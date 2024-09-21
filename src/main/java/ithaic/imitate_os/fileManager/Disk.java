@@ -1,5 +1,7 @@
 package ithaic.imitate_os.fileManager;
 
+import org.junit.Test;
+
 public final class Disk {
     private static final char[][] capacity = new char[256][64];
 
@@ -25,6 +27,7 @@ public final class Disk {
         capacity[0][0] = 1;//第0个盘块已被占用，存放FAT
         capacity[0][1] = 1;//第1个盘块已被占用，存放FAT
     }
+
 
     public static int getFreeBlock() {
         for (int i = 0; i < 2; i++) {
