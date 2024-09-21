@@ -14,5 +14,5 @@ public class PCB {
     private String[] instructions;
     private int PC;
     private char PSW;
-    int AX;
+    private int AX;
 }

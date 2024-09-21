@@ -5,22 +5,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CPU {
-    private static PCB runningProcess;
-    private static String IR;
-    private static int PC;
-    private static char PSW = 0b000;
-    int AX;
+    private  PCB runningProcess;
+    private  String IR;
+    private  int PC;
+    private  char PSW;
+    private  int AX;
 
     //模拟CPU运行
     public void run(){
-        while(true){
+//        while(true){
             checkPSW();
             //TODO: 解析指令，执行指令
-        }
+            String[] instruction = {"X=1000","x++","x++","x--","!A100","end"};
+            for(String ins : instruction){
+                parseInstruction(ins);
+            }
+//        }
     }
 
     //检查PSW 判断是否需要中断处理
@@ -35,8 +40,29 @@ public class CPU {
     }
 
     //解析指令
-    private void parseInstruction(){
+    private void parseInstruction(String instruction){
+        instruction = instruction.toLowerCase();
         //TODO: 解析指令
+        if(instruction.startsWith("x=")){
+            AX = Integer.parseInt(instruction.substring(2));
+            System.out.println("AX = " + AX);
+        }
+        if(instruction.compareTo("x++")==0){
+            AX++;
+            System.out.println("AX++,AX = " + AX);
+        }
+        if(instruction.compareTo("x--")==0){
+            AX--;
+            System.out.println("AX--,AX = " + AX);
+        }
+        if(instruction.startsWith("!")){
+            char deviceName =instruction.charAt(1);
+            int requestTime = Integer.parseInt(instruction.substring(2));
+            System.out.println("设备"+deviceName+" requestTime = " + requestTime);
+        }
+        if(instruction.compareTo("end")==0){
+            System.out.println("程序结束 释放内存");
+        }
     }
 
 

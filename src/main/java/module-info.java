@@ -7,4 +7,5 @@ module ithaic.imitate_os {
 
     opens ithaic.imitate_os to javafx.fxml;
     exports ithaic.imitate_os;
+    exports Test to junit;
 }
