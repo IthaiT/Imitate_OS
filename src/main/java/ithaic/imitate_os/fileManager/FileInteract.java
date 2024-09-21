@@ -3,14 +3,19 @@ package ithaic.imitate_os.fileManager;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
+/*
+*  TODO 此类实现用户与文件系统的交互
+* */
 public class FileInteract {
     private static TextField CommandInput;
     private static Button certify;
     private String command;
 
-    public FileInteract(TextField CommandInput, Button certify) {
+    public FileInteract(TextField CommandInput, Button certify){
+        new Disk();// 创建磁盘
         FileInteract.CommandInput = CommandInput;
         FileInteract.certify = certify;
         certify.setOnMouseClicked(e -> {

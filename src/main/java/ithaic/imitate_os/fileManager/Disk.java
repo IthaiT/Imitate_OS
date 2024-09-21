@@ -1,52 +1,86 @@
 package ithaic.imitate_os.fileManager;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+
 public final class Disk {
-    private static final char[][] capacity = new char[256][64];
-
     /*
-    * TODO 磁盘初始化
-    *  0 代表盘块空闲，1 代表已分配
-    *  前两块盘块用来存放文件分配表FAT
-    * */
+     * TODO 磁盘初始化
+     *  1. 磁盘分配
+     *    0-3盘块为系统盘，存放FAT
+     *    4盘块为根目录
+     *    5-255盘块为数据盘，可存放目录块、文件数据
+     *  2.FAT表内容含义
+     *    0代表盘块空闲
+     *    1代表盘块已被占用
+     *    2 3 4 未分配
+     *    5-255 代表文件/目录所在的盘块号
+     *
+     * */
+    private static final int BLOCK_COUNT = 256; // 盘块总数
+    private static final int BLOCK_SIZE = 64; // 每个盘块的大小
+    private static final char[] readBuffer = new char[BLOCK_SIZE]; // 读缓冲区
+    private static final char[] writeBuffer = new char[BLOCK_SIZE]; // 写缓冲区
+    private static final String diskFileName = "src/main/resources/ithaic/imitate_os/disk"; // 磁盘文件名
+
+    //TODO 磁盘初始化
     Disk() {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 64; j++) {
-                capacity[i][j] = 0;
+        int position = 0;
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
+            file.seek(position);
+            // 前4块盘区用于存放FAT，第5块盘区用于存放根目录
+            for (int i = 0; i < 5; i++) {
+                file.writeChar(1);
             }
+            // 后251块盘区自由使用
+            for (int i = 5; i < BLOCK_SIZE * 4; i++) {
+                file.writeChar(0);
+            }
+            //初始化磁盘文件
+            for (int i = BLOCK_SIZE * 4; i < BLOCK_SIZE * BLOCK_COUNT; i++) {
+                file.writeChar(0);
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        // 初始化根目录
-        capacity[2][0] = '/';
-        capacity[2][3] = 0;
-        capacity[2][4] = 0x80;
-        capacity[2][5] = 2;
-        capacity[2][7] = 1;
-
-
-        capacity[0][0] = 1;//第0个盘块已被占用，存放FAT
-        capacity[0][1] = 1;//第1个盘块已被占用，存放FAT
     }
 
+    //TODO 得到空闲盘块号
     public static int getFreeBlock() {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 64; j++) {
-                if (capacity[i][j] == 0) {
-                    return i * 64 + j;
+        int position = 0;
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "r");
+            file.seek(position);
+            for (int i = 5; i < BLOCK_SIZE; i++) {
+                if (file.readChar() == 0) {
+                    return i;
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return 0;
     }
-    public static void setBlock(int block, char[] name, char extendName, char property, short length) {
-        //TODO 父目录的FAT需要更新
-        capacity[block / 64][block % 64] = 1;
-        capacity[block][0] = name[0];
-        capacity[block][1] = name[1];
-        capacity[block][2] = name[2];
-        capacity[block][3] = extendName;
-        capacity[block][4] = property;
-        capacity[block][5] = (char) (length >> 8);
-        capacity[block][6] = (char) (length & 0xff);
+
+    //TODO 写入磁盘
+    public static void writeBlock(int blockNo, char[] data) {
+        int position = blockNo * BLOCK_SIZE;
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
+            file.seek(position);
+            for (char datum : data) {
+                file.writeChar(datum);
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-
 }
+
+
+
