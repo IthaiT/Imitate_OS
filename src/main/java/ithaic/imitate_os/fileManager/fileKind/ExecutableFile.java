@@ -1,17 +1,27 @@
 package ithaic.imitate_os.fileManager.fileKind;
 
-import ithaic.imitate_os.fileManager.fileKind.File;
+import ithaic.imitate_os.fileManager.Disk;
 
 public class ExecutableFile implements File {
     @Override
     public void create(String path) {
-
+        int startNum = Disk.getFreeBlock();
+        if(startNum == 0){
+            System.out.println("No free block available");
+            return;
+        }
+        if(path.contains("/") || path.contains(".") || path.contains("$")){
+            System.out.println("Invalid path");
+            return;
+        }
+        if(path.length() > 3 || path.isEmpty()){
+            System.out.println("Path too long");
+            return;
+        }
+        Disk.setBlock(startNum, path.toCharArray(), 'e', (char) 0X40, (short) 1);
     }
 
-    @Override
-    public void create(char[] name, char extendName, char property, int startNum, int length) {
 
-    }
 
     @Override
     public void delete(String path) {

@@ -14,8 +14,38 @@ public final class Disk {
                 capacity[i][j] = 0;
             }
         }
-        capacity[0][0] = 1;
-        capacity[0][1] = 1;
+        // 初始化根目录
+        capacity[2][0] = '/';
+        capacity[2][3] = 0;
+        capacity[2][4] = 0x80;
+        capacity[2][5] = 2;
+        capacity[2][7] = 1;
+
+
+        capacity[0][0] = 1;//第0个盘块已被占用，存放FAT
+        capacity[0][1] = 1;//第1个盘块已被占用，存放FAT
+    }
+
+    public static int getFreeBlock() {
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 64; j++) {
+                if (capacity[i][j] == 0) {
+                    return i * 64 + j;
+                }
+            }
+        }
+        return 0;
+    }
+    public static void setBlock(int block, char[] name, char extendName, char property, short length) {
+        //TODO 父目录的FAT需要更新
+        capacity[block / 64][block % 64] = 1;
+        capacity[block][0] = name[0];
+        capacity[block][1] = name[1];
+        capacity[block][2] = name[2];
+        capacity[block][3] = extendName;
+        capacity[block][4] = property;
+        capacity[block][5] = (char) (length >> 8);
+        capacity[block][6] = (char) (length & 0xff);
     }
 
 
