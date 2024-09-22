@@ -3,8 +3,6 @@ package ithaic.imitate_os.memoryManager;
 import ithaic.imitate_os.process.PCB;
 import lombok.Data;
 
-import java.util.Arrays;
-
 @Data
 public class Memory {
     private PCB[] pcbTable;
@@ -24,6 +22,5 @@ public class Memory {
     @Override
     public String toString() {
         return "Memory";
-
     }
 }

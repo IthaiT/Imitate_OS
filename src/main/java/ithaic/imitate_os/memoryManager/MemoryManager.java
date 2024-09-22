@@ -38,7 +38,11 @@ public class MemoryManager {
         return null;
     }
 
-    public boolean release(MemoryBlock releaseBlock) {
+    /**
+     * 该函数释放PCB所占用的内存块
+     * @param releaseBlock 需要释放的内存块
+     */
+    public void release(MemoryBlock releaseBlock) {
         //将内存块设置为true
         releaseBlock.setFree(true);
         //合并相邻的空闲内存块
@@ -54,8 +58,41 @@ public class MemoryManager {
 
             if(pre.getNext()!=null)pre.getNext().setPre(pre);
         }
-
-        return false;
     }
+
+    /**
+     * 该函数向内存中写入数据
+     * @param block PCB所占用的内存块
+     * @param content 写入的数据
+     */
+    public void write(MemoryBlock block, char[] content) {
+        if(block==null)return;
+        int startAddress = block.getAddress();
+        int size = block.getSize();
+        char[] userMemory = memory.getUserMemory();
+        for(int i=startAddress,j=0; i<startAddress+size; i++,j++) {
+            if(j>=content.length)break;
+            userMemory[i] = content[j];
+        }
+    }
+
+    /**
+     * 该函数从内存中读取指令
+     * @param block PCB所占用的内存块
+     * @return 指令数组
+     */
+    public String fetchInstruction(MemoryBlock block) {
+        if(block==null)return null;
+        //从内存中读取指令
+        int startAddress = block.getAddress();
+        int size = block.getSize();
+        char[] instructions = new char[size];
+        char[] userMemory = memory.getUserMemory();
+        for(int i=startAddress,j=0; i<startAddress+size; i++,j++) {
+            instructions[j] = userMemory[i];
+        }
+        return String.valueOf(instructions);
+    }
+
 
 }
