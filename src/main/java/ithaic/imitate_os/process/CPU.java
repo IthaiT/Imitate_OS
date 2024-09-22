@@ -12,33 +12,36 @@ import static java.lang.Thread.sleep;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CPU {
+    private  ProcessManager processManager;
     private  PCB runningProcess;
     private  String IR;
     private  int PC;
     private  char PSW;
     private  int AX;
 
+    {
+        processManager = new ProcessManager();
+    }
+
     //模拟CPU运行
     public void run(){
         Runnable task = ()->{
             while(true){
                 checkPSW();
+                //取就绪进程
+                runningProcess = processManager.getReadyProcessQueue().peek();
 
+                //到内存取指令
+                //fetchInstruction();
 
-                //TODO: 解析指令，执行指令
-
-                //以下为 测试指令
-                String[] instruction = {"X=1000","x++","x++","x--","!A100","end"};
-                for(String ins : instruction){
-                    parseInstruction(ins);
-                }
-
+                //解析并执行指令
+                parseInstruction();
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-            }
+        }
         };
         task.run();
     }
@@ -57,27 +60,27 @@ public class CPU {
     }
 
     //解析指令
-    private void parseInstruction(String instruction){
-        instruction = instruction.toLowerCase();
+    private void parseInstruction( ){
+        IR = IR.toLowerCase();
         //TODO: 解析指令
-        if(instruction.startsWith("x=")){
-            AX = Integer.parseInt(instruction.substring(2));
+        if(IR.startsWith("x=")){
+            AX = Integer.parseInt(IR.substring(2));
             System.out.println("AX = " + AX);
         }
-        if(instruction.compareTo("x++")==0){
+        if(IR.compareTo("x++")==0){
             AX++;
             System.out.println("AX++,AX = " + AX);
         }
-        if(instruction.compareTo("x--")==0){
+        if(IR.compareTo("x--")==0){
             AX--;
             System.out.println("AX--,AX = " + AX);
         }
-        if(instruction.startsWith("!")){
-            char deviceName =instruction.charAt(1);
-            int requestTime = Integer.parseInt(instruction.substring(2));
+        if(IR.startsWith("!")){
+            char deviceName =IR.charAt(1);
+            int requestTime = Integer.parseInt(IR.substring(2));
             System.out.println("设备"+deviceName+" requestTime = " + requestTime);
         }
-        if(instruction.compareTo("end")==0){
+        if(IR.compareTo("end")==0){
             System.out.println("程序结束 释放内存");
         }
     }
