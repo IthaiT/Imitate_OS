@@ -22,13 +22,12 @@ public final class Disk {
      *    5-255 代表文件/目录所在的盘块号
      *
      * */
-    private static final int BLOCK_COUNT = 256; // 盘块总数
-    private static final int BLOCK_SIZE = 64; // 每个盘块的大小
+    public static final int BLOCK_COUNT = 256; // 盘块总数
+    public static final int BLOCK_SIZE = 64; // 每个盘块的大小
     @Getter
     private static final char[] readBuffer = new char[BLOCK_SIZE]; // 读缓冲区
     private static final char[] writeBuffer = new char[BLOCK_SIZE]; // 写缓冲区
     private static final String diskFileName = "src/main/resources/ithaic/imitate_os/disk"; // 磁盘文件名
-
     /**
      * 磁盘初始化函数*/
     public Disk() {
@@ -77,12 +76,34 @@ public final class Disk {
 
 
     /**
+     * 写入整块64byte数据到磁盘
+     * @param content 写入的字符串数组
+     * @param blockNo 盘块号
+     * */
+    public static void writeBlock(char[] content, int blockNo) {
+        int position = blockNo * BLOCK_SIZE;
+        setWriteBuffer(content);
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
+            file.seek(position * 2L);
+            for (int i = 0; i < BLOCK_SIZE; i++) {
+                file.writeChar(writeBuffer[i]);
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
      * 将目录块写入磁盘
      * @param content 目录块内容
      * @param blockNo 盘块号
      * @param length 写入缓冲区的长度
+     * @return 返回写入的起始地址
      * */
-    public static void writeCatalogItem(char[] content, int blockNo, int length) {
+    public static int  writeCatalogItem(char[] content, int blockNo, int length) {
         // 先读磁盘，看看此盘块是否满了，可否新建文件/文件夹
         int position = blockNo * BLOCK_SIZE;
         readBlock(blockNo);
@@ -93,7 +114,7 @@ public final class Disk {
             }
             if(i == 7){
                 System.out.println("磁盘已满");
-                return;
+                return 0;
             }
         }
         //设置目录块内容
@@ -108,6 +129,7 @@ public final class Disk {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return position;
     }
 
 
@@ -137,7 +159,7 @@ public final class Disk {
      * 此函数指定盘块号，读取磁盘内容到缓冲区中
      * @param blockNo 盘块号
      * */
-    public static void readBlock(int blockNo) {
+    public static char[] readBlock(int blockNo) {
         int position = blockNo * BLOCK_SIZE;
         try {
             RandomAccessFile file = new RandomAccessFile(diskFileName, "r");
@@ -149,6 +171,7 @@ public final class Disk {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return readBuffer;
     }
 
     /**
@@ -184,7 +207,14 @@ public final class Disk {
             writeBuffer[i] = content[i];
         }
     }
-
+    /**
+     * 设置FAT表项
+     * @param content: 要写入的内容
+     * @param where:   要写入的位置
+     * */
+    public static void setFAT(int content, int where){
+        Disk.writeChar((char)content, (char)(where/64), (char)(where%64));//设置子目录的FAT表项
+    }
 }
 
 

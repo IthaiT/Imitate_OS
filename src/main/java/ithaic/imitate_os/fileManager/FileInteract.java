@@ -33,24 +33,23 @@ public class FileInteract {
         String[] commandArray = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
 
-        if (command.equals("create")) {// 创建文件，包括普通文件和可执行文件
-            MyFile file = new MyFile();
-            file.create(directoryArray);
+        if (commandArray[0].equals("create")) {// 创建文件，包括普通文件和可执行文件
+            MyFile file = new MyFile(directoryArray);
+            //等待写入数据
         }
-        else if (command.equals("delete")) {// 删除文件
+        else if (commandArray[0].equals("delete")) {// 删除文件
+            FileUtils.deleteFile(directoryArray);
+        }
+        else if (commandArray[0].equals("type")) {// 显示文件内容
+            FileUtils.typeFile(directoryArray);
+        }
+        else if (commandArray[0].equals("copy")) {// 复制文件
 
         }
-        else if (command.equals("type")) {// 显示文件内容
-
+        else if (commandArray[0].equals("mkdir")) {// 创建目录
+            Directory directory = new Directory(directoryArray);
         }
-        else if (command.equals("copy")) {// 复制文件
-
-        }
-        else if (command.equals("mkdir")) {// 创建目录
-            Directory directory = new Directory();
-            directory.create(directoryArray);
-        }
-        else if (command.equals("rmdir")) {// 删除目录
+        else if (commandArray[0].equals("rmdir")) {// 删除目录
 
         }
         else{
