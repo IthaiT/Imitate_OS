@@ -7,11 +7,11 @@ public class mainController {
     @FXML
     private TextField CommandInput;
     @FXML
-    private Button certify;
+    private Button button;
 
 
     @FXML
     private void initialize() {
-        new FileInteract(CommandInput,certify);
+        new FileInteract(CommandInput,button);
     }
 }
