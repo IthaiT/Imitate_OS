@@ -20,7 +20,8 @@ public class FileInteract {
 
     public FileInteract(TextField CommandInput, Button button){
         new Disk();// 创建磁盘
-        FileInteract.CommandInput = CommandInput;
+        FileInteract.CommandInput = CommandInput;//获得用户输入
+        //设置按钮鼠标监听事件
         FileInteract.button = button;
         button.setOnMouseClicked(e -> {
             command = CommandInput.getText();
@@ -51,6 +52,9 @@ public class FileInteract {
         }
         else if (command.equals("rmdir")) {// 删除目录
 
+        }
+        else{
+            System.out.println("命令错误！");
         }
     }
 }
