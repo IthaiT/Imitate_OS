@@ -28,7 +28,7 @@ public class Directory extends MyFile {
         }
         setAllocatedBlocks(allocateBlock);
         // 设置FAT
-        Disk.writeChar((char)1, (char)(allocateBlock/64), (char)(allocateBlock%64));//设置子目录的FAT表项
+        Disk.setFAT(1, allocateBlock);
         // 创建目录项
         CatalogItem catalogItem = new CatalogItem(getFilename().toCharArray(), (char)0, (char)0x80, (char)allocateBlock, (char)0);
         Disk.writeCatalogItem(catalogItem.getCatalogItem(), parentBlock,8);

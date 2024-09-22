@@ -22,8 +22,8 @@ public final class Disk {
      *    5-255 代表文件/目录所在的盘块号
      *
      * */
-    private static final int BLOCK_COUNT = 256; // 盘块总数
-    private static final int BLOCK_SIZE = 64; // 每个盘块的大小
+    public static final int BLOCK_COUNT = 256; // 盘块总数
+    public static final int BLOCK_SIZE = 64; // 每个盘块的大小
     @Getter
     private static final char[] readBuffer = new char[BLOCK_SIZE]; // 读缓冲区
     private static final char[] writeBuffer = new char[BLOCK_SIZE]; // 写缓冲区
@@ -207,7 +207,14 @@ public final class Disk {
             writeBuffer[i] = content[i];
         }
     }
-
+    /**
+     * 设置FAT表项
+     * @param content: 要写入的内容
+     * @param where:   要写入的位置
+     * */
+    public static void setFAT(int content, int where){
+        Disk.writeChar((char)content, (char)(where/64), (char)(where%64));//设置子目录的FAT表项
+    }
 }
 
 

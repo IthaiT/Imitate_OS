@@ -35,12 +35,13 @@ public class FileInteract {
 
         if (commandArray[0].equals("create")) {// 创建文件，包括普通文件和可执行文件
             MyFile file = new MyFile(directoryArray);
+            //等待写入数据
         }
         else if (commandArray[0].equals("delete")) {// 删除文件
-
+            FileUtils.deleteFile(directoryArray);
         }
         else if (commandArray[0].equals("type")) {// 显示文件内容
-
+            FileUtils.typeFile(directoryArray);
         }
         else if (commandArray[0].equals("copy")) {// 复制文件
 
