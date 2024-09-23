@@ -9,21 +9,28 @@ public class Directory extends MyFile {
     }
 
     private void create(String[] mixedArray){
-        handleMixedArray(mixedArray); //获得文件名还有父目录数组
+        //获得文件名还有父目录数组
+        if(handleMixedArray(mixedArray) == false){
+            setAvailable(false);
+            return;
+        }
         //获得父目录的盘块号
         int parentBlock = Disk.findBottomFileBlock(getDirectoryArray());
         if(parentBlock == 0){
+            setAvailable(false);
             return;
         }
         //判断文件名是否合法
         if(!isValidFilename(parentBlock)){
             System.out.println("Invalid filename");
+            setAvailable(false);
             return;
         }
         //获得空闲盘块号
         int allocateBlock = Disk.getFreeBlock();
         if(allocateBlock == 0){
             System.out.println("No free block available");
+            setAvailable(false);
             return;
         }
         setAllocatedBlocks(allocateBlock);

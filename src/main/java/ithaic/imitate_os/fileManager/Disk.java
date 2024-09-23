@@ -154,8 +154,29 @@ public final class Disk {
         }
     }
 
-
     /**
+     * 此函数用于修改目录块
+     * @param content 要修改的内容
+     * @param blockNo 盘块号
+     * @param position 要修改的位置
+     * */
+     public static void modifyCatalogItem(char[] content, int blockNo, int position) {
+        setWriteBuffer(content);
+        int position1 = blockNo * BLOCK_SIZE + position;
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
+            file.seek(position1 * 2L);
+            for (int i = 0; i < 8; i++) {
+                file.writeChar(writeBuffer[i]);
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+     }
+
+
+     /**
      * 此函数指定盘块号，读取磁盘内容到缓冲区中
      * @param blockNo 盘块号
      * */

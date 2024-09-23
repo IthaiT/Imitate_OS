@@ -4,8 +4,6 @@ import ithaic.imitate_os.fileManager.Disk;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
 /*TODO
  *   1. 文件属性
  *       1.1 0X80 目录
@@ -23,6 +21,7 @@ public class MyFile {
     private int fileLength = 0; // 文件长度
     private String[] directoryArray; //路径文件夹数组
     private int ItemPosition = 0; //目录项起始地址
+    private boolean available = true; //是否成功创建
 
     public MyFile(String[] mixedArray){
         create(mixedArray);
@@ -38,20 +37,27 @@ public class MyFile {
      * @param mixedArray: 用户创建的文件路径
      *                  * */
     private void create(String[] mixedArray){
-        handleMixedArray(mixedArray); //获得文件名还有父目录数组
+        //获得文件名还有父目录数组
+        if(handleMixedArray(mixedArray) == false){
+            available = false;
+            return;
+        }
         // 判断父目录是否存在
         int parentBlock = Disk.findBottomFileBlock(directoryArray);
         if(parentBlock == 0){
+            available = false;
             return ;
         }
 
         //判断文件名是否合法
         if(!isValidFilename(parentBlock)){
+            available = false;
             return;
         }
         //获得空闲盘块号
         allocatedBlocks = Disk.getFreeBlock();
         if(allocatedBlocks == 0){
+            available = false;
             System.out.println("No free block available");
             return;
         }
@@ -70,6 +76,7 @@ public class MyFile {
      * @return 是否写入成功
      * */
     public boolean writeData(char[] content){
+        if(!available)return false;
         //先判断要写入的块是否已经被写满了
         boolean isFull = true;
         char[] buffer = Disk.readBlock(allocatedBlocks);
@@ -101,13 +108,15 @@ public class MyFile {
      * 用来分离文件名和父目录数组
      * @param mixedArray: 外部传入的，既有文件名又有父目录数组的混合数组
      * */
-    protected void handleMixedArray(String[] mixedArray){
+    protected boolean handleMixedArray(String[] mixedArray){
+        if(mixedArray.length<=0)return false;
         filename = mixedArray[mixedArray.length-1];
         // i从1开始，因为按照/分割，第一个是空字符串
         directoryArray = new String[mixedArray.length-2];
         for (int i = 1; i < mixedArray.length - 1; i++) {
             directoryArray[i-1] = mixedArray[i];
         }
+        return true;
     }
 
 
@@ -124,7 +133,7 @@ public class MyFile {
         }
         // 如果文件名长度超过3个字符或为空，则返回
         if(filename.length() > 3 || filename.isEmpty()){
-            System.out.println("Path too long");
+            System.out.println("Path too long | Path is empty");
             return false;
         }
         // 检查文件名是否合法

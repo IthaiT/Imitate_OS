@@ -50,7 +50,7 @@ public class FileInteract {
             Directory directory = new Directory(directoryArray);
         }
         else if (commandArray[0].equals("rmdir")) {// 删除目录
-
+            FileUtils.deleteDirectory(directoryArray);
         }
         else{
             System.out.println("命令错误！");
