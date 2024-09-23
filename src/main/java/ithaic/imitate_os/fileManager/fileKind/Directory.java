@@ -33,4 +33,45 @@ public class Directory extends MyFile {
         CatalogItem catalogItem = new CatalogItem(getFilename().toCharArray(), (char)0, (char)0x80, (char)allocateBlock, (char)0);
         Disk.writeCatalogItem(catalogItem.getCatalogItem(), parentBlock,8);
     }
+
+
+    /**
+     * 重写父类方法：目录文件不能写入数据
+     * @param content 写入的数据
+     * */
+    @Override
+    public boolean writeData(char[] content) {
+        System.out.println("Cannot write data to a directory");
+        return false;
+    }
+
+    /**
+     * 重写父类方法：目录文件文件名合法标准与一般文件不同
+     * @param parentBlock 父目录盘块号，用于检查是否存在同名文件夹
+     * @return 合法返回true，不合法返回false
+     * */
+    @Override
+    public boolean isValidFilename(int parentBlock){
+        String filename = getFilename();
+        // 如果文件名长度超过3个字符或为空，则返回
+        if(filename.length() > 3 || filename.isEmpty()){
+            System.out.println("Path too long");
+            return false;
+        }
+        // 检查文件名是否合法
+        if(filename.contains("/") || filename.contains(".") ||filename.contains("$")) {
+            System.out.println("Invalid path");
+            return false;
+        }
+        //判断是否存在同名文件夹
+        Disk.readBlock(parentBlock);
+        char[] buffer = Disk.getReadBuffer();
+        for (int i = 0; i < 8; i++) {
+            if(filename.equals(new String(buffer,i*8,3)) && buffer[i*8+4] == 0x80 ){
+                System.out.println("file already exists");
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -113,8 +113,10 @@ public class MyFile {
 
     /**
      * 判断用户创建的文件名是否合法
+     * @param parentBlock: 父目录所在的盘块号,用于判断是否有同名文件
+     * @return 文件名是否合法
      * */
-    protected boolean isValidFilename(int parentBlock){
+    public boolean isValidFilename(int parentBlock){
         if(filename.endsWith(".e")){
             filename = filename.substring(0, filename.lastIndexOf("."));
             extendName = 'e';
@@ -140,6 +142,4 @@ public class MyFile {
         }
         return true;
     }
-
-
 }

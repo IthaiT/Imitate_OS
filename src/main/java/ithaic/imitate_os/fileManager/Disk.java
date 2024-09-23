@@ -174,9 +174,10 @@ public final class Disk {
         return readBuffer;
     }
 
+
     /**
-     * 这个函数用于查找文件/文件夹所在的盘块号
-     * @param path 一个字符串数组，表示文件的路径
+     * 这个函数用于查找文件/文件夹所在的盘块号（创建文件/目录时使用）, 你必须保证你传入的路径全是目录
+     * @param path 一个字符串数组，表示文件的路径(不包括文件本身）
      * @return 返回文件夹/文件所在的盘块号，如果不存在，返回0
      */
     public static int findBottomFileBlock(String[] path){
@@ -184,7 +185,7 @@ public final class Disk {
         for (int i = 0; i < path.length; i++) {
             readBlock(blockNo);
             for (int j = 0; j < 8; j++) {
-                if(path[i].equals(new String(readBuffer, j * 8, 3).trim())){
+                if(path[i].equals(new String(readBuffer, j * 8, 3).trim()) && readBuffer[j * 8 + 4] == 0x80){
                     blockNo = readBuffer[j * 8 + 5];
                     break;
                 }
@@ -193,6 +194,45 @@ public final class Disk {
                     return 0;
                 }
             }
+        }
+        return blockNo;
+    }
+
+    /**
+     * 这个函数用于查找文件/文件夹所在的盘块号
+     * @param path 一个字符串数组，表示文件的路径(不包括文件本身）
+     * @param fileName 文件名
+     * @param property 文件属性 0x80表示文件夹，0x40表示可执行文件，0x20表示普通文件
+     * @return 返回文件夹/文件所在的盘块号，如果不存在，返回0
+     */
+    public static int findBottomFileBlock(String[] path, String fileName, int property){
+        char blockNo = 4; //根目录所在的盘块号
+        //前面path.length-1个盘块是必须是目录盘块，最后一个盘块是文件/文件夹所在的盘块
+        for (int i = 0; i < path.length; i++) {
+            readBlock(blockNo);
+            for (int j = 0; j < 8; j++) {
+                if(path[i].equals(new String(readBuffer, j * 8, 3).trim()) && readBuffer[j * 8 + 4] == 0x80){
+                    blockNo = readBuffer[j * 8 + 5];
+                    break;
+                }
+                if(j == 7){
+                    System.out.println("文件不存在");
+                    return 0;
+                }
+            }
+        }
+        //检查最后一个文件名与文件里类型是否匹配
+        readBlock(blockNo);
+        for (int i = 0; i < 8; i++) {
+            if(fileName.equals(new String(readBuffer, i * 8, 3).trim()) && readBuffer[i * 8 + 4]  == property){
+                blockNo = readBuffer[i * 8 + 5];
+                break;
+            }
+            if(i == 7){
+                System.out.println("文件不存在");
+                return 0;
+            }
+
         }
         return blockNo;
     }

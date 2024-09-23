@@ -45,21 +45,22 @@ public class FileUtils {
     }
 
     /**
-     * 判断文件/文件夹是否存在
+     * 判断文件是否存在，注意是文件，不包含目录
      * @param mixedArray 文件路径数组
      * @return true:存在 false:不存在*/
     public static boolean isFileExists(String[] mixedArray) {
         String filename = mixedArray[mixedArray.length-1];
+        int property = 0x20;
         if(filename.endsWith(".e")){
             filename = filename.substring(0, filename.lastIndexOf("."));
+            property = 0x40;
         }
         // i从1开始，因为按照/分割，第一个是空字符串
-        String[] directoryArray = new String[mixedArray.length-1];
+        String[] directoryArray = new String[mixedArray.length-2];
         for (int i = 1; i < mixedArray.length - 1; i++) {
             directoryArray[i-1] = mixedArray[i];
         }
-        directoryArray[directoryArray.length-1] = filename;
-        if(Disk.findBottomFileBlock(directoryArray)==0)
+        if(Disk.findBottomFileBlock(directoryArray,filename,property)==0)
             return false;
         return true;
     }
@@ -72,21 +73,26 @@ public class FileUtils {
      * */
     private static int getCatalogItemPosition(String[] mixedArray) {
         String filename = mixedArray[mixedArray.length-1];
+        int property = 0x20;
         if(filename.endsWith(".e")){
             filename = filename.substring(0, filename.lastIndexOf("."));
+            property = 0x40;
         }
         String[] directoryArray = new String[mixedArray.length-2];
         for (int i = 1; i < mixedArray.length - 1; i++) {
             directoryArray[i-1] = mixedArray[i];
         }
         int position = Disk.findBottomFileBlock(directoryArray);
+        System.out.println(position);
         char[] block = Disk.readBlock(position);
-        for (int i = 0; i < block.length; i += 8) {
+        for (int i = 0; i < 8; i += 8) {
             String catalogItem = new String(block, i*8, 3).trim();
             if(catalogItem.equals(filename)){
+                System.out.println(position* Disk.BLOCK_SIZE + i);
                 return position* Disk.BLOCK_SIZE + i;
             }
         }
         return 0;
     }
+
 }
