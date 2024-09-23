@@ -1,5 +1,8 @@
 package ithaic.imitate_os.fileManager;
 
+import ithaic.imitate_os.fileManager.fileKind.Directory;
+import ithaic.imitate_os.fileManager.fileKind.MyFile;
+
 import java.util.Arrays;
 
 public class FileUtils {
@@ -8,6 +11,10 @@ public class FileUtils {
      * @param filePath 文件路径数组
      * */
     public static void deleteFile(String[] filePath) {
+        if(filePath.length <=0){
+            System.out.println("Invalid path");
+            return;
+        }
         //判断文件是否存在
         if(!isFileExists(filePath, (char) 0x20)){
             System.out.println("File not found");
@@ -108,11 +115,44 @@ public class FileUtils {
 
 
     /**
+     * 复制文件
+     * @param sourceMixedArray 源文件路径数组
+     * @param targetMixedArray 目标文件路径数组
+     * */
+    public static void copyFile(String[] sourceMixedArray, String[] targetMixedArray) {
+        if(!copyFileUtil(sourceMixedArray, targetMixedArray)){
+            System.out.println("复制失败");
+            return;
+        }
+        //修改目录项
+        String targetFilename = targetMixedArray[targetMixedArray.length-1];
+        int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
+        char[] block = Disk.readBlock(sourcePosition/64);//得到目录块所在盘块
+        char[] content = new char[8];//得到原来目录项
+        //创建新的目录项
+        for (int i = 3; i < 8; i++) {
+            content[i] = block[sourcePosition%64 + i];
+        }
+        for (int i = 0; i < targetFilename.length(); i++) {
+            content[i] = targetFilename.charAt(i);
+        }
+        //设置新的目录项
+        String[] directoryArray = new String[targetMixedArray.length-2];
+        for (int i = 1; i < targetMixedArray.length - 1; i++) {
+            directoryArray[i - 1] = targetMixedArray[i];
+        }
+        int position = Disk.findBottomFileBlock(directoryArray);
+        System.out.println(position);
+        Disk.writeCatalogItem(content, position, 8);
+    }
+
+    /**
      * 判断文件/文件夹是否存在
      * @param mixedArray 文件路径数组
      * @return true:存在 false:不存在*/
     public static boolean isFileExists(String[] mixedArray, char property) {
         if(mixedArray.length <= 0 )return false;
+        if(mixedArray.length == 1 && mixedArray[0].isEmpty())return true;
         String filename = mixedArray[mixedArray.length-1];
         if(filename.endsWith(".e")){
             filename = filename.substring(0, filename.lastIndexOf("."));
@@ -154,4 +194,73 @@ public class FileUtils {
         return 0;
     }
 
+    /**
+     * 文件复制的工具函数，用于文件合法性判断
+     * @param sourceMixedArray 源文件路径数组
+     * @param targetMixedArray 目标文件路径数组
+     * */
+    private static boolean copyFileUtil(String[] sourceMixedArray, String[] targetMixedArray) {
+        //判断传入参数是否合法
+        if(sourceMixedArray.length <= 0 || targetMixedArray == null || targetMixedArray.length <= 0){
+            System.out.println("Invalid path");
+            return false;
+        }
+        //判断源文件是否存在
+        if(!isFileExists(sourceMixedArray, (char) 0x20)){
+            System.out.println("File not found");
+            return false;
+        }
+        //判断目标路径是否存在
+        String[] directoryArray = new String[targetMixedArray.length-1];
+        for (int i = 0; i < targetMixedArray.length - 1; i++) {
+            directoryArray[i] = targetMixedArray[i];
+        }
+        if(!isFileExists(directoryArray, (char) 0x80)){
+            for(int i = 1; i < directoryArray.length; i++){
+                if(directoryArray[i].length() > 3 || directoryArray[i].length() <= 0 || directoryArray[i].contains("$") || directoryArray[i].contains(".")){
+                    System.out.println("目标路径错误");
+                    return false;
+                }
+            }
+            //创建目标目录
+            createDirectory(directoryArray);
+        }
+        //判断文件类型是否匹配
+        String sourceFilename = sourceMixedArray[sourceMixedArray.length-1];
+        String targetFilename = targetMixedArray[targetMixedArray.length-1];
+        if(sourceFilename.endsWith(".e")){
+            if(!targetFilename.endsWith(".e")){
+                System.out.println("文件类型不匹配");
+                return false;
+            }
+            sourceFilename = sourceFilename.substring(0, sourceFilename.lastIndexOf("."));
+            targetFilename = targetFilename.substring(0, targetFilename.lastIndexOf("."));
+        }
+        //判断目标文件名是否正确
+        if(targetFilename.length() > 3 || targetFilename.length() <= 0){
+            System.out.println("文件名错误");
+            return false;
+        }
+        return true;
+    }
+
+    private static void createDirectory(String[] directoryArray) {
+        String[] temp = new String[directoryArray.length - 1];
+        for (int i = 1; i < directoryArray.length; i++) {
+              temp[i - 1] = directoryArray[i];
+        }
+        for (int i = 0; i < temp.length; i++) {
+            //如果存在
+            String[] newDirectoryArray = new String[i + 2];
+            newDirectoryArray[0] = "";
+            for(int j = 1; j < newDirectoryArray.length; j++){
+                newDirectoryArray[j] = temp[j-1];
+            }
+            if(isFileExists(newDirectoryArray, (char) 0x80)){
+                continue;
+            }
+            //不存在，创建目录项
+            new Directory(newDirectoryArray);
+        }
+    }
 }

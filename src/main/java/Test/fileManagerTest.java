@@ -14,14 +14,20 @@ public class fileManagerTest {
         new Disk();
         String[] commandArray = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
-        MyFile file = new MyFile(directoryArray);
-        file.writeData("hello world".toCharArray());
-        file.writeData("hello world2".toCharArray());
+        Directory file = new Directory(directoryArray);
+//        file.writeData("hello world".toCharArray());
+//        file.writeData("hello world2".toCharArray());
 
-        FileUtils.typeFile(directoryArray);
+        command = "sdasasa /abc/fil";
+        String[] commandArray1 = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
+        String[] directoryArray1 = commandArray1[1].split("/"); // 以/分割目录数组
+        MyFile file1 = new MyFile(directoryArray1);
+        String[] directoryArrayq = {"", "a","b"};
+        FileUtils.copyFile(directoryArray1, directoryArrayq);
 
-        FileUtils.deleteFile(directoryArray);
-        System.out.println("delete");
+//        FileUtils.deleteDirectory(directoryArray);
+//
+//        System.out.println("delete");
         Disk.readBlock(0);
         char[] buffer = Disk.getReadBuffer();
         for (int i = 0; i < 64; i++) {
@@ -46,6 +52,14 @@ public class fileManagerTest {
         }
         System.out.println(buffer);
         Disk.readBlock(6);
+        buffer = Disk.getReadBuffer();
+        for (int i = 0; i < 64; i++) {
+            if(buffer[i] == 0)buffer[i] = '0';
+            if(buffer[i] == 1)buffer[i] = '1';
+        }
+        System.out.println(buffer);
+
+        Disk.readBlock(7);
         buffer = Disk.getReadBuffer();
         for (int i = 0; i < 64; i++) {
             if(buffer[i] == 0)buffer[i] = '0';
