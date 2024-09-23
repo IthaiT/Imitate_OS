@@ -1,6 +1,7 @@
 package ithaic.imitate_os.process;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,18 +15,23 @@ public class ProcessManager {
     //进程空白队列
     private Queue<PCB> blankProcessQueue;
 
+    @Getter
+    private static ProcessManager instance;
+
+    static{
+        instance = new ProcessManager();
+    }
+
     {
         blockedProcessQueue = new LinkedList<>();
         readyProcessQueue = new LinkedList<>();
         blankProcessQueue = new LinkedList<>();
     }
 
-    public ProcessManager() {
-
-    }
-
     //TODO: 进程创建
-    public  void create(){
+    public void create(){
+        PCB pcb = this.blockedProcessQueue.poll();
+        if(pcb == null)return;
 
     }
     //TODO: 进程撤销

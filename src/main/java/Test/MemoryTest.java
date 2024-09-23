@@ -19,7 +19,7 @@ public class MemoryTest {
         PCB pcb = new PCB(1,"running",block,0, (char) 0,0,"null");
         cpu.setRunningProcess(pcb);
 
-        String executableFile = "X=1000;X--;\0\0\0X++    !A10 X-- X=9999 X-- X--";
+        String executableFile = "X=1000;X--;\0\0\0X++    !A10 X-- X=9999 X-- X--  end";
 
         memoryManager.write(pcb.getAllocatedMemory(),executableFile.toCharArray());
 

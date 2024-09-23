@@ -1,11 +1,20 @@
 package ithaic.imitate_os.memoryManager;
 
+import lombok.Getter;
+
 public class MemoryManager {
     private final int MEMORY_SIZE = 512;
     private Memory memory;
 
-    public MemoryManager(Memory memory) {
-        this.memory = memory;
+    @Getter
+    private static MemoryManager instance;
+
+    static{
+        instance = new MemoryManager();
+    }
+
+    public MemoryManager() {
+        this.memory = Memory.getInstance();
     }
 
     /**
