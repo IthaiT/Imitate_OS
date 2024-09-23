@@ -86,9 +86,9 @@ public class CPU {
     //检查PSW 判断是否需要中断处理
     private void checkPSW(){
         if((PSW & 0b001) == 0b001){
-            //TODO: 程序结束中断
             System.out.println("程序结束中断");
-            //调用进程撤销原语
+            //进程撤销原语
+            processManager.destroy(runningProcess);
             runningProcess = null;
             PSW = (char) (PSW & 0b110);
         }
@@ -128,7 +128,6 @@ public class CPU {
         }
         if(IR.compareTo("end")==0){
             PSW = (char) (PSW | 0b001);
-            System.out.println("程序结束,释放内存");
         }
     }
 

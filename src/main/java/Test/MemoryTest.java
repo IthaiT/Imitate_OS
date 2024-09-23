@@ -4,7 +4,8 @@ package Test;
 import ithaic.imitate_os.memoryManager.MemoryBlock;
 import ithaic.imitate_os.memoryManager.MemoryManager;
 import ithaic.imitate_os.process.CPU;
-import ithaic.imitate_os.process.PCB;
+
+import ithaic.imitate_os.process.ProcessManager;
 import org.junit.Test;
 
 
@@ -12,17 +13,25 @@ import org.junit.Test;
 public class MemoryTest {
 
     @Test
-    public void Test() {
+    public void Test() throws InterruptedException {
         CPU cpu = new CPU();
-        MemoryManager memoryManager = cpu.getMemoryManager();
-        MemoryBlock block = memoryManager.allocate(100);
-        PCB pcb = new PCB(1,"running",block,0, (char) 0,0,"null");
-        cpu.setRunningProcess(pcb);
 
-        String executableFile = "X=1000;X--;\0\0\0X++    !A10 X-- X=9999 X-- X--  end";
+        Thread thread = new Thread(()->cpu.run());
+        Thread thread1 = new Thread(()-> {
+            ProcessManager processManager = ProcessManager.getInstance();
 
-        memoryManager.write(pcb.getAllocatedMemory(),executableFile.toCharArray());
+            String executableFile = "X=1000;X--;\0\0\0X++    !A10 X-- X=9999 X-- X--  end";
+            String executableFile1 = "X=1;X++;\0\0\0X++    !B9 X++ X=520 X-- X-- .................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................. end";
 
-        cpu.run();
+            processManager.create(executableFile.toCharArray());
+            processManager.create(executableFile1.toCharArray());
+        });
+        thread.start();
+        thread1.start();
+
+
+        thread1.join();
+        thread.join();
+
     }
 }

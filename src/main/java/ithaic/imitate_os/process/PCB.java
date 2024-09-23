@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class PCB {
     private int pid;
     private String state;//进程状态
@@ -18,4 +16,21 @@ public class PCB {
     private char PSW;
     private int AX;
     private String blockedReason; //阻塞原因
+
+
+    {
+        PC = 0;
+        PSW = 0b000;
+        AX = 0;
+    }
+
+    public void clear() {
+        pid = 0;
+        PC = 0;
+        PSW = 0b000;
+        AX = 0;
+        state = null;
+        allocatedMemory = null;
+        blockedReason = null;
+    }
 }

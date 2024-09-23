@@ -4,6 +4,8 @@ import ithaic.imitate_os.process.PCB;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Data
 public class Memory {
     private PCB[] pcbTable;
@@ -21,6 +23,10 @@ public class Memory {
     {
         //最多容纳10个进程
         pcbTable = new PCB[10];
+        //初始化PCB数组
+        for (int i = 0; i < 10; i++){
+            pcbTable[i] = new PCB();
+        }
         //初始状态内存块大小为512,且为空闲状态
         memoryBlock = new MemoryBlock(0,512,true,null,null);
         //初始化用户内存
