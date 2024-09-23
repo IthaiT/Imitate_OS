@@ -2,6 +2,7 @@ package ithaic.imitate_os.process;
 
 
 import ithaic.imitate_os.memoryManager.Memory;
+import ithaic.imitate_os.memoryManager.MemoryBlock;
 import ithaic.imitate_os.memoryManager.MemoryManager;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,8 +33,8 @@ public class CPU {
         Runnable task = ()->{
             while(true){
                 checkPSW();
-                //取就绪进程
-//                runningProcess = processManager.getReadyProcessQueue(s).peek();
+//              取就绪进程
+                runningProcess = processManager.getReadyProcessQueue().peek();
                 if(runningProcess == null){
                     System.out.println("没有进程,CPU空转");
                 }else {
@@ -109,10 +110,14 @@ public class CPU {
         if(IR.startsWith("!")){
             char deviceName =IR.charAt(1);
             int requestTime = Integer.parseInt(IR.substring(2));
+
             System.out.println("设备"+deviceName+" requestTime = " + requestTime);
         }
         if(IR.compareTo("end")==0){
-            System.out.println("程序结束 释放内存");
+            PSW = (char) (PSW | 0b001);
+            MemoryBlock memoryBlock = runningProcess.getAllocatedMemory();
+            memoryManager.release(memoryBlock);
+            System.out.println("程序结束,释放内存");
         }
     }
 
