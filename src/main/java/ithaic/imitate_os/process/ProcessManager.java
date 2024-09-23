@@ -8,16 +8,20 @@ import java.util.Queue;
 @Data
 public class ProcessManager {
     //进程阻塞队列
-    private  Queue<PCB> blockedProcessQueue;
+    private Queue<PCB> blockedProcessQueue;
     //进程就绪队列
-    private  Queue<PCB> readyProcessQueue;
+    private Queue<PCB> readyProcessQueue;
     //进程空白队列
-    private  Queue<PCB> blankProcessQueue;
+    private Queue<PCB> blankProcessQueue;
 
     {
         blockedProcessQueue = new LinkedList<>();
         readyProcessQueue = new LinkedList<>();
         blankProcessQueue = new LinkedList<>();
+    }
+
+    public ProcessManager() {
+
     }
 
     //TODO: 进程创建
@@ -36,6 +40,4 @@ public class ProcessManager {
     public  void awake(){
 
     }
-
-
 }
