@@ -22,8 +22,9 @@ public final class Disk {
      *    5-255 代表文件/目录所在的盘块号
      *
      * */
-    private static final int BLOCK_COUNT = 256; // 盘块总数
-    private static final int BLOCK_SIZE = 64; // 每个盘块的大小
+
+    public static final int BLOCK_COUNT = 256; // 盘块总数
+    public static final int BLOCK_SIZE = 64; // 每个盘块的大小
     @Getter
     private static final char[] readBuffer = new char[BLOCK_SIZE]; // 读缓冲区
     private static final char[] writeBuffer = new char[BLOCK_SIZE]; // 写缓冲区
@@ -154,8 +155,29 @@ public final class Disk {
         }
     }
 
-
     /**
+     * 此函数用于修改目录块
+     * @param content 要修改的内容
+     * @param blockNo 盘块号
+     * @param position 要修改的位置
+     * */
+     public static void modifyCatalogItem(char[] content, int blockNo, int position) {
+        setWriteBuffer(content);
+        int position1 = blockNo * BLOCK_SIZE + position;
+        try {
+            RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
+            file.seek(position1 * 2L);
+            for (int i = 0; i < 8; i++) {
+                file.writeChar(writeBuffer[i]);
+            }
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+     }
+
+
+     /**
      * 此函数指定盘块号，读取磁盘内容到缓冲区中
      * @param blockNo 盘块号
      * */
@@ -174,9 +196,10 @@ public final class Disk {
         return readBuffer;
     }
 
+
     /**
-     * 这个函数用于查找文件/文件夹所在的盘块号
-     * @param path 一个字符串数组，表示文件的路径
+     * 这个函数用于查找文件/文件夹所在的盘块号（创建文件/目录时使用）, 你必须保证你传入的路径全是目录
+     * @param path 一个字符串数组，表示文件的路径(不包括文件本身）
      * @return 返回文件夹/文件所在的盘块号，如果不存在，返回0
      */
     public static int findBottomFileBlock(String[] path){
@@ -184,7 +207,7 @@ public final class Disk {
         for (int i = 0; i < path.length; i++) {
             readBlock(blockNo);
             for (int j = 0; j < 8; j++) {
-                if(path[i].equals(new String(readBuffer, j * 8, 3).trim())){
+                if(path[i].equals(new String(readBuffer, j * 8, 3).trim()) && readBuffer[j * 8 + 4] == 0x80){
                     blockNo = readBuffer[j * 8 + 5];
                     break;
                 }
@@ -198,6 +221,45 @@ public final class Disk {
     }
 
     /**
+     * 这个函数用于查找文件/文件夹所在的盘块号
+     * @param path 一个字符串数组，表示文件的路径(不包括文件本身）
+     * @param fileName 文件名
+     * @param property 文件属性 0x80表示文件夹，0x40表示可执行文件，0x20表示普通文件
+     * @return 返回文件夹/文件所在的盘块号，如果不存在，返回0
+     */
+    public static int findBottomFileBlock(String[] path, String fileName, int property){
+        char blockNo = 4; //根目录所在的盘块号
+        //前面path.length-1个盘块是必须是目录盘块，最后一个盘块是文件/文件夹所在的盘块
+        for (int i = 0; i < path.length; i++) {
+            readBlock(blockNo);
+            for (int j = 0; j < 8; j++) {
+                if(path[i].equals(new String(readBuffer, j * 8, 3).trim()) && readBuffer[j * 8 + 4] == 0x80){
+                    blockNo = readBuffer[j * 8 + 5];
+                    break;
+                }
+                if(j == 7){
+                    System.out.println("文件不存在");
+                    return 0;
+                }
+            }
+        }
+        //检查最后一个文件名与文件里类型是否匹配
+        readBlock(blockNo);
+        for (int i = 0; i < 8; i++) {
+            if(fileName.equals(new String(readBuffer, i * 8, 3).trim()) && readBuffer[i * 8 + 4]  == property){
+                blockNo = readBuffer[i * 8 + 5];
+                break;
+            }
+            if(i == 7){
+                System.out.println("文件不存在");
+                return 0;
+            }
+
+        }
+        return blockNo;
+    }
+
+    /**
      * 此函数用于设置写缓冲区内容
      * @param content 一个字符串数组
      * */
@@ -206,6 +268,40 @@ public final class Disk {
         for (int i = 0; i < content.length; i++) {
             writeBuffer[i] = content[i];
         }
+    }
+    /**
+     * 设置FAT表项
+     * @param content: 要写入的内容
+     * @param where:   要写入的位置
+     * */
+    public static void setFAT(int content, int where){
+        Disk.writeChar((char)content, (char)(where/64), (char)(where%64));//设置子目录的FAT表项
+    }
+
+    /**
+     * 打印指定盘块内容，供调试使用
+     * @param blockNo 盘块号*/
+    public static void printBlock(int blockNo){
+        char[] content = readBlock(blockNo);
+        System.out.print("Block "+blockNo+": ");
+        for (int i = 0; i < 64; i++) {
+            if(content[i] == 0) System.out.print("0");
+            else if (content[i] == 1) System.out.print("1");
+            else if (content[i] == 2) System.out.print("2");
+            else if (content[i] == 3) System.out.print("3");
+            else if (content[i] == 4) System.out.print("4");
+            else if (content[i] == 5) System.out.print("5");
+            else if (content[i] == 6) System.out.print("6");
+            else if (content[i] == 7) System.out.print("7");
+            else if (content[i] == 8) System.out.print("8");
+            else if (content[i] == 9) System.out.print("9");
+            else if (content[i] == 0x20) System.out.print("F");
+            else if (content[i] == 0x40) System.out.print("E");
+            else if (content[i] == 0x80) System.out.print("D");
+            else System.out.print(content[i]);
+            if((i+1)%8==0)System.out.print("  ");
+        }
+        System.out.println();
     }
 
 }
