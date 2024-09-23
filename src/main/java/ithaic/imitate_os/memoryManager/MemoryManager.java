@@ -2,8 +2,11 @@ package ithaic.imitate_os.memoryManager;
 
 import lombok.Getter;
 
+/**
+ * 该类管理内存，分配和释放内存块，写入和读取数据
+ */
 public class MemoryManager {
-    private final int MEMORY_SIZE = 512;
+    public static final int MEMORY_SIZE = 512;
     private Memory memory;
 
     @Getter

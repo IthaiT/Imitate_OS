@@ -2,6 +2,10 @@ package ithaic.imitate_os.memoryManager;
 
 import lombok.Data;
 
+
+/**
+ * 内存分配表节点类
+ */
 @Data
 public class MemoryBlock {
     private int address;

@@ -1,11 +1,10 @@
 package ithaic.imitate_os.process;
 
 
-import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryBlock;
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Data
 public class PCB {
@@ -16,15 +15,14 @@ public class PCB {
     private char PSW;
     private int AX;
     private String blockedReason; //阻塞原因
+    private int runningTime; //时间片
 
 
     {
-        PC = 0;
-        PSW = 0b000;
-        AX = 0;
+        this.init();
     }
 
-    public void clear() {
+    public void init() {
         pid = 0;
         PC = 0;
         PSW = 0b000;
@@ -32,5 +30,6 @@ public class PCB {
         state = null;
         allocatedMemory = null;
         blockedReason = null;
+        runningTime = 0;
     }
 }

@@ -42,6 +42,12 @@ public class ProcessManager {
         blankProcessQueue.addAll(Arrays.asList(pcb).subList(0, 10));
     }
 
+
+    /**
+     * 该原语创建进程,并加入就绪队列
+     * @param execFile 传入可执行文件的内容
+     * @return 创建成功返回true，失败返回false
+     */
     //进程创建
     public boolean create(char[] execFile){
         PCB pcb = this.blankProcessQueue.poll();
@@ -62,19 +68,27 @@ public class ProcessManager {
             nextPID++;
         }
         pcb.setPid(nextPID);
+        activePIDs.add(nextPID);
         //加入就绪队列
         pcb.setState("Ready");
         this.readyProcessQueue.add(pcb);
         return true;
     }
 
+
+    /**
+     * 该原语撤销进程,并回收进程所占内存
+     * @param pcb 进程控制块
+     */
     //进程撤销
     public void destroy(PCB pcb){
+        if(pcb == null)return;
         //回收进程所占内存
         MemoryBlock memoryBlock = pcb.getAllocatedMemory();
         MemoryManager.getInstance().release(memoryBlock);
         //回收进程PCB
-        pcb.clear();
+        activePIDs.remove(pcb.getPid());
+        pcb.init();
         this.blankProcessQueue.add(pcb);
     }
     //TODO: 进程阻塞
