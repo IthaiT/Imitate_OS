@@ -97,6 +97,7 @@ public class MyFile {
         }
         //将内容写入新的块中
         Disk.writeBlock(content, allocatedBlocks);
+
         //更新目录项中文件长度
         fileLength++;
         Disk.writeChar((char)fileLength,ItemPosition/64,ItemPosition%64+7);

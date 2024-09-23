@@ -22,6 +22,7 @@ public final class Disk {
      *    5-255 代表文件/目录所在的盘块号
      *
      * */
+
     public static final int BLOCK_COUNT = 256; // 盘块总数
     public static final int BLOCK_SIZE = 64; // 每个盘块的大小
     @Getter
@@ -276,6 +277,33 @@ public final class Disk {
     public static void setFAT(int content, int where){
         Disk.writeChar((char)content, (char)(where/64), (char)(where%64));//设置子目录的FAT表项
     }
+
+    /**
+     * 打印指定盘块内容，供调试使用
+     * @param blockNo 盘块号*/
+    public static void printBlock(int blockNo){
+        char[] content = readBlock(blockNo);
+        System.out.print("Block "+blockNo+": ");
+        for (int i = 0; i < 64; i++) {
+            if(content[i] == 0) System.out.print("0");
+            else if (content[i] == 1) System.out.print("1");
+            else if (content[i] == 2) System.out.print("2");
+            else if (content[i] == 3) System.out.print("3");
+            else if (content[i] == 4) System.out.print("4");
+            else if (content[i] == 5) System.out.print("5");
+            else if (content[i] == 6) System.out.print("6");
+            else if (content[i] == 7) System.out.print("7");
+            else if (content[i] == 8) System.out.print("8");
+            else if (content[i] == 9) System.out.print("9");
+            else if (content[i] == 0x20) System.out.print("F");
+            else if (content[i] == 0x40) System.out.print("E");
+            else if (content[i] == 0x80) System.out.print("D");
+            else System.out.print(content[i]);
+            if((i+1)%8==0)System.out.print("  ");
+        }
+        System.out.println();
+    }
+    
 }
 
 

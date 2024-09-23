@@ -47,13 +47,22 @@ public class FileInteract {
             FileUtils.typeFile(directoryArray);
         }
         else if (commandArray[0].equals("copy")) {// 复制文件
-            FileUtils.copyFile(directoryArray, aimArray);
+            FileUtils.hardCopyFile(directoryArray, aimArray);
+        }
+        else if (commandArray[0].equals("move")) {// 移动文件
+            FileUtils.moveFile(directoryArray, aimArray);
         }
         else if (commandArray[0].equals("mkdir")) {// 创建目录
             new Directory(directoryArray);
         }
         else if (commandArray[0].equals("rmdir")) {// 删除目录
             FileUtils.deleteDirectory(directoryArray);
+        }
+        else if(commandArray[0].equals("deldir")){
+            FileUtils.deleteAllFiles(directoryArray);
+        }
+        else if (commandArray[0].equals("format")) {// 格式化磁盘
+            new Disk();
         }
         else{
             System.out.println("命令错误！");

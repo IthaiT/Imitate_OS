@@ -1,70 +1,40 @@
 package Test;
 
 import ithaic.imitate_os.fileManager.Disk;
-import ithaic.imitate_os.fileManager.FileInteract;
 import ithaic.imitate_os.fileManager.FileUtils;
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
 import org.junit.Test;
 
 public class fileManagerTest {
+
     @Test
     public void test() {
-        String command = "sdajhsdjkahsk /abc";
         new Disk();
+        String command = "sdajhsdjkahsk /abc";
         String[] commandArray = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
         Directory file = new Directory(directoryArray);
-//        file.writeData("hello world".toCharArray());
-//        file.writeData("hello world2".toCharArray());
 
         command = "sdasasa /abc/fil";
         String[] commandArray1 = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
         String[] directoryArray1 = commandArray1[1].split("/"); // 以/分割目录数组
         MyFile file1 = new MyFile(directoryArray1);
-        String[] directoryArrayq = {"", "a","b"};
-        FileUtils.copyFile(directoryArray1, directoryArrayq);
+        file1.writeData("hello world".toCharArray());
 
-//        FileUtils.deleteDirectory(directoryArray);
-//
-//        System.out.println("delete");
-        Disk.readBlock(0);
-        char[] buffer = Disk.getReadBuffer();
-        for (int i = 0; i < 64; i++) {
-            if(buffer[i] == 0)buffer[i] = '0';
-            if(buffer[i] == 1)buffer[i] = '1';
-        }
-        System.out.println(buffer);
+        String[] directoryArrayq = {"", "a","b","c"};
+        FileUtils.hardCopyFile(directoryArray1, directoryArrayq);
 
-        Disk.readBlock(4);
-        buffer = Disk.getReadBuffer();
-        for (int i = 0; i < 64; i++) {
-            if(buffer[i] == 0)buffer[i] = '0';
-            if(buffer[i] == 1)buffer[i] = '1';
-            if(buffer[i] == 2)buffer[i] = '2';
-        }
-        System.out.println(buffer);
-        Disk.readBlock(5);
-        buffer = Disk.getReadBuffer();
-        for (int i = 0; i < 64; i++) {
-            if(buffer[i] == 0)buffer[i] = '0';
-            if(buffer[i] == 1)buffer[i] = '1';
-        }
-        System.out.println(buffer);
-        Disk.readBlock(6);
-        buffer = Disk.getReadBuffer();
-        for (int i = 0; i < 64; i++) {
-            if(buffer[i] == 0)buffer[i] = '0';
-            if(buffer[i] == 1)buffer[i] = '1';
-        }
-        System.out.println(buffer);
 
-        Disk.readBlock(7);
-        buffer = Disk.getReadBuffer();
-        for (int i = 0; i < 64; i++) {
-            if(buffer[i] == 0)buffer[i] = '0';
-            if(buffer[i] == 1)buffer[i] = '1';
+        for (int i = 0; i < 10; i++) {
+            Disk.printBlock(i);
         }
-        System.out.println(buffer);
+        String[] array2 = {"", "a"};
+        FileUtils.deleteAllFiles(array2);
+        for (int i = 0; i < 10; i++) {
+            Disk.printBlock(i);
+        }
     }
+
 }
+

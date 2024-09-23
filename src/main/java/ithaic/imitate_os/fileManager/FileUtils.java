@@ -3,8 +3,6 @@ package ithaic.imitate_os.fileManager;
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
 
-import java.util.Arrays;
-
 public class FileUtils {
     /**
      * 删除文件
@@ -115,11 +113,11 @@ public class FileUtils {
 
 
     /**
-     * 复制文件
+     * 软链接文件，仅复制项目块，不复制文件内容
      * @param sourceMixedArray 源文件路径数组
      * @param targetMixedArray 目标文件路径数组
      * */
-    public static void copyFile(String[] sourceMixedArray, String[] targetMixedArray) {
+    public static void softCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
         if(!copyFileUtil(sourceMixedArray, targetMixedArray)){
             System.out.println("复制失败");
             return;
@@ -145,6 +143,35 @@ public class FileUtils {
         System.out.println(position);
         Disk.writeCatalogItem(content, position, 8);
     }
+
+
+    /**
+     * 硬链接文件，复制文件块与文件内容
+     * @param sourceMixedArray 源文件路径数组
+     * @param targetMixedArray 目标文件路径数组
+     * */
+    public static void hardCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
+        if(!copyFileUtil(sourceMixedArray, targetMixedArray)){
+            System.out.println("复制失败");
+            return;
+        }
+        //创建新文件
+        MyFile targetFile = new MyFile(targetMixedArray);
+        //复制文件内容
+        int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
+        char[] block = Disk.readBlock(sourcePosition/64);//得到目录块所在盘块
+        int ptr = block[sourcePosition%64 + 5];//得到第一页的指针
+        while(ptr != 1){
+            char[] content = new char[64];
+            for (int i = 0; i < 64; i++) {
+                content[i] = Disk.readBlock(ptr)[i];
+            }
+            targetFile.writeData(content);
+            char[] temp = Disk.readBlock(ptr/64);//获得FAT表
+            ptr = temp[ptr%64]; //获得下一页的指针
+        }
+    }
+
 
     /**
      * 判断文件/文件夹是否存在
@@ -185,14 +212,15 @@ public class FileUtils {
         }
         int position = Disk.findBottomFileBlock(directoryArray);
         char[] block = Disk.readBlock(position);
-        for (int i = 0; i < 8; i += 8) {
-            String catalogItem = new String(block, i*8, 3).trim();
+        for (int i = 0; i < 64; i += 8) {
+            String catalogItem = new String(block, i, 3).trim();
             if(catalogItem.equals(filename)){
                 return position* Disk.BLOCK_SIZE + i;
             }
         }
         return 0;
     }
+
 
     /**
      * 文件复制的工具函数，用于文件合法性判断
@@ -244,6 +272,11 @@ public class FileUtils {
         return true;
     }
 
+
+    /**
+     * 创建多级目录
+     * @param directoryArray 目录路径数组,第一个元素为空
+     * */
     private static void createDirectory(String[] directoryArray) {
         String[] temp = new String[directoryArray.length - 1];
         for (int i = 1; i < directoryArray.length; i++) {
@@ -263,4 +296,65 @@ public class FileUtils {
             new Directory(newDirectoryArray);
         }
     }
+
+
+    /**
+     * 移动文件，将文件从源路径移动到目标路径
+     * @param sourceMixedArray 源文件路径数组
+     * @param targetMixedArray 目标文件路径数组
+     * */
+    public static void moveFile(String[] sourceMixedArray, String[] targetMixedArray) {
+        softCopyFile(sourceMixedArray, targetMixedArray);
+        int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
+        Disk.modifyCatalogItem(new char[8], sourcePosition/64, sourcePosition%64);//清除原先目录项
+    }
+
+
+    /** 删除目录下所有文件
+     * @param directoryArray 目录路径数组
+     * */
+    public static void deleteAllFiles(String[] directoryArray) {
+        if(!isFileExists(directoryArray, (char) 0x80)){
+            System.out.println("目录不存在");
+            return;
+        }
+        int position = getCatalogItemPosition(directoryArray);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
+        if(block[position%64 + 4] != 0x80){
+            System.out.println("不是目录");
+            return;
+        }
+        int ptr = block[position%64 + 5];//得到第一页的指针
+        Disk.modifyCatalogItem(new char[8], position/64, position%64);
+        deleteAllFilesUtil(ptr);
+    }
+
+    /**
+     * 删除目录下所有文件的工具函数
+     * @param ptr 目录项所在的盘块号
+     * */
+    private static void deleteAllFilesUtil(int ptr) {
+        char[] content = new char[64];
+        for (int i = 0; i < 64; i++) {
+            content[i] = Disk.readBlock(ptr)[i];
+        }
+        int storePtr = ptr;
+        for(int i = 0; i < 8; i++){
+            if(content[i * 8] != 0){
+                if(content[i * 8 + 4] == 0x20 || content[i * 8 + 4] == 0x40){
+                    ptr = content[i * 8 + 5];
+                    Disk.setFAT(0,ptr);//设置FAT表
+                    Disk.writeBlock(new char[64], ptr);
+                }
+                if(content[i * 8 + 4] == 0x80){
+                    ptr = content[i * 8 + 5];
+                    deleteAllFilesUtil(ptr);
+                }
+            }
+        }
+        Disk.setFAT(0,storePtr);
+        Disk.writeBlock(new char[64], storePtr);
+    }
+
+
 }
