@@ -62,10 +62,22 @@ public class FileInteract {
             FileUtils.deleteAllFiles(sourceArray.toArray(new String[0]));
         }
         else if (commandArray[0].equals("format")) {// 格式化磁盘
-            new Disk();
+            Disk.format();
         }
         else if (commandArray[0].equals("cd")) {// 切换目录
             FileUtils.changeDirectory(sourceArray.toArray(new String[0]));
+        }
+        else if (commandArray[0].equals("vi")) {// 编辑文件
+            FileUtils.typeFile(sourceArray.toArray(new String[0]));
+            //TODO 等待用户输入
+            char[] content = new char[0];
+            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
+        }
+        else if (commandArray[0].equals("ls")) {// 显示目录内容
+            FileUtils.listDirectory(currentPath.toArray(new String[0]));
+        }
+        else if (commandArray[0].equals("pwd")) {// 显示当前目录
+            FileUtils.showCurrentPath(currentPath.toArray(new String[0]));
         }
         else{
             System.out.println("命令错误！");
@@ -90,7 +102,8 @@ public class FileInteract {
             return false;
         }
         if(commandArray.length == 1){
-            if(commandArray[0].equals("format"))return true;
+            if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd"))return true;
+            else return false;
         }
 
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组

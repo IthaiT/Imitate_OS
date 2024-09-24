@@ -2,6 +2,8 @@ package ithaic.imitate_os.fileManager;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 import lombok.Data;
@@ -29,9 +31,18 @@ public final class Disk {
     private static final char[] readBuffer = new char[BLOCK_SIZE]; // 读缓冲区
     private static final char[] writeBuffer = new char[BLOCK_SIZE]; // 写缓冲区
     private static final String diskFileName = "src/main/resources/ithaic/imitate_os/disk"; // 磁盘文件名
+
     /**
      * 磁盘初始化函数*/
     public Disk() {
+        if(Files.exists(Path.of(diskFileName))) return;
+        format();
+    }
+
+
+    /**格式化磁盘
+     * */
+    public static void format() {
         int position = 0;
         try {
             RandomAccessFile file = new RandomAccessFile(diskFileName, "rw");
@@ -53,7 +64,6 @@ public final class Disk {
             throw new RuntimeException(e);
         }
     }
-
 
     /**
      * 此函数用于分配一个空闲的盘块号
@@ -204,6 +214,7 @@ public final class Disk {
      */
     public static int findBottomFileBlock(String[] path){
         char blockNo = 4; //根目录所在的盘块号
+        if(path ==null)return blockNo;
         for (int i = 0; i < path.length; i++) {
             readBlock(blockNo);
             for (int j = 0; j < 8; j++) {
@@ -212,7 +223,7 @@ public final class Disk {
                     break;
                 }
                 if(j == 7){
-                    System.out.println("文件不存在");
+                    System.out.println("findBottomFileBlock: 文件不存在|根目录");
                     return 0;
                 }
             }
@@ -238,7 +249,7 @@ public final class Disk {
                     break;
                 }
                 if(j == 7){
-                    System.out.println("文件不存在");
+                    System.out.println("findBottomFileBlock: 文件不存在1");
                     return 0;
                 }
             }
@@ -251,7 +262,7 @@ public final class Disk {
                 break;
             }
             if(i == 7){
-                System.out.println("文件不存在");
+                System.out.println("findBottomFileBlock: 文件不存在2");
                 return 0;
             }
 

@@ -30,8 +30,8 @@ public class FileUtils {
             Disk.writeBlock(new char[64], ptr); //清除文件占据的盘块
             char[] temp = Disk.readBlock(ptr/64);//获得FAT表
             int tempPtr = ptr; //暂存指针
-            Disk.setFAT(0,ptr);//设置FAT表
             ptr = temp[tempPtr%64]; //获得下一页的指针
+            Disk.setFAT(0,tempPtr);//设置FAT表
         }
         //将目录块清除
         Disk.modifyCatalogItem(new char[8], position/64, position%64);
@@ -98,7 +98,7 @@ public class FileUtils {
                 return;
             }
         }
-        //循环打印文件内容，知道文件结尾
+        //循环打印文件内容，直到文件结尾
         while(ptr != 1){
             content = Disk.readBlock(ptr);
             int length = 0;
@@ -200,6 +200,146 @@ public class FileUtils {
 
 
     /**
+     * 移动文件，将文件从源路径移动到目标路径
+     * @param sourceMixedArray 源文件路径数组
+     * @param targetMixedArray 目标文件路径数组
+     * */
+    public static void moveFile(String[] sourceMixedArray, String[] targetMixedArray) {
+        softCopyFile(sourceMixedArray, targetMixedArray);
+        int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
+        Disk.modifyCatalogItem(new char[8], sourcePosition/64, sourcePosition%64);//清除原先目录项
+    }
+
+
+    /** 删除目录下所有文件
+     * @param directoryArray 目录路径数组
+     * */
+    public static void deleteAllFiles(String[] directoryArray) {
+        if(!isFileExists(directoryArray, (char) 0x80)){
+            System.out.println("目录不存在");
+            return;
+        }
+        int position = getCatalogItemPosition(directoryArray);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
+        if(block[position%64 + 4] != 0x80){
+            System.out.println("不是目录");
+            return;
+        }
+        int ptr = block[position%64 + 5];//得到第一页的指针
+        Disk.modifyCatalogItem(new char[8], position/64, position%64);
+        deleteAllFilesUtil(ptr);
+    }
+
+
+    /** 改变当前工作目录
+     * @param directoryArray 目录路径数组*/
+
+    public static void changeDirectory(String[] directoryArray) {
+        ArrayList<String> currentPath= FileInteract.getCurrentPath();
+        if(directoryArray[directoryArray.length-1].equals("..")){
+            currentPath.remove(currentPath.size()-1);
+        }
+        if(isFileExists(directoryArray, (char) 0x80)){
+            currentPath.clear();
+            Collections.addAll(currentPath, directoryArray);
+        }
+    }
+
+
+    /** 往文件中写入内容
+     * @param filePath*/
+    public static void writeFile(String[] filePath, char[] content) {
+        //首先判断是否是目录
+        if(isFileExists(filePath, (char) 0x80)){
+            System.out.println("不能写入目录");
+            return;
+        }
+        System.out.println("安全的文件不存在（无bug）");
+        //判断文件是否存在
+        if(!isFileExists(filePath, (char) 0x20)){
+            System.out.println("被写文件不存在");
+            return;
+        }
+//        int isExecutable = 0;
+//        if(filePath[filePath.length-1].endsWith(".e")) isExecutable = 1;
+        //判断文件内容有没有更改，有的话更新文件
+
+        //更新文件
+        clearFileContent(filePath);
+        int fileLength = 0;
+        int position = getCatalogItemPosition(filePath);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
+        int ptr = block[position%64 + 5];//得到第一页的指针,第一页一直分配给文件，不会再更新中被清除
+
+        int pageNum = content.length/64;
+        int tmpPtr = ptr;
+        for (int i = 0; i < pageNum; i++) {
+            char[] temp = new char[64];
+            for (int j = 0; j < 64; j++) {
+                temp[j] = content[i * 64 + j];
+            }
+            Disk.writeBlock(temp, ptr);
+            tmpPtr = ptr;
+            if(i<pageNum-1){
+                ptr = Disk.getFreeBlock ();
+                Disk.setFAT(ptr,tmpPtr);
+            }
+            fileLength++;
+        }
+        Disk.setFAT(1,tmpPtr);
+        if(content.length % 64 != 0){
+            if(pageNum != 0) {
+                ptr = Disk.getFreeBlock();
+                Disk.setFAT(ptr,tmpPtr);
+            }
+            char[] tmp = new char[content.length % 64];
+            for (int i = 0; i < content.length % 64; i++) {
+                tmp[i] = content[content.length - content.length % 64 + i];
+            }
+            Disk.writeBlock(tmp, ptr);
+            Disk.setFAT(1,ptr);
+            fileLength++;
+        }
+
+        //更新目录项中文件长度
+        Disk.writeChar((char)fileLength,position/64,position%64+7);
+    }
+
+
+    /** 显示当前文件夹下的所有文件/文件夹
+     * @param currentPath 目录路径数组*/
+    public static void listDirectory(String[] currentPath) {
+        int position = getCatalogItemPosition(currentPath);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
+        int ptr = block[position%64 + 5];//得到第一页的指针
+        if(position == 4 * Disk.BLOCK_SIZE)ptr = 4;
+        char[] content = Disk.readBlock(ptr);
+        for(int i = 0; i < 8; i++){
+            if(content[i * 8] != 0){
+                String name = new String(content, i * 8, 3).trim();
+                if(content[i * 8 + 4] == 0x20)
+                    System.out.println(name);
+                else if (content[i * 8 + 4] == 0x40) {
+                    System.out.println(name + ".e");
+                }
+                else{
+                    System.out.println(name + "/");
+                }
+            }
+        }
+    }
+
+    /** 显示当前工作路径
+     * @param currentPath 目录路径数组*/
+    public static void showCurrentPath(String[] currentPath) {
+        for(String path:currentPath){
+            System.out.print(path + "/");
+        }
+        System.out.println();
+    }
+
+
+    /**
      * 获得目录项在磁盘中的位置
      * @param mixedArray 文件路径数组
      * @return 目录项在磁盘中的位置
@@ -209,6 +349,7 @@ public class FileUtils {
         if(filename.endsWith(".e")){
             filename = filename.substring(0, filename.lastIndexOf("."));
         }
+        if(mixedArray.length == 1)return 4*Disk.BLOCK_SIZE;
         String[] directoryArray = new String[mixedArray.length-2];
         for (int i = 1; i < mixedArray.length - 1; i++) {
             directoryArray[i-1] = mixedArray[i];
@@ -275,7 +416,6 @@ public class FileUtils {
         return true;
     }
 
-
     /**
      * 创建多级目录
      * @param directoryArray 目录路径数组,第一个元素为空
@@ -283,7 +423,7 @@ public class FileUtils {
     private static void createDirectory(String[] directoryArray) {
         String[] temp = new String[directoryArray.length - 1];
         for (int i = 1; i < directoryArray.length; i++) {
-              temp[i - 1] = directoryArray[i];
+            temp[i - 1] = directoryArray[i];
         }
         for (int i = 0; i < temp.length; i++) {
             //如果存在
@@ -300,37 +440,6 @@ public class FileUtils {
         }
     }
 
-
-    /**
-     * 移动文件，将文件从源路径移动到目标路径
-     * @param sourceMixedArray 源文件路径数组
-     * @param targetMixedArray 目标文件路径数组
-     * */
-    public static void moveFile(String[] sourceMixedArray, String[] targetMixedArray) {
-        softCopyFile(sourceMixedArray, targetMixedArray);
-        int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
-        Disk.modifyCatalogItem(new char[8], sourcePosition/64, sourcePosition%64);//清除原先目录项
-    }
-
-
-    /** 删除目录下所有文件
-     * @param directoryArray 目录路径数组
-     * */
-    public static void deleteAllFiles(String[] directoryArray) {
-        if(!isFileExists(directoryArray, (char) 0x80)){
-            System.out.println("目录不存在");
-            return;
-        }
-        int position = getCatalogItemPosition(directoryArray);//得到目录块的位置
-        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
-        if(block[position%64 + 4] != 0x80){
-            System.out.println("不是目录");
-            return;
-        }
-        int ptr = block[position%64 + 5];//得到第一页的指针
-        Disk.modifyCatalogItem(new char[8], position/64, position%64);
-        deleteAllFilesUtil(ptr);
-    }
 
     /**
      * 删除目录下所有文件的工具函数
@@ -360,20 +469,22 @@ public class FileUtils {
     }
 
 
-    /** 改变当前工作目录
-     * @param directoryArray 目录路径数组*/
-
-    public static void changeDirectory(String[] directoryArray) {
-        ArrayList<String> currentPath= FileInteract.getCurrentPath();
-        if(directoryArray[directoryArray.length-1].equals("..")){
-            currentPath.remove(currentPath.size()-1);
+    /** 清除文件内容,是写入函数的工具函数
+     * @param filePath */
+    private static void clearFileContent(String[] filePath) {
+        int position = getCatalogItemPosition(filePath);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
+        int ptr = block[position%64 + 5];//得到第一页的指针,第一页一直分配给文件，不会再更新中被清除
+        while(ptr != 1){
+            Disk.writeBlock(new char[64], ptr);
+            char[] temp = Disk.readBlock(ptr/64);//获得FAT表
+            int tempPtr = ptr;
+            ptr = temp[tempPtr%64]; //获得下一页的指针
+            Disk.setFAT(0,tempPtr);//设置FAT表
         }
-        if(isFileExists(directoryArray, (char) 0x80)){
-            currentPath.clear();
-            Collections.addAll(currentPath, directoryArray);
-        }
-//        for (String s : currentPath) {
-//            System.out.println(s);
-//        }
+        block = Disk.readBlock(position/64);//得到目录块所在盘块
+        ptr = block[position%64 + 5];//得到第一页的指针,第一页一直分配给文件，不会再更新中被清除
+        Disk.setFAT(1,ptr);
     }
+
 }
