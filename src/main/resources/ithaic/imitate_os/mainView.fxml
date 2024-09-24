@@ -4,9 +4,64 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="535.0" prefWidth="872.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
-   <children>
-      <TextField fx:id="CommandInput" layoutX="534.0" layoutY="92.0" />
-      <Button fx:id="button" layoutX="700.0" layoutY="89.0" mnemonicParsing="false" text="OK" />
-   </children>
-</AnchorPane>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<VBox fx:id="mainVBox" prefHeight="800" prefWidth="1200" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
+<!--   <children>-->
+<!--      <TextField fx:id="CommandInput" layoutX="534.0" layoutY="92.0" />-->
+<!--      <Button fx:id="button" layoutX="700.0" layoutY="89.0" mnemonicParsing="false" text="OK" />-->
+<!--   </children>-->
+
+   <HBox fx:id="topHBox" spacing="50" alignment="CENTER" style="-fx-border-color: red; -fx-border-width: 2" prefWidth="${mainVBox.width}">
+
+
+
+      <Label>系统时钟</Label>
+      <Label>cpu</Label>
+      <Label>正在运行进程ID</Label>
+      <Label>时间片</Label>
+      <Label>用户命令接口</Label>
+   </HBox>
+   <HBox fx:id="bottom_Box" prefWidth="${mainVBox.width}" style="-fx-border-color: black; -fx-border-width: 2">
+      <VBox fx:id="bottom_leftBox" style="-fx-border-color: yellow; -fx-border-width: 2">
+
+         <HBox spacing="10" fx:id="queueBox" prefWidth="${bottom_leftBox.width}" style="-fx-border-color: blue; -fx-border-width: 2">
+               <Label>就绪进程队列ID</Label>
+               <Label>就绪进程队列ID</Label>
+               <!--         <ListView>就绪进程队列ID</ListView>-->
+               <!--         <ListView>就绪进程队列ID</ListView>-->
+         </HBox>
+
+         <VBox spacing="10" fx:id="commandBox" prefWidth="${bottom_leftBox.width}" style="-fx-border-color: orange; -fx-border-width: 2">
+            <Label>正在执行的命令</Label>
+            <Label>主存用户使用</Label>
+            <Label>设备占用情况</Label>
+            <!--         <ListView>主存用户使用</ListView>-->
+            <!--         <ListView>设备占用情况</ListView>-->
+         </VBox>
+      </VBox>
+      <VBox fx:id="bottom_midBox" alignment="CENTER" style="-fx-border-color: pink; -fx-border-width: 2">
+         <Label>执行过程中间结果</Label>
+         <Label>进程执行完，显示结果</Label>
+      </VBox>
+
+      <VBox fx:id="bottom_rightBox" alignment="CENTER" style="-fx-border-color: green; -fx-border-width: 2">
+         <Label>磁盘目录结构</Label>
+         <Label>磁盘使用情况</Label>
+
+          <HBox> <!--      记得这2个换个位置放这些或者套一个组件。外面的百分比绑定好了，style边框是测试边框大小用的-->
+
+              <TextField fx:id="CommandInput" layoutX="534.0" layoutY="92.0" />
+              <Button fx:id="button" layoutX="700.0" layoutY="89.0" mnemonicParsing="false" text="OK" />
+
+          </HBox>
+         <!--      <ListView>磁盘目录结构</ListView>-->
+         <!--      <ListView>磁盘使用情况</ListView>-->
+      </VBox>
+   </HBox>
+
+
+
+</VBox>

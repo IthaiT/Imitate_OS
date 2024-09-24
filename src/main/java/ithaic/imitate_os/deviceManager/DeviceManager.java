@@ -37,7 +37,7 @@ public class DeviceManager {
             deciveBeingUsed.put(deviceName,processName);
 
             System.out.println(processName+"申请并占用"+deviceName+"设备。");
-            //System.out.println(deviceName+"现在队列为"+deciveCapacity.get(deviceName));
+            //System.out.println(deviceName+"现在队列为"+deviceCapacity.get(deviceName));
         }else{
 
             //设备不可用，加入等待队列
