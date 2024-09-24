@@ -42,6 +42,34 @@ public class ProcessManager {
         blankProcessQueue.addAll(Arrays.asList(pcb).subList(0, 10));
     }
 
+    /**
+     * 保存当前进程状态
+     */
+    public void saveProcessState() {
+        CPU cpu = CPU.getInstance();
+        PCB runningProcess = cpu.getRunningProcess();
+        if(runningProcess == null)return;
+        runningProcess.setPC(cpu.getPC());
+        runningProcess.setAX(cpu.getAX());
+        runningProcess.setPSW(cpu.getPSW());
+        runningProcess.setRunningTime(cpu.getRelativeClock());
+        runningProcess.setState("Ready");
+    }
+
+
+    /**
+     * 恢复当前进程状态
+     */
+    public void restoreProcessState() {
+        CPU cpu = CPU.getInstance();
+        PCB runningProcess = cpu.getRunningProcess();
+        if(runningProcess == null)return;
+        cpu.setPC(runningProcess.getPC());
+        cpu.setAX(runningProcess.getAX());
+        cpu.setPSW(runningProcess.getPSW());
+        cpu.setRelativeClock(runningProcess.getRunningTime() == 0 ? cpu.getTimeSlice() : runningProcess.getRunningTime());
+    }
+
 
     /**
      * 该原语创建进程,并加入就绪队列
@@ -91,13 +119,30 @@ public class ProcessManager {
         pcb.init();
         this.blankProcessQueue.add(pcb);
     }
-    //TODO: 进程阻塞
-    public  void block(){
 
+    /**
+     * 该原语阻塞进程,并将进程保存到阻塞队列
+     */
+    //进程阻塞
+    public void block(PCB pcb){
+        if(pcb == null)return;
+        saveProcessState();
+        pcb.setState("Blocked");
+        this.blockedProcessQueue.add(pcb);
     }
-    //TODO: 进程唤醒
-    public  void awake(){
 
+
+    /**
+     * 该原语唤醒进程,并将进程保存到就绪队列
+     */
+    //进程唤醒
+    public void awake(PCB pcb){
+        if(pcb == null)return;
+        boolean hasProcess = this.blockedProcessQueue.remove(pcb);
+        if(hasProcess){
+            pcb.setState("Ready");
+            this.readyProcessQueue.add(pcb);
+        }
     }
 
 }

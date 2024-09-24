@@ -3,6 +3,7 @@ package ithaic.imitate_os.process;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
 import lombok.Data;
+import lombok.Getter;
 
 import static java.lang.Thread.sleep;
 
@@ -19,6 +20,13 @@ public class CPU {
     private int PC;
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
+
+    @Getter
+    private static CPU instance;
+
+    static {
+        instance = new CPU(6);
+    }
 
     {
         memory = Memory.getInstance();
@@ -73,14 +81,13 @@ public class CPU {
         String[] instructions = instruction.split("[\\n;\\s\0]+");
 
         try {
-            IR = instructions[PC];
+            IR = instructions[PC++];
         } catch (ArrayIndexOutOfBoundsException e) {
             PSW |= 0b001;  // 指令超出范围, 程序结束
             return;
         }
 
         parseInstruction();
-        PC++;
         relativeClock--;
         System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
     }
@@ -90,40 +97,19 @@ public class CPU {
      */
     private void processScheduling() {
         if (runningProcess != null) {
-            saveProcessState();
+            processManager.saveProcessState();
             processManager.getReadyProcessQueue().add(runningProcess);
         }
 
         runningProcess = processManager.getReadyProcessQueue().poll();
         if (runningProcess == null) return;
 
-        restoreProcessState();
+        processManager.restoreProcessState();
         runningProcess.setState("Running");
 
         System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
     }
 
-    /**
-     * 保存当前进程状态
-     */
-    private void saveProcessState() {
-        runningProcess.setPC(PC);
-        runningProcess.setAX(AX);
-        runningProcess.setPSW(PSW);
-        runningProcess.setRunningTime(relativeClock);
-        runningProcess.setState("Ready");
-    }
-
-
-    /**
-     * 恢复当前进程状态
-     */
-    private void restoreProcessState() {
-        PC = runningProcess.getPC();
-        AX = runningProcess.getAX();
-        PSW = runningProcess.getPSW();
-        relativeClock = runningProcess.getRunningTime() == 0 ? timeSlice : runningProcess.getRunningTime();
-    }
 
     /**
      * 检查程序状态字
@@ -142,8 +128,10 @@ public class CPU {
 
         if ((PSW & 0b100) == 0b100) {
             System.out.println("I/O中断");
-            //TODO: 处理I/O中断
+            //阻塞当前进程, 并将其放入阻塞队列
             PSW &= 0b011;  // 清除I/O中断标志
+            processManager.block(runningProcess);
+            runningProcess = null;
         }
     }
 
@@ -165,7 +153,7 @@ public class CPU {
         } else if (IR.startsWith("!")) {
             char deviceName = IR.charAt(1);
             int requestTime = Integer.parseInt(IR.substring(2));
-            //TODO: 处理I/O请求
+            //TODO:处理I/O请求
 
             PSW |= 0b100;  // 设置I/O请求中断
         } else if (IR.equals("end")) {
