@@ -3,6 +3,9 @@ package ithaic.imitate_os.fileManager;
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class FileUtils {
     /**
      * 删除文件
@@ -357,4 +360,20 @@ public class FileUtils {
     }
 
 
+    /** 改变当前工作目录
+     * @param directoryArray 目录路径数组*/
+
+    public static void changeDirectory(String[] directoryArray) {
+        ArrayList<String> currentPath= FileInteract.getCurrentPath();
+        if(directoryArray[directoryArray.length-1].equals("..")){
+            currentPath.remove(currentPath.size()-1);
+        }
+        if(isFileExists(directoryArray, (char) 0x80)){
+            currentPath.clear();
+            Collections.addAll(currentPath, directoryArray);
+        }
+//        for (String s : currentPath) {
+//            System.out.println(s);
+//        }
+    }
 }
