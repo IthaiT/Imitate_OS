@@ -1,6 +1,7 @@
 package ithaic.imitate_os.fileManager.fileKind;
 
 import ithaic.imitate_os.fileManager.Disk;
+import ithaic.imitate_os.fileManager.FileInteract;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -58,7 +59,7 @@ public class MyFile {
         allocatedBlocks = Disk.getFreeBlock();
         if(allocatedBlocks == 0){
             available = false;
-            System.out.println("No free block available");
+            FileInteract.getHistoryCommand().appendText("No free block available\n");
             return;
         }
 
@@ -89,7 +90,7 @@ public class MyFile {
             int previousBlocks = allocatedBlocks;
             allocatedBlocks = Disk.getFreeBlock();
             if(allocatedBlocks == 0){
-                System.out.println("No free block available");
+                FileInteract.getHistoryCommand().appendText("No free block available\n");
                 return false;
             }
             Disk.setFAT(allocatedBlocks,previousBlocks);//更新前一个块的FAT表项，指向文件下一个位置
@@ -134,19 +135,19 @@ public class MyFile {
         }
         // 如果文件名长度超过3个字符或为空，则返回
         if(filename.length() > 3 || filename.isEmpty()){
-            System.out.println("Path too long | Path is empty");
+            FileInteract.getHistoryCommand().appendText("Path too long | Path is empty\n");
             return false;
         }
         // 检查文件名是否合法
         if(filename.contains("/") || filename.contains(".") ||filename.contains("$")) {
-            System.out.println("Invalid path");
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return false;
         }
         Disk.readBlock(parentBlock);
         char[] buffer = Disk.getReadBuffer();
         for (int i = 0; i < 8; i++) {
             if(filename.equals(new String(buffer,i*8,3))){
-                System.out.println("file already exists");
+                FileInteract.getHistoryCommand().appendText("file already exists\n");
                 return false;
             }
         }

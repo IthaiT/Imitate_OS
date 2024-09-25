@@ -1,6 +1,7 @@
 package ithaic.imitate_os.fileManager.fileKind;
 
 import ithaic.imitate_os.fileManager.Disk;
+import ithaic.imitate_os.fileManager.FileInteract;
 
 public class Directory extends MyFile {
     public Directory(String[] mixedArray){
@@ -22,14 +23,14 @@ public class Directory extends MyFile {
         }
         //判断文件名是否合法
         if(!isValidFilename(parentBlock)){
-            System.out.println("Invalid filename");
+            FileInteract.getHistoryCommand().appendText( "Invalid filename\n");
             setAvailable(false);
             return;
         }
         //获得空闲盘块号
         int allocateBlock = Disk.getFreeBlock();
         if(allocateBlock == 0){
-            System.out.println("No free block available");
+            FileInteract.getHistoryCommand().appendText("No free block available\n");
             setAvailable(false);
             return;
         }
@@ -48,7 +49,7 @@ public class Directory extends MyFile {
      * */
     @Override
     public boolean writeData(char[] content) {
-        System.out.println("Cannot write data to a directory");
+        FileInteract.getHistoryCommand().appendText("Cannot write data to a directory\n");
         return false;
     }
 
@@ -62,12 +63,12 @@ public class Directory extends MyFile {
         String filename = getFilename();
         // 如果文件名长度超过3个字符或为空，则返回
         if(filename.length() > 3 || filename.isEmpty()){
-            System.out.println("Path too long");
+            FileInteract.getHistoryCommand().appendText("Path too long\n");
             return false;
         }
         // 检查文件名是否合法
         if(filename.contains("/") || filename.contains(".") ||filename.contains("$")) {
-            System.out.println("Invalid path");
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return false;
         }
         //判断是否存在同名文件夹
@@ -75,7 +76,7 @@ public class Directory extends MyFile {
         char[] buffer = Disk.getReadBuffer();
         for (int i = 0; i < 8; i++) {
             if(filename.equals(new String(buffer,i*8,3)) && buffer[i*8+4] == 0x80 ){
-                System.out.println("file already exists");
+                FileInteract.getHistoryCommand().appendText("file already exists\n");
                 return false;
             }
         }

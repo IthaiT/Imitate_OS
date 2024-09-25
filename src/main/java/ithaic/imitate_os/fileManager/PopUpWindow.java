@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 //弹窗类
 public class PopUpWindow {
     private final int MAX_INPUT_HEIGHT = 100;
+    private TextArea textArea = new TextArea();
     private final String Title = "弹窗";
     private final String Content = "请输入指令：";
     private String str;
@@ -26,7 +27,6 @@ public class PopUpWindow {
         stage.setResizable(false);
 
         Label label = new Label(Content);
-        TextArea textArea = new TextArea();
         //设置最大高度
         textArea.setMaxHeight(MAX_INPUT_HEIGHT);
         //设置默认文本区域尺寸
@@ -61,7 +61,12 @@ public class PopUpWindow {
         return StrToCharArray(textArea.getText());
     }
 
+    public void appendText(String str) {
+        textArea.setText(str);
+    }
     private char[] StrToCharArray(String str) {
         return str.toCharArray();
     }
+
+
 }

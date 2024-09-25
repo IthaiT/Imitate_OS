@@ -124,7 +124,7 @@ public final class Disk {
                 break;
             }
             if(i == 7){
-                System.out.println("磁盘已满");
+                FileInteract.getHistoryCommand().appendText("磁盘已满\n");
                 return 0;
             }
         }
@@ -223,7 +223,7 @@ public final class Disk {
                     break;
                 }
                 if(j == 7){
-                    System.out.println("findBottomFileBlock: 文件不存在|根目录");
+                    //FileInteract.getHistoryCommand().appendText("findBottomFileBlock: 文件不存在|根目录\n");
                     return 0;
                 }
             }
@@ -249,7 +249,7 @@ public final class Disk {
                     break;
                 }
                 if(j == 7){
-                    System.out.println("findBottomFileBlock: 文件不存在1");
+                    //FileInteract.getHistoryCommand().appendText("findBottomFileBlock: 文件不存在1\n");
                     return 0;
                 }
             }
@@ -262,7 +262,7 @@ public final class Disk {
                 break;
             }
             if(i == 7){
-                System.out.println("findBottomFileBlock: 文件不存在2");
+                //FileInteract.getHistoryCommand().appendText("findBottomFileBlock: 文件不存在2\n");
                 return 0;
             }
 
@@ -294,25 +294,25 @@ public final class Disk {
      * @param blockNo 盘块号*/
     public static void printBlock(int blockNo){
         char[] content = readBlock(blockNo);
-        System.out.print("Block "+blockNo+": ");
+        FileInteract.getHistoryCommand().appendText("Block "+blockNo+": ");
         for (int i = 0; i < 64; i++) {
-            if(content[i] == 0) System.out.print("0");
-            else if (content[i] == 1) System.out.print("1");
-            else if (content[i] == 2) System.out.print("2");
-            else if (content[i] == 3) System.out.print("3");
-            else if (content[i] == 4) System.out.print("4");
-            else if (content[i] == 5) System.out.print("5");
-            else if (content[i] == 6) System.out.print("6");
-            else if (content[i] == 7) System.out.print("7");
-            else if (content[i] == 8) System.out.print("8");
-            else if (content[i] == 9) System.out.print("9");
-            else if (content[i] == 0x20) System.out.print("F");
-            else if (content[i] == 0x40) System.out.print("E");
-            else if (content[i] == 0x80) System.out.print("D");
-            else System.out.print(content[i]);
-            if((i+1)%8==0)System.out.print("  ");
+            if(content[i] == 0) FileInteract.getHistoryCommand().appendText("0");
+            else if (content[i] == 1) FileInteract.getHistoryCommand().appendText("1");
+            else if (content[i] == 2) FileInteract.getHistoryCommand().appendText("2");
+            else if (content[i] == 3) FileInteract.getHistoryCommand().appendText("3");
+            else if (content[i] == 4) FileInteract.getHistoryCommand().appendText("4");
+            else if (content[i] == 5) FileInteract.getHistoryCommand().appendText("5");
+            else if (content[i] == 6) FileInteract.getHistoryCommand().appendText("6");
+            else if (content[i] == 7) FileInteract.getHistoryCommand().appendText("7");
+            else if (content[i] == 8) FileInteract.getHistoryCommand().appendText("8");
+            else if (content[i] == 9) FileInteract.getHistoryCommand().appendText("9");
+            else if (content[i] == 0x20) FileInteract.getHistoryCommand().appendText("F");
+            else if (content[i] == 0x40) FileInteract.getHistoryCommand().appendText("E");
+            else if (content[i] == 0x80) FileInteract.getHistoryCommand().appendText("D");
+            else FileInteract.getHistoryCommand().appendText(String.valueOf(content[i]));
+            if((i+1)%8==0)FileInteract.getHistoryCommand().appendText("  ");
         }
-        System.out.println();
+        FileInteract.getHistoryCommand().appendText("\n");
     }
 
 }

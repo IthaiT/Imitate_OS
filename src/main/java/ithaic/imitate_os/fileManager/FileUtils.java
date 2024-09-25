@@ -13,12 +13,12 @@ public class FileUtils {
      * */
     public static void deleteFile(String[] filePath) {
         if(filePath.length <=0){
-            System.out.println("Invalid path");
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return;
         }
         //判断文件是否存在
         if(!isFileExists(filePath, (char) 0x20)){
-            System.out.println("File not found");
+            FileInteract.getHistoryCommand().appendText("File not found\n");
             return;
         }
         //得到目录块的位置
@@ -46,12 +46,12 @@ public class FileUtils {
      * */
     public static void deleteDirectory(String[] filePath) {
         if(filePath.length <=0){
-            System.out.println("Invalid path");
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return;
         }
         //判断目录是否存在
         if(!isFileExists(filePath, (char) 0x80)){
-            System.out.println("File not found");
+            FileInteract.getHistoryCommand().appendText("File not found\n");
             return;
         }
         //得到目录块的位置
@@ -61,7 +61,7 @@ public class FileUtils {
         char[] content = Disk.readBlock(ptr);
         for (int i = 0; i < 64; i++) {
             if(content[i]!= 0){
-                System.out.println("Directory not empty");
+                FileInteract.getHistoryCommand().appendText("Directory not empty\n");
                 return;
             }
         }
@@ -76,15 +76,15 @@ public class FileUtils {
      * 打开文件，并将其内容打印到控制台
      * @param filePath 文件路径数组
      * */
-    public static void typeFile(String[] filePath) {
+    public static StringBuilder typeFile(String[] filePath) {
         if(filePath.length <= 0){
-            System.out.println("Invalid path");
-            return;
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
+            return null;
         }
         //判断目录是否存在
         if(!isFileExists(filePath, (char) 0x20)){
-            System.out.println("File not found");
-            return;
+            FileInteract.getHistoryCommand().appendText("File not found\n");
+            return null;
         }
         int position = getCatalogItemPosition(filePath);//得到目录块的位置
         char[] block = Disk.readBlock(position/64); //得到目录块所在盘块
@@ -94,24 +94,25 @@ public class FileUtils {
         for (int i = 0; i < 64; i++) {
             if(content[i] != 0)break;
             if(i == 63) {
-                System.out.println("File is empty");
-                return;
+                FileInteract.getHistoryCommand().appendText("File is empty\n");
+                return null;
             }
         }
         //循环打印文件内容，直到文件结尾
+        StringBuilder sb = new StringBuilder();
         while(ptr != 1){
             content = Disk.readBlock(ptr);
-            int length = 0;
             for (int i = 0; i < 64; i++) {
-                if(content[i] != 0)length++;
+                if(content[i] != 0){
+                    sb.append(content[i]);
+                }
                 else break;
             }
-            char[] buffer = new char[length];
-            System.arraycopy(content, 0, buffer, 0, length);
-            System.out.println(buffer);
             char[] temp = Disk.readBlock(ptr/64);//获得FAT表
             ptr = temp[ptr%64]; //获得下一页的指针
         }
+        FileInteract.getHistoryCommand().appendText(sb+ "\n");
+        return sb;
     }
 
 
@@ -122,7 +123,7 @@ public class FileUtils {
      * */
     public static void softCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
         if(!copyFileUtil(sourceMixedArray, targetMixedArray)){
-            System.out.println("复制失败");
+            FileInteract.getHistoryCommand().appendText("复制失败\n");
             return;
         }
         //修改目录项
@@ -143,7 +144,7 @@ public class FileUtils {
             directoryArray[i - 1] = targetMixedArray[i];
         }
         int position = Disk.findBottomFileBlock(directoryArray);
-        System.out.println(position);
+        FileInteract.getHistoryCommand().appendText(String.valueOf(position) + "\n");
         Disk.writeCatalogItem(content, position, 8);
     }
 
@@ -155,7 +156,7 @@ public class FileUtils {
      * */
     public static void hardCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
         if(!copyFileUtil(sourceMixedArray, targetMixedArray)){
-            System.out.println("复制失败");
+            FileInteract.getHistoryCommand().appendText("复制失败\n");
             return;
         }
         //创建新文件
@@ -216,13 +217,13 @@ public class FileUtils {
      * */
     public static void deleteAllFiles(String[] directoryArray) {
         if(!isFileExists(directoryArray, (char) 0x80)){
-            System.out.println("目录不存在");
+            FileInteract.getHistoryCommand().appendText("目录不存在\n");
             return;
         }
         int position = getCatalogItemPosition(directoryArray);//得到目录块的位置
         char[] block = Disk.readBlock(position/64);//得到目录块所在盘块
         if(block[position%64 + 4] != 0x80){
-            System.out.println("不是目录");
+            FileInteract.getHistoryCommand().appendText("不是目录\n");
             return;
         }
         int ptr = block[position%64 + 5];//得到第一页的指针
@@ -251,13 +252,13 @@ public class FileUtils {
     public static void writeFile(String[] filePath, char[] content) {
         //首先判断是否是目录
         if(isFileExists(filePath, (char) 0x80)){
-            System.out.println("不能写入目录");
+            FileInteract.getHistoryCommand().appendText("不能写入目录\n");
             return;
         }
-        System.out.println("安全的文件不存在（无bug）");
+        //FileInteract.getHistoryCommand().appendText("安全的文件不存在（无bug）\n");
         //判断文件是否存在
         if(!isFileExists(filePath, (char) 0x20)){
-            System.out.println("被写文件不存在");
+            FileInteract.getHistoryCommand().appendText("被写文件不存在\n");
             return;
         }
 //        int isExecutable = 0;
@@ -318,24 +319,28 @@ public class FileUtils {
             if(content[i * 8] != 0){
                 String name = new String(content, i * 8, 3).trim();
                 if(content[i * 8 + 4] == 0x20)
-                    System.out.println(name);
+                    FileInteract.getHistoryCommand().appendText(name + "   ");
                 else if (content[i * 8 + 4] == 0x40) {
-                    System.out.println(name + ".e");
+                    FileInteract.getHistoryCommand().appendText(name + ".e   ");
                 }
                 else{
-                    System.out.println(name + "/");
+                    FileInteract.getHistoryCommand().appendText(name + "/   ");
                 }
             }
         }
+        FileInteract.getHistoryCommand().appendText("\n");
     }
 
     /** 显示当前工作路径
-     * @param currentPath 目录路径数组*/
-    public static void showCurrentPath(String[] currentPath) {
+     * @param currentPath 目录路径数组
+     * @return 工作路径字符串*/
+    public static String getPathString(String[] currentPath) {
+        StringBuilder sb = new StringBuilder();
         for(String path:currentPath){
-            System.out.print(path + "/");
+            sb.append(path).append("/");
         }
-        System.out.println();
+        sb.append("\n");
+        return sb.toString();
     }
 
 
@@ -374,12 +379,12 @@ public class FileUtils {
     private static boolean copyFileUtil(String[] sourceMixedArray, String[] targetMixedArray) {
         //判断传入参数是否合法
         if(sourceMixedArray.length <= 0 || targetMixedArray == null || targetMixedArray.length <= 0){
-            System.out.println("Invalid path");
+            FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return false;
         }
         //判断源文件是否存在
         if(!isFileExists(sourceMixedArray, (char) 0x20)){
-            System.out.println("File not found");
+            FileInteract.getHistoryCommand().appendText("File not found\n");
             return false;
         }
         //判断目标路径是否存在
@@ -390,7 +395,7 @@ public class FileUtils {
         if(!isFileExists(directoryArray, (char) 0x80)){
             for(int i = 1; i < directoryArray.length; i++){
                 if(directoryArray[i].length() > 3 || directoryArray[i].length() <= 0 || directoryArray[i].contains("$") || directoryArray[i].contains(".")){
-                    System.out.println("目标路径错误");
+                    FileInteract.getHistoryCommand().appendText("目标路径错误\n");
                     return false;
                 }
             }
@@ -402,7 +407,7 @@ public class FileUtils {
         String targetFilename = targetMixedArray[targetMixedArray.length-1];
         if(sourceFilename.endsWith(".e")){
             if(!targetFilename.endsWith(".e")){
-                System.out.println("文件类型不匹配");
+                FileInteract.getHistoryCommand().appendText("文件类型不匹配\n");
                 return false;
             }
             sourceFilename = sourceFilename.substring(0, sourceFilename.lastIndexOf("."));
@@ -410,7 +415,7 @@ public class FileUtils {
         }
         //判断目标文件名是否正确
         if(targetFilename.length() > 3 || targetFilename.length() <= 0){
-            System.out.println("文件名错误");
+            FileInteract.getHistoryCommand().appendText("文件名错误\n");
             return false;
         }
         return true;

@@ -14,6 +14,7 @@ import java.util.Arrays;
 @Data
 public class FileInteract {
     private static TextField CommandInput;
+    @Getter
     private static TextArea historyCommand;
     private static Button button;
     private static String command;
@@ -30,26 +31,35 @@ public class FileInteract {
         FileInteract.historyCommand = historyCommand;//获得历史命令条
         //设置按钮鼠标监听事件
         FileInteract.button = button;
-
+        historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
         button.setOnMouseClicked(e -> commandAction());
+        button.setOnKeyPressed(e -> {
+            if(e.getCode().toString().equals("ENTER")) {
+                commandAction();
+            }
+        });
         CommandInput.setOnAction(e -> commandAction());
 
     }
     private void commandAction(){
         command = CommandInput.getText();
+        historyCommand.appendText("$  " + command + "\n");
         HandleCommand();
+        historyCommand.appendText("\n");
+        historyCommand.appendText("----------------------------------------------------------------------------------\n");
+        historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
         CommandInput.clear();
-        historyCommand.appendText(">>>"+command+"\n");
     }
 
     private void HandleCommand() {
         if(!handleCommandUtil())return;
 
         if (commandArray[0].equals("create")) {// 创建文件，包括普通文件和可执行文件
-            new MyFile(sourceArray.toArray(new String[0]));
-            //等待写入数据
-            char[] content = new PopUpWindow().popUp();
-            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
+            MyFile myFile = new MyFile(sourceArray.toArray(new String[0]));
+            if(myFile.isAvailable()){
+                char[] content = new PopUpWindow().popUp();
+                FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
+            }
         }
         else if (commandArray[0].equals("delete")) {// 删除文件
             FileUtils.deleteFile(sourceArray.toArray(new String[0]));
@@ -79,24 +89,26 @@ public class FileInteract {
             FileUtils.changeDirectory(sourceArray.toArray(new String[0]));
         }
         else if (commandArray[0].equals("vi")) {// 编辑文件
-            FileUtils.typeFile(sourceArray.toArray(new String[0]));
-            //TODO 等待用户输入
-            char[] content = new PopUpWindow().popUp();
-//            char[] content = new char[0];
+            PopUpWindow popUpWindow = new PopUpWindow();
+            if(FileUtils.typeFile(sourceArray.toArray(new String[0]))!=null){
+                popUpWindow.appendText(FileUtils.typeFile(sourceArray.toArray(new String[0])).toString());
+            }
+            char[] content = popUpWindow.popUp();
             FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("ls")) {// 显示目录内容
             FileUtils.listDirectory(currentPath.toArray(new String[0]));
         }
         else if (commandArray[0].equals("pwd")) {// 显示当前目录
-            FileUtils.showCurrentPath(currentPath.toArray(new String[0]));
+            historyCommand.appendText(FileUtils.getPathString(currentPath.toArray(new String[0])));
+        }
+        else if (commandArray[0].equals("show")) {//显示磁盘信息
+            for (int i = 0; i < 10; i++) {
+                Disk.printBlock(i);
+            }
         }
         else{
-            System.out.println("命令错误！");
-        }
-        //调试使用
-        for (int i = 0; i < 10; i++) {
-            Disk.printBlock(i);
+            FileInteract.getHistoryCommand().appendText("命令错误！\n");
         }
 
     }
@@ -110,12 +122,16 @@ public class FileInteract {
         aimArray.clear();
         commandArray = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
         if(commandArray.length>3){
-            System.out.println("命令错误！");
+            FileInteract.getHistoryCommand().appendText("命令错误！\n");
             return false;
         }
         if(commandArray.length == 1){
-            if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd"))return true;
-            else return false;
+            if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd")
+                    || commandArray[0].equals("show"))return true;
+            else {
+                FileInteract.getHistoryCommand().appendText("命令错误！\n");
+                return false;
+            }
         }
 
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
