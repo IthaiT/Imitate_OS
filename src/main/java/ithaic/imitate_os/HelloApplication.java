@@ -1,5 +1,6 @@
 package ithaic.imitate_os;
 
+import ithaic.imitate_os.process.CPU;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,6 +21,9 @@ public class HelloApplication extends Application {
     //OS界面缺失图标
 
     public static void main(String[] args) {
+        //CPU初始化
+        CPU cpu = CPU.getInstance();
+        cpu.run();
         launch();
     }
 }
