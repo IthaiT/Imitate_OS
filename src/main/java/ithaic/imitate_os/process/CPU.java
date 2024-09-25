@@ -5,6 +5,11 @@ import ithaic.imitate_os.memoryManager.MemoryManager;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import static ithaic.imitate_os.process.StateCode.RUNNING;
 import static java.lang.Thread.sleep;
 
 @Data
@@ -20,6 +25,7 @@ public class CPU {
     private int PC;   // 程序计数器
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
+    private Runnable task;
 
     @Getter
     private static CPU instance;
@@ -42,35 +48,33 @@ public class CPU {
      * 建立新线程模拟CPU运行
      */
     // 模拟CPU运行
-    public void run() {
-        Runnable task = () -> {
-            while (true) {
-                checkPSW();
-
-                if (runningProcess == null) {
-                    processScheduling();
-                    System.out.println("没有进程, CPU空转");
-                } else {
-                    executeRunningProcess();
-                }
-
-                System.out.println("系统时钟: " + systemClock);
-
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                systemClock++;
-                if (relativeClock == 0) {
-                    PSW |= 0b010;  // 置时间片结束中断位为1
-                }
-
-            }
-        };
-        task.run();
+    public void run(){
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::runTask, 0, 1, TimeUnit.SECONDS);
     }
+
+
+    //CPU运行流程
+    private void runTask() {
+        checkPSW();
+
+        if (runningProcess == null) {
+            processScheduling();
+            System.out.println("没有进程, CPU空转");
+        } else {
+            executeRunningProcess();
+        }
+
+        System.out.println("系统时钟: " + systemClock);
+
+
+        systemClock++;
+        if (relativeClock == 0) {
+            PSW |= 0b010;  // 置时间片结束中断位为1
+        }
+
+    }
+
 
     /**
      * 执行当前运行进程
@@ -104,9 +108,7 @@ public class CPU {
         if (runningProcess == null) return;
 
         processManager.restoreProcessState();
-        runningProcess.setState("Running");
-
-        System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
+        runningProcess.setState(RUNNING);
     }
 
 

@@ -15,8 +15,9 @@ public class MemoryTest {
     @Test
     public void Test() throws InterruptedException {
         CPU cpu = CPU.getInstance();
-        Thread thread = new Thread(()->cpu.run());
-        Thread thread1 = new Thread(()-> {
+
+
+        Thread t = new Thread(()->{
             ProcessManager processManager = ProcessManager.getInstance();
 
             String executableFile = "X=1000;X--;\0\0\0X++    !A10 X-- X=9999 X-- X--  x-- x-- x-- end";
@@ -27,11 +28,8 @@ public class MemoryTest {
             processManager.create(executableFile1.toCharArray());
             processManager.create(executableFile2.toCharArray());
         });
-        thread.start();
-        thread1.start();
-
-        thread1.join();
-        thread.join();
-
+        t.start();
+        cpu.run();
+        while(true){}
     }
 }
