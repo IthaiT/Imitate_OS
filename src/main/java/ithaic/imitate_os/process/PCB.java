@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class PCB {
     private int pid;
-    private String state;//进程状态
+    private int state;//进程状态
     private MemoryBlock allocatedMemory;
     private int PC;
     private char PSW;
@@ -27,7 +27,7 @@ public class PCB {
         PC = 0;
         PSW = 0b000;
         AX = 0;
-        state = null;
+        state = -1;
         allocatedMemory = null;
         blockedReason = null;
         runningTime = 0;
