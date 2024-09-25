@@ -16,8 +16,8 @@ public class CPU {
     private ProcessManager processManager;
     private MemoryManager memoryManager;
     private PCB runningProcess;
-    private String IR;
-    private int PC;
+    private String IR; //指令寄存器
+    private int PC;   // 程序计数器
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
 
@@ -61,7 +61,6 @@ public class CPU {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
 
                 systemClock++;
                 if (relativeClock == 0) {
