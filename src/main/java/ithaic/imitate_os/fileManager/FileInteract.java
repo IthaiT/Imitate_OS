@@ -3,6 +3,7 @@ package ithaic.imitate_os.fileManager;
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import lombok.Data;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import java.util.Arrays;
 @Data
 public class FileInteract {
     private static TextField CommandInput;
+    private static TextArea historyCommand;
     private static Button button;
     private static String command;
     private static String[] commandArray;
@@ -21,16 +23,23 @@ public class FileInteract {
     private static ArrayList<String> sourceArray = new ArrayList<>();
     private static ArrayList<String> aimArray = new ArrayList<>();
 
-    public FileInteract(TextField CommandInput, Button button){
+    public FileInteract(TextField CommandInput, TextArea historyCommand ,Button button){
         currentPath.add("");
         new Disk();// 创建磁盘
         FileInteract.CommandInput = CommandInput;//获得用户输入
+        FileInteract.historyCommand = historyCommand;//获得历史命令条
         //设置按钮鼠标监听事件
         FileInteract.button = button;
-        button.setOnMouseClicked(e -> {
-            command = CommandInput.getText();
-            HandleCommand();
-        });
+
+        button.setOnMouseClicked(e -> commandAction());
+        CommandInput.setOnAction(e -> commandAction());
+
+    }
+    private void commandAction(){
+        command = CommandInput.getText();
+        HandleCommand();
+        CommandInput.clear();
+        historyCommand.appendText(">>>"+command+"\n");
     }
 
     private void HandleCommand() {
@@ -39,6 +48,8 @@ public class FileInteract {
         if (commandArray[0].equals("create")) {// 创建文件，包括普通文件和可执行文件
             new MyFile(sourceArray.toArray(new String[0]));
             //等待写入数据
+            char[] content = new PopUpWindow().popUp();
+            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("delete")) {// 删除文件
             FileUtils.deleteFile(sourceArray.toArray(new String[0]));
@@ -70,7 +81,8 @@ public class FileInteract {
         else if (commandArray[0].equals("vi")) {// 编辑文件
             FileUtils.typeFile(sourceArray.toArray(new String[0]));
             //TODO 等待用户输入
-            char[] content = new char[0];
+            char[] content = new PopUpWindow().popUp();
+//            char[] content = new char[0];
             FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("ls")) {// 显示目录内容

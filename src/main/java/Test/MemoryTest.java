@@ -14,8 +14,7 @@ public class MemoryTest {
 
     @Test
     public void Test() throws InterruptedException {
-        CPU cpu = new CPU(2);
-
+        CPU cpu = CPU.getInstance();
         Thread thread = new Thread(()->cpu.run());
         Thread thread1 = new Thread(()-> {
             ProcessManager processManager = ProcessManager.getInstance();
