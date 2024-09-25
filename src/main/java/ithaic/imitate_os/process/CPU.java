@@ -140,24 +140,29 @@ public class CPU {
      */
     private void parseInstruction() {
         IR = IR.toLowerCase();
+        switch (IR) {
+            case "end":
+                PSW |= 0b001;  // 设置程序结束中断
+                break;
+            case "x++":
+                System.out.println("AX++, AX = " + ++AX);
+                break;
+            case "x--":
+                System.out.println("AX--, AX = " + --AX);
+                break;
+            default:
+                if (IR.startsWith("x=")) {
+                    AX = Integer.parseInt(IR.substring(2));
+                    System.out.println("AX = " + AX);
+                } else if (IR.startsWith("!")) {
+                    char deviceName = IR.charAt(1);
+                    int requestTime = Integer.parseInt(IR.substring(2));
+                    //TODO:处理I/O请求,申请设备资源,此处应该调用设备管理的相关函数
 
-        if (IR.startsWith("x=")) {
-            AX = Integer.parseInt(IR.substring(2));
-            System.out.println("AX = " + AX);
-        } else if (IR.equals("x++")) {
-            AX++;
-            System.out.println("AX++, AX = " + AX);
-        } else if (IR.equals("x--")) {
-            AX--;
-            System.out.println("AX--, AX = " + AX);
-        } else if (IR.startsWith("!")) {
-            char deviceName = IR.charAt(1);
-            int requestTime = Integer.parseInt(IR.substring(2));
-            //TODO:处理I/O请求
 
-            PSW |= 0b100;  // 设置I/O请求中断
-        } else if (IR.equals("end")) {
-            PSW |= 0b001;  // 设置程序结束中断
+                    PSW |= 0b100;  // 设置I/O请求中断
+                }
+                break;
         }
     }
 }
