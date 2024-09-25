@@ -90,6 +90,8 @@ public class FileInteract {
         }
         else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
+
+            //判断文件是否存在
             if(FileUtils.typeFile(sourceArray.toArray(new String[0]))!=null){
                 popUpWindow.appendText(FileUtils.typeFile(sourceArray.toArray(new String[0])).toString());
             }

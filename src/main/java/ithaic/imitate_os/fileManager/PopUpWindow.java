@@ -62,7 +62,8 @@ public class PopUpWindow {
     }
 
     public void appendText(String str) {
-        textArea.setText(str);
+//        textArea.setText(str);
+        textArea.appendText(str);
     }
     private char[] StrToCharArray(String str) {
         return str.toCharArray();
