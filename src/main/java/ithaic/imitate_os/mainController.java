@@ -2,11 +2,16 @@ package ithaic.imitate_os;
 
 import ithaic.imitate_os.fileManager.FileInteract;
 import ithaic.imitate_os.fileManager.PopUpWindow;
+import ithaic.imitate_os.process.CPU;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+import lombok.Getter;
 
 public class mainController {
     public VBox mainVBox;
@@ -24,6 +29,7 @@ public class mainController {
     public HBox processAndDisk;
     public HBox userInterface_box;
     public TextArea historyCommand;
+    public Label systemClockLabel;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -34,6 +40,7 @@ public class mainController {
         new FileInteract(CommandInput,historyCommand,button);
         initializeBox();
         initializeText();
+        initializeTopBox();
 
     }
     private void initializeBox() {
@@ -84,6 +91,20 @@ public class mainController {
         //设置CommandInput的宽度为userInterface的宽度减去button的宽度,二者撑满底部
         CommandInput.setPrefWidth(userInterface.getPrefWidth()-button.getPrefWidth());
         CommandInput.prefWidthProperty().bind(Bindings.subtract(userInterface.widthProperty(),button.widthProperty()));
+    }
+
+    private void initializeTopBox(){
+        updateClock();
+    }
+    public void updateClock(){
+
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
+               int systemClock= CPU.getInstance().getLabelClock();
+               systemClockLabel.setText("系统时间："+systemClock);
+            }));
+            timeline.setCycleCount(Timeline.INDEFINITE);
+            timeline.play();
+
     }
 
 }
