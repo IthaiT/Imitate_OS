@@ -13,8 +13,8 @@ public class mainController {
     public HBox topHBox;
     public VBox bottom_leftBox;
     
-    public VBox bottom_rightBox;
-    public HBox bottom_Box;
+    public SplitPane bottom_rightBox;
+    public SplitPane bottom_Box;
     public HBox queueBox;
     public VBox commandBox;
 
@@ -37,10 +37,10 @@ public class mainController {
 
     }
     private void initializeBox() {
-        topHBox.setPrefHeight(mainVBox.getPrefHeight() * 0.2);
+        topHBox.setPrefHeight(mainVBox.getPrefHeight() * 0.05);
 
-        bottom_Box.setPrefHeight(mainVBox.getPrefHeight() * 0.8);
-
+        bottom_Box.setPrefHeight(mainVBox.getPrefHeight() * 0.95);
+        bottom_Box.prefHeightProperty().bind(Bindings.subtract(mainVBox.heightProperty(),topHBox.heightProperty()));
 
         bottom_leftBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_leftBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.4);
@@ -71,13 +71,15 @@ public class mainController {
               diskBox.prefWidthProperty().bind(Bindings.multiply(0.6,processAndDisk.prefWidthProperty()));
 
         userInterface.setPrefHeight(bottom_rightBox.getPrefHeight() *0.3);
-        userInterface.prefHeightProperty().bind(Bindings.multiply(0.3,bottom_Box.prefHeightProperty()));
-            historyCommand.setMinHeight(userInterface.getPrefHeight());
+        userInterface.prefHeightProperty().bind(Bindings.multiply(0.3,bottom_rightBox.prefHeightProperty()));
+            historyCommand.setMinHeight(userInterface.getPrefHeight()*0.3);
     }
 
     private void initializeText(){
         //不可编辑
         historyCommand.setEditable(false);
+        //设置historyCommand的高度为userInterface-底下输入栏的高度
+        historyCommand.prefHeightProperty().bind(Bindings.subtract(userInterface.heightProperty(),userInterface_box.heightProperty()));
         button.setPrefWidth(100);
         //设置CommandInput的宽度为userInterface的宽度减去button的宽度,二者撑满底部
         CommandInput.setPrefWidth(userInterface.getPrefWidth()-button.getPrefWidth());

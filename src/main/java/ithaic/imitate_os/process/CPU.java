@@ -10,7 +10,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static ithaic.imitate_os.process.StateCode.RUNNING;
-import static java.lang.Thread.sleep;
+
 
 @Data
 public class CPU {
@@ -45,7 +45,7 @@ public class CPU {
     }
 
     /**
-     * 建立新线程模拟CPU运行
+     * 模拟CPU 1秒运行一次
      */
     // 模拟CPU运行
     public void run(){
@@ -72,7 +72,6 @@ public class CPU {
         if (relativeClock == 0) {
             PSW |= 0b010;  // 置时间片结束中断位为1
         }
-
     }
 
 

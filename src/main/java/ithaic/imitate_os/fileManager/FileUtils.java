@@ -2,6 +2,7 @@ package ithaic.imitate_os.fileManager;
 
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
+import ithaic.imitate_os.process.ProcessManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -251,7 +252,7 @@ public class FileUtils {
      * @param filePath*/
     public static void writeFile(String[] filePath, char[] content) {
         //首先判断是否是目录
-        if(isFileExists(filePath, (char) 0x80)){
+        if(!filePath[filePath.length - 1].contains(".e")&&isFileExists(filePath, (char) 0x80)){
             FileInteract.getHistoryCommand().appendText("不能写入目录\n");
             return;
         }
@@ -343,7 +344,44 @@ public class FileUtils {
         return sb.toString();
     }
 
-
+    public static boolean executeFile(String[] filePath) {
+        if(filePath.length <= 0){
+            FileInteract.getHistoryCommand().appendText("Invalid file\n");
+            return false;
+        }
+        //判断可执行文件是否存在
+        if(!isFileExists(filePath, (char) 0x40)){
+            FileInteract.getHistoryCommand().appendText("File not found\n");
+            return false;
+        }
+        int position = getCatalogItemPosition(filePath);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64); //得到目录块所在盘块
+        int ptr = block[position%64 + 5];//得到第一页的指针
+        //先判断文件是否为空
+        char[] content = Disk.readBlock(ptr);
+        for (int i = 0; i < 64; i++) {
+            if(content[i] != 0)break;
+            if(i == 63) {
+                FileInteract.getHistoryCommand().appendText("File is empty\n");
+                return false;
+            }
+        }
+        //循环打印文件内容，直到文件结尾
+        StringBuilder sb = new StringBuilder();
+        while(ptr != 1){
+            content = Disk.readBlock(ptr);
+            for (int i = 0; i < 64; i++) {
+                if(content[i] != 0){
+                    sb.append(content[i]);
+                }
+                else break;
+            }
+            char[] temp = Disk.readBlock(ptr/64);//获得FAT表
+            ptr = temp[ptr%64]; //获得下一页的指针
+        }
+        ProcessManager.getInstance().create(sb.toString().toCharArray());
+        return true;
+    }
     /**
      * 获得目录项在磁盘中的位置
      * @param mixedArray 文件路径数组

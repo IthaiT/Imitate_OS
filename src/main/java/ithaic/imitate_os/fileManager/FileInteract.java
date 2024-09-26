@@ -2,14 +2,17 @@ package ithaic.imitate_os.fileManager;
 
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
+import ithaic.imitate_os.process.ProcessManager;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import lombok.Data;
 import lombok.Getter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 @Data
 public class FileInteract {
@@ -90,6 +93,8 @@ public class FileInteract {
         }
         else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
+
+            //判断文件是否存在
             if(FileUtils.typeFile(sourceArray.toArray(new String[0]))!=null){
                 popUpWindow.appendText(FileUtils.typeFile(sourceArray.toArray(new String[0])).toString());
             }
@@ -106,6 +111,9 @@ public class FileInteract {
             for (int i = 0; i < 10; i++) {
                 Disk.printBlock(i);
             }
+        }
+        else if(commandArray[0].equals("exec")){  //执行可执行文件
+            FileUtils.executeFile(sourceArray.toArray(new String[0]));
         }
         else{
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
