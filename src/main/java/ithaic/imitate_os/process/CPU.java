@@ -1,7 +1,9 @@
 package ithaic.imitate_os.process;
 
+import ithaic.imitate_os.mainController;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
+import javafx.scene.control.Label;
 import lombok.Data;
 import lombok.Getter;
 
@@ -26,6 +28,7 @@ public class CPU {
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
     private Runnable task;
+    public int systemClockLabel=0;
 
     @Getter
     private static CPU instance;
@@ -66,6 +69,8 @@ public class CPU {
         }
 
         System.out.println("系统时钟: " + systemClock);
+        //立刻调用设置时间
+        setLabelClock();
 
 
         systemClock++;
@@ -164,5 +169,13 @@ public class CPU {
                 }
                 break;
         }
+    }
+//设置Label时间
+    public void setLabelClock(){
+        systemClockLabel=systemClock;
+    }
+    //返回Label时间
+    public int getLabelClock(){
+        return systemClockLabel;
     }
 }

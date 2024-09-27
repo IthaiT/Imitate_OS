@@ -18,7 +18,7 @@
 
    <HBox fx:id="topHBox" spacing="50" alignment="CENTER" style="-fx-border-color: red; -fx-border-width: 2" prefWidth="${mainVBox.width}">
 
-      <Label>系统时钟</Label>
+      <Label fx:id="systemClockLabel">系统时钟</Label>
       <Label>cpu</Label>
       <Label>正在运行进程ID</Label>
       <Label>时间片</Label>
