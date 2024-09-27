@@ -238,6 +238,7 @@ public class FileUtils {
 
     public static void changeDirectory(String[] directoryArray) {
         ArrayList<String> currentPath= FileInteract.getCurrentPath();
+        if(currentPath.isEmpty())return;
         if(directoryArray[directoryArray.length-1].equals("..")){
             currentPath.remove(currentPath.size()-1);
         }
