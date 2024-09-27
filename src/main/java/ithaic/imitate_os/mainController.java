@@ -142,16 +142,11 @@ public class mainController {
                newProcessIDs.add(String.valueOf(pcb.getPid()));
            }
        }
-//        readyProcessQueue.setItems(processIDs);
-
         // 只在列表发生变化时更新 ListView
         if (!newProcessIDs.equals(currentProcessIDs_ready)) {
             currentProcessIDs_ready.setAll(newProcessIDs);  // 更新 currentProcessIDs
             readyProcessQueue.setItems(currentProcessIDs_ready);  // 只在需要时设置
         }
-    }
-    private void blockProcessUpdate(){
-
     }
 
     private void timeUpdate(){
