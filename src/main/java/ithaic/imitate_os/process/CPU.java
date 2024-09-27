@@ -29,6 +29,7 @@ public class CPU {
     private int AX;    // 累加器
     private Runnable task;
     public int systemClockLabel=0;
+    public int relativeClockLabel=0;
 
     @Getter
     private static CPU instance;
@@ -97,6 +98,8 @@ public class CPU {
         parseInstruction();
         relativeClock--;
         System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
+        //更新进程状态
+        setLabelRelativeClock();
     }
 
     /**
@@ -177,5 +180,12 @@ public class CPU {
     //返回Label时间
     public int getLabelClock(){
         return systemClockLabel;
+    }
+
+    public void setLabelRelativeClock(){
+        relativeClockLabel=relativeClock;
+    }
+    public int getLabelRelativeClock(){
+        return relativeClockLabel;
     }
 }
