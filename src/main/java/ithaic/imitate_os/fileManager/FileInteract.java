@@ -22,6 +22,7 @@ public class FileInteract {
     private static Button button;
     @Getter
     private static String command;
+    @Getter
     private static String[] commandArray;
     @Getter
     private static ArrayList<String> currentPath = new ArrayList<>();
@@ -97,8 +98,9 @@ public class FileInteract {
         else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
             //判断文件是否存在
-            if(FileUtils.typeFile(sourceArray.toArray(new String[0]))!=null){
-                popUpWindow.appendText(FileUtils.typeFile(sourceArray.toArray(new String[0])).toString());
+            StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
+            if(sb!= null){
+                popUpWindow.appendText(sb.toString());
             }
             char[] content = popUpWindow.popUp();
             FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
@@ -139,7 +141,6 @@ public class FileInteract {
         else{
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
         }
-
     }
 
 
@@ -176,7 +177,7 @@ public class FileInteract {
         }
         //如果是绝对路径，直接加入目录数组
         else{
-            if(!directoryArray[0].isEmpty())sourceArray.add("");
+            if(directoryArray.length == 0 ||!directoryArray[0].isEmpty())sourceArray.add("");
             sourceArray.addAll(Arrays.asList(directoryArray).subList(0, directoryArray.length));
         }
 

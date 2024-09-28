@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.util.Objects;
 import java.util.Queue;
 
 public class mainController {
@@ -64,6 +65,7 @@ public class mainController {
     @FXML
     private Button button;
     private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
+    private String commandString = null; // 判断用户是否输入新的命令，以此来判断目录树是否需要更新
     @FXML
     private void initialize() {
         new FileInteract(CommandInput,historyCommand,button);
@@ -160,6 +162,7 @@ public class mainController {
            updateClock();
            updateProcess();
            processQueueUpdate();
+           updateDiskTree();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -181,6 +184,20 @@ public class mainController {
             runningProcessLabel.setText("运行进程："+runningProcessName);
         }else {//当前无进程
             runningProcessLabel.setText("运行进程：无");
+        }
+    }
+
+    /** 更新磁盘树*/
+    private void updateDiskTree(){
+        String tmp = FileInteract.getCommand();
+        if(tmp.equals(commandString))return;
+        commandString = tmp;
+        String command = FileInteract.getCommandArray()[0];
+        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"};
+        for(String str:commandArray){
+            if(Objects.equals(command, str)){
+                DiskTreeShower.updateDiskTree();
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ public class DiskTreeShower {
 
     public DiskTreeShower(TreeView disktree) {
         DiskTreeShower.disktree = disktree;
-        TreeItem<String> root = new TreeItem<>("/");
+        TreeItem<String> root = new TreeItem<>("/(root)");
         root.setGraphic(getIcon(FOLDER_IMAGE));
         //设置树视图的根目录
         disktree.setRoot(root);
@@ -26,7 +26,7 @@ public class DiskTreeShower {
 
     /** 更新树结构，供外部调用
      * */
-    public static void updateTree(){
+    public static void updateDiskTree(){
         TreeItem<String> root = disktree.getRoot();
         root.getChildren().clear();
         createTree(4, root);
@@ -50,14 +50,12 @@ public class DiskTreeShower {
                 TreeItem<String> item = new TreeItem<>(new String(buffer, i * 8, 3));
                 item.setGraphic(getIcon(DOCUMENT_IMAGE));
                 parent.getChildren().add(item);
-                System.out.println(new String(buffer, i * 8, 3));
             }
             if(buffer[i * 8 + 4] == 0x80){
                 TreeItem<String> item = new TreeItem<>(new String(buffer, i * 8, 3));
                 item.setGraphic(getIcon(FOLDER_IMAGE));
                 createTree(buffer[i * 8 + 5], item);
                 parent.getChildren().add(item);
-                System.out.println(new String(buffer, i * 8, 3));
             }
         }
     }
