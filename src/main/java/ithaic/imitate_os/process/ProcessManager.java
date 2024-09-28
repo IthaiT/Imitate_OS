@@ -77,9 +77,10 @@ public class ProcessManager {
     /**
      * 创建进程，并加入就绪队列
      * @param execFile 传入可执行文件的内容
+     * @param processName 传入进程名
      * @return 创建成功返回true，失败返回false
      */
-    public boolean create(char[] execFile) {
+    public boolean create(char[] execFile,String processName) {
         PCB pcb = blankProcessQueue.poll();
         if (pcb == null) return false;
 
@@ -94,6 +95,7 @@ public class ProcessManager {
         memoryManager.write(memoryBlock, execFile);
         pcb.setAllocatedMemory(memoryBlock);
         pcb.setPid(getAvailablePID());
+        pcb.setName(processName);
         pcb.setState(READY);
         readyProcessQueue.add(pcb);
         return true;

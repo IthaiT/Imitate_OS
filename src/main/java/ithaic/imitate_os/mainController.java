@@ -1,6 +1,7 @@
 package ithaic.imitate_os;
 
 import ithaic.imitate_os.fileManager.FileInteract;
+
 import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
@@ -62,7 +63,7 @@ public class mainController {
     private TextField CommandInput;
     @FXML
     private Button button;
-    private ObservableList<String> currentProcessIDs_ready = FXCollections.observableArrayList();
+    private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
     @FXML
     private void initialize() {
         new FileInteract(CommandInput,historyCommand,button);
@@ -72,6 +73,8 @@ public class mainController {
         timeUpdate();
         initializeQueueBox();
     }
+
+//    初始化大框组件的边界
     private void initializeBox() {
         topHBox.setPrefHeight(mainVBox.getPrefHeight() * 0.05);
 
@@ -111,6 +114,8 @@ public class mainController {
             historyCommand.setMinHeight(userInterface.getPrefHeight()*0.3);
     }
 
+
+//    初始化输入命令行框和历史命令行的边界
     private void initializeText(){
         //不可编辑
         historyCommand.setEditable(false);
@@ -122,52 +127,58 @@ public class mainController {
         CommandInput.prefWidthProperty().bind(Bindings.subtract(userInterface.widthProperty(),button.widthProperty()));
     }
 
-
+    //    初始化进程队列框
     private void initializeQueueBox(){
         readyProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5,queueBox.prefWidthProperty()));
         blockProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5,queueBox.prefWidthProperty()));
     }
-    private void processUpdate(){
+    //    更新进程框
+    private void processQueueUpdate(){
         readyProcessUpdate();
     }
+
+    //    就绪进程的更新实现
     private void readyProcessUpdate(){
        Queue<PCB> pcbQueue= CPU.getInstance().getProcessManager().getReadyProcessQueue();
-       ObservableList<String> newProcessIDs=FXCollections.observableArrayList();
+       ObservableList<String> newProcessNames=FXCollections.observableArrayList();
        if (pcbQueue.size()==0){
-           newProcessIDs.add("无进程");
+           newProcessNames.add("无进程");
        }else {
            for (PCB pcb:pcbQueue){
-               newProcessIDs.add(String.valueOf(pcb.getPid()));
+               newProcessNames.add(pcb.getName());
            }
        }
         // 只在列表发生变化时更新 ListView
-        if (!newProcessIDs.equals(currentProcessIDs_ready)) {
-            currentProcessIDs_ready.setAll(newProcessIDs);  // 更新 currentProcessIDs
-            readyProcessQueue.setItems(currentProcessIDs_ready);  // 只在需要时设置
+        if (!newProcessNames.equals(currentProcessNames_ready)) {
+            currentProcessNames_ready.setAll(newProcessNames);  // 更新 currentProcessIDs
+            readyProcessQueue.setItems(currentProcessNames_ready);  // 只在需要时设置
         }
     }
-
+//    组件依靠时间间隔更新一次，时钟进程
     private void timeUpdate(){
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> {
            updateClock();
            updateProcess();
-           processUpdate();
+           processQueueUpdate();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
     }
 
+//    系统时间个时间片获取的实现
     private void updateClock(){
         int systemClock= CPU.getInstance().getLabelClock();
         int relativeClock= CPU.getInstance().getLabelRelativeClock();
         systemClockLabel.setText("系统时间："+systemClock);
         relativeClockLabel.setText("时间片："+relativeClock);
     }
+
+//    运行中进程更新
     private void updateProcess(){
         //当前进程非空
         if (CPU.getInstance().getRunningProcess()!=null){
-            int runningProcessID=CPU.getInstance().getRunningProcess().getPid();
-            runningProcessLabel.setText("运行进程："+runningProcessID);
+            String runningProcessName=CPU.getInstance().getRunningProcess().getName();
+            runningProcessLabel.setText("运行进程："+runningProcessName);
         }else {//当前无进程
             runningProcessLabel.setText("运行进程：无");
         }

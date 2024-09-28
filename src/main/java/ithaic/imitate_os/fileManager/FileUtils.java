@@ -5,6 +5,7 @@ import ithaic.imitate_os.fileManager.fileKind.MyFile;
 import ithaic.imitate_os.process.ProcessManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class FileUtils {
@@ -352,9 +353,41 @@ public class FileUtils {
      * @param filePath 文件路径数组
      * @return 是否成功执行*/
     public static boolean executeFile(String[] filePath) {
-        StringBuilder sb = typeFile(filePath);
-        if(sb == null)return false;
-        ProcessManager.getInstance().create(sb.toString().toCharArray());
+        if(filePath.length <= 0){
+            FileInteract.getHistoryCommand().appendText("Invalid file\n");
+            return false;
+        }
+        //判断可执行文件是否存在
+        if(!isFileExists(filePath, (char) 0x40)){
+            FileInteract.getHistoryCommand().appendText("File not found\n");
+            return false;
+        }
+        int position = getCatalogItemPosition(filePath);//得到目录块的位置
+        char[] block = Disk.readBlock(position/64); //得到目录块所在盘块
+        int ptr = block[position%64 + 5];//得到第一页的指针
+        //先判断文件是否为空
+        char[] content = Disk.readBlock(ptr);
+        for (int i = 0; i < 64; i++) {
+            if(content[i] != 0)break;
+            if(i == 63) {
+                FileInteract.getHistoryCommand().appendText("File is empty\n");
+                return false;
+            }
+        }
+        //循环打印文件内容，直到文件结尾
+        StringBuilder sb = new StringBuilder();
+        while(ptr != 1){
+            content = Disk.readBlock(ptr);
+            for (int i = 0; i < 64; i++) {
+                if(content[i] != 0){
+                    sb.append(content[i]);
+                }
+                else break;
+            }
+            char[] temp = Disk.readBlock(ptr/64);//获得FAT表
+            ptr = temp[ptr%64]; //获得下一页的指针
+        }
+        ProcessManager.getInstance().create(sb.toString().toCharArray(), filePath[1]);
         return true;
     }
 
