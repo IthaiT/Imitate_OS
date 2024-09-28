@@ -64,12 +64,12 @@ public class CPU {
 
         if (runningProcess == null) {
             processScheduling();
-            System.out.println("没有进程, CPU空转");
+            //System.out.println("没有进程, CPU空转");
         } else {
             executeRunningProcess();
         }
 
-        System.out.println("系统时钟: " + systemClock);
+        //System.out.println("系统时钟: " + systemClock);
         //立刻调用设置时间
         setLabelClock();
 

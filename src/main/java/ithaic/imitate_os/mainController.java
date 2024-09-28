@@ -1,24 +1,21 @@
 package ithaic.imitate_os;
 
 import ithaic.imitate_os.fileManager.FileInteract;
-import ithaic.imitate_os.fileManager.PopUpWindow;
+import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import lombok.Getter;
 
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class mainController {
     @FXML
@@ -69,6 +66,7 @@ public class mainController {
     @FXML
     private void initialize() {
         new FileInteract(CommandInput,historyCommand,button);
+        new DiskTreeShower(diskStructure);
         initializeBox();
         initializeText();
         timeUpdate();

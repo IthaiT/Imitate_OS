@@ -76,13 +76,14 @@ public class FileUtils {
     /**
      * 打开文件，并将其内容打印到控制台
      * @param filePath 文件路径数组
+     * @return 文件内容
      * */
     public static StringBuilder typeFile(String[] filePath) {
         if(filePath.length <= 0){
             FileInteract.getHistoryCommand().appendText("Invalid path\n");
             return null;
         }
-        //判断目录是否存在
+        //判断文件是否存在
         if(!isFileExists(filePath, (char) 0x20)){
             FileInteract.getHistoryCommand().appendText("File not found\n");
             return null;
@@ -333,6 +334,7 @@ public class FileUtils {
         FileInteract.getHistoryCommand().appendText("\n");
     }
 
+
     /** 显示当前工作路径
      * @param currentPath 目录路径数组
      * @return 工作路径字符串*/
@@ -345,44 +347,18 @@ public class FileUtils {
         return sb.toString();
     }
 
+
+    /** 执行文件
+     * @param filePath 文件路径数组
+     * @return 是否成功执行*/
     public static boolean executeFile(String[] filePath) {
-        if(filePath.length <= 0){
-            FileInteract.getHistoryCommand().appendText("Invalid file\n");
-            return false;
-        }
-        //判断可执行文件是否存在
-        if(!isFileExists(filePath, (char) 0x40)){
-            FileInteract.getHistoryCommand().appendText("File not found\n");
-            return false;
-        }
-        int position = getCatalogItemPosition(filePath);//得到目录块的位置
-        char[] block = Disk.readBlock(position/64); //得到目录块所在盘块
-        int ptr = block[position%64 + 5];//得到第一页的指针
-        //先判断文件是否为空
-        char[] content = Disk.readBlock(ptr);
-        for (int i = 0; i < 64; i++) {
-            if(content[i] != 0)break;
-            if(i == 63) {
-                FileInteract.getHistoryCommand().appendText("File is empty\n");
-                return false;
-            }
-        }
-        //循环打印文件内容，直到文件结尾
-        StringBuilder sb = new StringBuilder();
-        while(ptr != 1){
-            content = Disk.readBlock(ptr);
-            for (int i = 0; i < 64; i++) {
-                if(content[i] != 0){
-                    sb.append(content[i]);
-                }
-                else break;
-            }
-            char[] temp = Disk.readBlock(ptr/64);//获得FAT表
-            ptr = temp[ptr%64]; //获得下一页的指针
-        }
+        StringBuilder sb = typeFile(filePath);
+        if(sb == null)return false;
         ProcessManager.getInstance().create(sb.toString().toCharArray());
         return true;
     }
+
+
     /**
      * 获得目录项在磁盘中的位置
      * @param mixedArray 文件路径数组

@@ -20,12 +20,14 @@ public class FileInteract {
     @Getter
     private static TextArea historyCommand;
     private static Button button;
+    @Getter
     private static String command;
     private static String[] commandArray;
     @Getter
     private static ArrayList<String> currentPath = new ArrayList<>();
     private static ArrayList<String> sourceArray = new ArrayList<>();
     private static ArrayList<String> aimArray = new ArrayList<>();
+
 
     public FileInteract(TextField CommandInput, TextArea historyCommand ,Button button){
         currentPath.add("");
@@ -63,6 +65,7 @@ public class FileInteract {
                 char[] content = new PopUpWindow().popUp();
                 FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
             }
+
         }
         else if (commandArray[0].equals("delete")) {// 删除文件
             FileUtils.deleteFile(sourceArray.toArray(new String[0]));
@@ -93,7 +96,6 @@ public class FileInteract {
         }
         else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
-
             //判断文件是否存在
             if(FileUtils.typeFile(sourceArray.toArray(new String[0]))!=null){
                 popUpWindow.appendText(FileUtils.typeFile(sourceArray.toArray(new String[0])).toString());
@@ -115,6 +117,25 @@ public class FileInteract {
         else if(commandArray[0].equals("exec")){  //执行可执行文件
             FileUtils.executeFile(sourceArray.toArray(new String[0]));
         }
+        else if(commandArray[0].equals("help")) {  //退出系统
+            FileInteract.getHistoryCommand().appendText("命令列表：\n" +
+                    "create [文件名] [内容] 创建文件，包括普通文件和可执行文件\n" +
+                    "delete [文件名] 删除文件\n" +
+                    "type [文件名] 显示文件内容\n" +
+                    "copy [源文件名] [目标文件名] 复制文件\n" +
+                    "move [源文件名] [目标文件名] 移动文件\n" +
+                    "mkdir [目录名] 创建目录\n" +
+                    "rmdir [目录名] 删除空目录\n" +
+                    "deldir [目录名] 删除目录下所有文件\n" +
+                    "format 格式化磁盘\n" +
+                    "cd [目录名] 切换目录\n" +
+                    "vi [文件名] 编辑文件\n" +
+                    "ls 显示目录内容\n" +
+                    "pwd 显示当前目录\n" +
+                    "show 显示磁盘信息\n" +
+                    "exec [可执行文件名] 执行可执行文件\n" +
+                    "help 显示命令列表\n");
+        }
         else{
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
         }
@@ -135,15 +156,15 @@ public class FileInteract {
         }
         if(commandArray.length == 1){
             if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd")
-                    || commandArray[0].equals("show"))return true;
+                    || commandArray[0].equals("show") || commandArray[0].equals("help"))return true;
             else {
                 FileInteract.getHistoryCommand().appendText("命令错误！\n");
                 return false;
             }
         }
 
+        //处理第一个参数，即源文件或目录
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
-
         //如果是相对路径，加入当前路径
         if(isRelative(directoryArray)) {
             sourceArray.addAll(currentPath);
@@ -159,6 +180,7 @@ public class FileInteract {
             sourceArray.addAll(Arrays.asList(directoryArray).subList(0, directoryArray.length));
         }
 
+        //处理第二个参数，即目标文件或目录
         directoryArray = null;
         if(commandArray.length == 3){
             directoryArray = commandArray[2].split("/"); // 以/分割文件名数组
@@ -186,6 +208,8 @@ public class FileInteract {
     private boolean isRelative(String[] directoryArray){
         //如果长度为0，说明输入用户输入”/“，则是绝对路径
         if(directoryArray.length == 0)return false;
+        //如果当前路径不是空，则说明是相对路径
+        if(!currentPath.isEmpty())return true;
         String filename;
         if(directoryArray.length == 1)filename = directoryArray[0];
         else filename = directoryArray[1];
