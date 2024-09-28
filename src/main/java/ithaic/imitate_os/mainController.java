@@ -1,24 +1,20 @@
 package ithaic.imitate_os;
 
 import ithaic.imitate_os.fileManager.FileInteract;
-import ithaic.imitate_os.fileManager.PopUpWindow;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import lombok.Getter;
 
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class mainController {
     @FXML
@@ -65,7 +61,7 @@ public class mainController {
     private TextField CommandInput;
     @FXML
     private Button button;
-    private ObservableList<String> currentProcessIDs_ready = FXCollections.observableArrayList();
+    private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
     @FXML
     private void initialize() {
         new FileInteract(CommandInput,historyCommand,button);
@@ -141,18 +137,18 @@ public class mainController {
     //    就绪进程的更新实现
     private void readyProcessUpdate(){
        Queue<PCB> pcbQueue= CPU.getInstance().getProcessManager().getReadyProcessQueue();
-       ObservableList<String> newProcessIDs=FXCollections.observableArrayList();
+       ObservableList<String> newProcessNames=FXCollections.observableArrayList();
        if (pcbQueue.size()==0){
-           newProcessIDs.add("无进程");
+           newProcessNames.add("无进程");
        }else {
            for (PCB pcb:pcbQueue){
-               newProcessIDs.add(String.valueOf(pcb.getPid()));
+               newProcessNames.add(pcb.getName());
            }
        }
         // 只在列表发生变化时更新 ListView
-        if (!newProcessIDs.equals(currentProcessIDs_ready)) {
-            currentProcessIDs_ready.setAll(newProcessIDs);  // 更新 currentProcessIDs
-            readyProcessQueue.setItems(currentProcessIDs_ready);  // 只在需要时设置
+        if (!newProcessNames.equals(currentProcessNames_ready)) {
+            currentProcessNames_ready.setAll(newProcessNames);  // 更新 currentProcessIDs
+            readyProcessQueue.setItems(currentProcessNames_ready);  // 只在需要时设置
         }
     }
 //    组件依靠时间间隔更新一次，时钟进程
@@ -178,8 +174,8 @@ public class mainController {
     private void updateProcess(){
         //当前进程非空
         if (CPU.getInstance().getRunningProcess()!=null){
-            int runningProcessID=CPU.getInstance().getRunningProcess().getPid();
-            runningProcessLabel.setText("运行进程："+runningProcessID);
+            String runningProcessName=CPU.getInstance().getRunningProcess().getName();
+            runningProcessLabel.setText("运行进程："+runningProcessName);
         }else {//当前无进程
             runningProcessLabel.setText("运行进程：无");
         }

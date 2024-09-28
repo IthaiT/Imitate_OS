@@ -20,10 +20,18 @@ public class HelloApplication extends Application {
     }
     //OS界面缺失图标
 
+    //关闭程序(关闭窗口一同应该关闭CPU运行线程)
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
         //CPU初始化
         CPU cpu = CPU.getInstance();
         cpu.run();
+        //UI窗口启动
         launch();
     }
 }

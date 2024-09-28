@@ -16,6 +16,7 @@ public class PCB {
     private int AX;
     private String blockedReason; //阻塞原因
     private int runningTime; //时间片
+    private String name; //进程名
 
 
     {
@@ -31,5 +32,6 @@ public class PCB {
         allocatedMemory = null;
         blockedReason = null;
         runningTime = 0;
+        name = null;
     }
 }

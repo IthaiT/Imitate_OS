@@ -5,6 +5,7 @@ import ithaic.imitate_os.fileManager.fileKind.MyFile;
 import ithaic.imitate_os.process.ProcessManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class FileUtils {
@@ -380,7 +381,7 @@ public class FileUtils {
             char[] temp = Disk.readBlock(ptr/64);//获得FAT表
             ptr = temp[ptr%64]; //获得下一页的指针
         }
-        ProcessManager.getInstance().create(sb.toString().toCharArray());
+        ProcessManager.getInstance().create(sb.toString().toCharArray(), filePath[1]);
         return true;
     }
     /**
