@@ -28,8 +28,10 @@ public class CPU {
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
     private Runnable task;
-    public int systemClockLabel=0;
-    public int relativeClockLabel=0;
+    private int systemClockLabel=0;
+    private int relativeClockLabel=0;
+    private String processStatus="";
+    private int processResult=0;
 
     @Getter
     private static CPU instance;
@@ -97,7 +99,7 @@ public class CPU {
 
         parseInstruction();
         relativeClock--;
-        System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
+        //System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
         //更新进程状态
         setLabelRelativeClock();
     }
@@ -151,30 +153,30 @@ public class CPU {
         switch (IR) {
             case "end":
                 PSW |= 0b001;  // 设置程序结束中断
+                setProcessState("end");//进程过程界面显示end
+                setProcessResult(AX);//进程结果界面显示AX
                 break;
             case "x++":
-                System.out.println("AX++, AX = " + ++AX);
+                setProcessState("AX++, AX = " + ++AX);//进程过程界面显示
                 break;
             case "x--":
-                System.out.println("AX--, AX = " + --AX);
+                setProcessState("AX--, AX = " + --AX);//进程过程界面显示
                 break;
             default:
                 if (IR.startsWith("x=")) {
                     AX = Integer.parseInt(IR.substring(2));
-                    System.out.println("AX = " + AX);
+                    setProcessState("AX = " + AX);//进程过程界面显示
                 } else if (IR.startsWith("!")) {
                     char deviceName = IR.charAt(1);
                     int requestTime = Integer.parseInt(IR.substring(2));
                     //TODO:处理I/O请求,申请设备资源,此处应该调用设备管理的相关函数
-
-
                     PSW |= 0b100;  // 设置I/O请求中断
                 }
                 break;
         }
     }
 //设置Label时间
-    public void setLabelClock(){
+    private void setLabelClock(){
         systemClockLabel=systemClock;
     }
     //返回Label时间
@@ -182,10 +184,23 @@ public class CPU {
         return systemClockLabel;
     }
 
-    public void setLabelRelativeClock(){
+    private void setLabelRelativeClock(){
         relativeClockLabel=relativeClock;
     }
     public int getLabelRelativeClock(){
         return relativeClockLabel;
+    }
+
+    private void setProcessState(String str){
+        processStatus=str;
+    }
+    public String getProcessState(){
+        return processStatus;
+    }
+    private void setProcessResult(int result){
+        processResult=result;
+    }
+    public int getProcessResult(){
+        return processResult;
     }
 }

@@ -35,7 +35,6 @@ public class mainController {
     @FXML
     private VBox commandBox;
     @FXML
-
     private SplitPane diskBox;
     @FXML
     private VBox processBox;
@@ -59,11 +58,16 @@ public class mainController {
     private ListView blockProcessQueue;
     @FXML
     private TreeView diskStructure;
+    @FXML
+    private TextArea intermediateProcess;
+    @FXML
+    private Label processResult;
 
     @FXML
     private TextField CommandInput;
     @FXML
     private Button button;
+
     private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
     private String commandString = null; // 判断用户是否输入新的命令，以此来判断目录树是否需要更新
     @FXML
@@ -74,6 +78,7 @@ public class mainController {
         initializeText();
         timeUpdate();
         initializeQueueBox();
+        initializeProcessBox();
     }
 
 //    初始化大框组件的边界
@@ -134,6 +139,11 @@ public class mainController {
         readyProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5,queueBox.prefWidthProperty()));
         blockProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5,queueBox.prefWidthProperty()));
     }
+    //    初始化进程过程和结果
+    private void initializeProcessBox(){
+        intermediateProcess.setEditable(false);
+        intermediateProcess.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(),processResult.heightProperty()));
+    }
     //    更新进程框
     private void processQueueUpdate(){
         readyProcessUpdate();
@@ -162,6 +172,7 @@ public class mainController {
            updateClock();
            updateProcess();
            processQueueUpdate();
+           updateIntermediateProcess();
            updateDiskTree();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
@@ -186,10 +197,22 @@ public class mainController {
             runningProcessLabel.setText("运行进程：无");
         }
     }
+//    中间过程更新
+    private void updateIntermediateProcess(){
+        if (CPU.getInstance().getRunningProcess()!=null){
+            String tmp= CPU.getInstance().getProcessState();
+            intermediateProcess.appendText(">"+tmp+"\n");
+            //最终结果输出
+            processResult.setText("AX = "+ CPU.getInstance().getProcessResult());
+        }
+    }
 
     /** 更新磁盘树*/
     private void updateDiskTree(){
         String tmp = FileInteract.getCommand();
+        if (tmp == null){
+            return;
+        }
         if(tmp.equals(commandString))return;
         commandString = tmp;
         String command = FileInteract.getCommandArray()[0];
