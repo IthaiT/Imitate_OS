@@ -11,6 +11,7 @@ public class DiskTreeShower {
     private static final Image FOLDER_IMAGE = new Image(Objects.requireNonNull(DiskTreeShower.class.getResourceAsStream("/ithaic/imitate_os/icons/directory.png")));
     private static final Image DOCUMENT_IMAGE = new Image(Objects.requireNonNull(DiskTreeShower.class.getResourceAsStream("/ithaic/imitate_os/icons/document.png")));
     private static TreeView disktree;
+    private static String commandString = null; // 判断用户是否输入新的命令，以此来判断目录树是否需要更新
 
 
     public DiskTreeShower(TreeView disktree) {
@@ -27,6 +28,17 @@ public class DiskTreeShower {
     /** 更新树结构，供外部调用
      * */
     public static void updateDiskTree(){
+        String tmp = FileInteract.getCommand();
+        if (tmp == null || tmp.equals(commandString)) return;
+        commandString = tmp;
+        String command = FileInteract.getCommandArray()[0];
+        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"};
+        for (String str : commandArray) {
+            if (Objects.equals(command, str)) {
+                DiskTreeShower.updateDiskTree();
+                break;
+            }
+        }
         TreeItem<String> root = disktree.getRoot();
         root.getChildren().clear();
         createTree(4, root);

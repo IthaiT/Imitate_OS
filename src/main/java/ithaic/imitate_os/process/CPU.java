@@ -29,11 +29,13 @@ public class CPU {
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
     private Runnable task;
-    private int systemClockLabel = 0;
-    private int relativeClockLabel = 0;
-    private String processStatus = "";
-    private int processResult = 0;
-
+    private int systemClockLabel = 0;//系统时钟标签0
+    private int relativeClockLabel = 0;//时间片标签0
+    private String processStatus = "";//进程状态标签传参
+    private final String CALCULATING="Calculating...";//常量,计算中
+    private String processResult = CALCULATING;//进程结果标签传参
+    private final String NO_INSTRUCTION="No Instruction";//常量,无指令
+    private String currentCommand=NO_INSTRUCTION;//当前指令标签传参
     @Getter
     private static CPU instance;
 
@@ -158,13 +160,18 @@ public class CPU {
             case "end":
                 PSW |= 0b001;  // 设置程序结束中断
                 setProcessState("end");//进程过程界面显示end
-                setProcessResult(AX);//进程结果界面显示AX
+                setCurrentCommand(NO_INSTRUCTION);
+                setProcessResult(String.valueOf(AX));//进程结果界面显示AX
                 break;
             case "x++":
                 setProcessState("AX++, AX = " + ++AX);//进程过程界面显示
+                setCurrentCommand("x++");
+                setProcessResult(CALCULATING);//进程结果界面显示计算中
                 break;
             case "x--":
                 setProcessState("AX--, AX = " + --AX);//进程过程界面显示
+                setCurrentCommand("x--");
+                setProcessResult(CALCULATING);//进程结果界面显示计算中
                 break;
             default:
                 if (IR.startsWith("x=")) {
@@ -208,11 +215,18 @@ public class CPU {
         return processStatus;
     }
 
-    private void setProcessResult(int result) {
+    private void setProcessResult(String result) {
         processResult = result;
     }
 
-    public int getProcessResult() {
+    public String getProcessResult() {
         return processResult;
+    }
+
+    private void setCurrentCommand(String command){
+        currentCommand = command;
+    }
+    public String getCurrentCommand(){
+        return currentCommand;
     }
 }

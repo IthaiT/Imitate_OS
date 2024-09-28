@@ -1,5 +1,6 @@
 package ithaic.imitate_os;
 
+import ithaic.imitate_os.fileManager.DiskUsedShower;
 import ithaic.imitate_os.fileManager.FileInteract;
 
 import ithaic.imitate_os.fileManager.DiskTreeShower;
@@ -12,14 +13,25 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
-import java.util.Objects;
 import java.util.Queue;
 
 public class mainController {
+    @FXML
+    private Label diskBox_VBox_bottom_label;
+    @FXML
+    private ScrollPane diskScrollPane;
+    @FXML
+    private VBox diskBox_VBox_top;
+    @FXML
+    private VBox diskBox_VBox_bottom;
+    @FXML
+    private FlowPane diskUsedPane;
+    @FXML
+    private Label currentCommand;
     @FXML
     private VBox mainVBox;
     @FXML
@@ -41,7 +53,7 @@ public class mainController {
     @FXML
     private VBox userInterface;
     @FXML
-    private HBox processAndDisk;
+    private SplitPane processAndDisk;
     @FXML
     private HBox userInterface_box;
     @FXML
@@ -69,12 +81,13 @@ public class mainController {
     private Button button;
 
     private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
-    private String commandString = null; // 判断用户是否输入新的命令，以此来判断目录树是否需要更新
+
 
     @FXML
     private void initialize() {
         new FileInteract(CommandInput, historyCommand, button);
         new DiskTreeShower(diskStructure);
+        new DiskUsedShower(diskUsedPane);
         initializeBox();
         initializeText();
         timeUpdate();
@@ -92,7 +105,7 @@ public class mainController {
         bottom_leftBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_leftBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.4);
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-        bottom_leftBox.prefWidthProperty().bind(Bindings.multiply(0.4, bottom_Box.prefWidthProperty()));
+        bottom_leftBox.prefWidthProperty().bind(Bindings.multiply(0.4, bottom_Box.widthProperty()));
 
 
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
@@ -106,19 +119,19 @@ public class mainController {
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-        bottom_rightBox.prefWidthProperty().bind(Bindings.multiply(0.6, bottom_Box.prefWidthProperty()));
+        bottom_rightBox.prefWidthProperty().bind(Bindings.multiply(0.6, bottom_Box.widthProperty()));
 
 
         processAndDisk.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.7);
-        processAndDisk.prefHeightProperty().bind(Bindings.multiply(0.7, bottom_rightBox.prefHeightProperty()));
+        processAndDisk.prefHeightProperty().bind(Bindings.multiply(0.7, bottom_rightBox.heightProperty()));
         processBox.setPrefWidth(bottom_rightBox.getPrefWidth() * 0.4);
-        processBox.prefWidthProperty().bind(Bindings.multiply(0.4, processAndDisk.prefWidthProperty()));
+        processBox.prefWidthProperty().bind(Bindings.multiply(0.4, processAndDisk.widthProperty()));
 
         diskBox.setPrefWidth(processAndDisk.getPrefWidth() * 0.6);
-        diskBox.prefWidthProperty().bind(Bindings.multiply(0.6, processAndDisk.prefWidthProperty()));
-
+        diskBox.prefWidthProperty().bind(Bindings.multiply(0.6, processAndDisk.widthProperty()));
+          diskScrollPane.prefHeightProperty().bind(Bindings.subtract(diskBox_VBox_bottom.heightProperty(),diskBox_VBox_bottom_label.heightProperty()));
         userInterface.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.3);
-        userInterface.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_rightBox.prefHeightProperty()));
+        userInterface.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_rightBox.heightProperty()));
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
     }
 
@@ -177,7 +190,8 @@ public class mainController {
             updateProcess();
             processQueueUpdate();
             updateIntermediateProcess();
-            updateDiskTree();
+            DiskTreeShower.updateDiskTree();
+            DiskUsedShower.updateDiskUsed();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -207,24 +221,11 @@ public class mainController {
         if (CPU.getInstance().getRunningProcess() != null) {
             String tmp = CPU.getInstance().getProcessState();
             intermediateProcess.appendText(">" + tmp + "\n");
+            //当前指令
+            currentCommand.setText("当前执行中指令："+CPU.getInstance().getCurrentCommand());
             //最终结果输出
             processResult.setText("AX = " + CPU.getInstance().getProcessResult());
         }
     }
 
-    /**
-     * 更新磁盘树
-     */
-    private void updateDiskTree() {
-        String tmp = FileInteract.getCommand();
-        if (tmp == null || tmp.equals(commandString)) return;
-        commandString = tmp;
-        String command = FileInteract.getCommandArray()[0];
-        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"};
-        for (String str : commandArray) {
-            if (Objects.equals(command, str)) {
-                DiskTreeShower.updateDiskTree();
-            }
-        }
-    }
 }
