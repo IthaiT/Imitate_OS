@@ -1,5 +1,6 @@
 package ithaic.imitate_os.process;
 
+import ithaic.imitate_os.deviceManager.DeviceManager;
 import ithaic.imitate_os.mainController;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
@@ -28,10 +29,10 @@ public class CPU {
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
     private Runnable task;
-    private int systemClockLabel=0;
-    private int relativeClockLabel=0;
-    private String processStatus="";
-    private int processResult=0;
+    private int systemClockLabel = 0;
+    private int relativeClockLabel = 0;
+    private String processStatus = "";
+    private int processResult = 0;
 
     @Getter
     private static CPU instance;
@@ -54,7 +55,7 @@ public class CPU {
      * 模拟CPU 1秒运行一次
      */
     // 模拟CPU运行
-    public void run(){
+    public void run() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::runTask, 0, 1, TimeUnit.SECONDS);
     }
@@ -66,6 +67,9 @@ public class CPU {
 
         if (runningProcess == null) {
             processScheduling();
+            if(runningProcess != null){
+                executeRunningProcess();
+            }
             //System.out.println("没有进程, CPU空转");
         } else {
             executeRunningProcess();
@@ -120,7 +124,6 @@ public class CPU {
         runningProcess.setState(RUNNING);
     }
 
-
     /**
      * 检查程序状态字
      */
@@ -128,6 +131,7 @@ public class CPU {
         if ((PSW & 0b001) == 0b001) {
             processManager.destroy(runningProcess);
             runningProcess = null;
+            IR = null;
             PSW &= 0b110;  // 清除程序结束中断标志
         }
 
@@ -170,37 +174,45 @@ public class CPU {
                     char deviceName = IR.charAt(1);
                     int requestTime = Integer.parseInt(IR.substring(2));
                     //TODO:处理I/O请求,申请设备资源,此处应该调用设备管理的相关函数
+                    DeviceManager deviceManager = DeviceManager.getInstance();
+                    deviceManager.allocateDevice(runningProcess, String.valueOf(deviceName), requestTime);
                     PSW |= 0b100;  // 设置I/O请求中断
                 }
                 break;
         }
     }
-//设置Label时间
-    private void setLabelClock(){
-        systemClockLabel=systemClock;
+
+    //设置Label时间
+    private void setLabelClock() {
+        systemClockLabel = systemClock;
     }
+
     //返回Label时间
-    public int getLabelClock(){
+    public int getLabelClock() {
         return systemClockLabel;
     }
 
-    private void setLabelRelativeClock(){
-        relativeClockLabel=relativeClock;
+    private void setLabelRelativeClock() {
+        relativeClockLabel = relativeClock;
     }
-    public int getLabelRelativeClock(){
+
+    public int getLabelRelativeClock() {
         return relativeClockLabel;
     }
 
-    private void setProcessState(String str){
-        processStatus=str;
+    private void setProcessState(String str) {
+        processStatus = str;
     }
-    public String getProcessState(){
+
+    public String getProcessState() {
         return processStatus;
     }
-    private void setProcessResult(int result){
-        processResult=result;
+
+    private void setProcessResult(int result) {
+        processResult = result;
     }
-    public int getProcessResult(){
+
+    public int getProcessResult() {
         return processResult;
     }
 }
