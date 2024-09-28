@@ -17,10 +17,18 @@ public class DiskUsedShower {
     private static final Color beingUsedColor = Color.rgb(100,100,100);
     private static final Color notUsedColor = Color.rgb(200,200,200);
 /*255, 0, 0, 0.5);*
- * 初始化前五个1，后面全0
+ * 初始化前五个1，后面全0，然后重新读一遍盘
  * */
 static {
     Arrays.fill(FAT, (char) 0);
+    for (int i = 0; i < 4; i++) {
+        char[] tmp = Disk.readBlock(i);
+        for (int j = 0; j < 64; j++) {
+            if(FAT[i*64 + j]!=tmp[j]){
+                FAT[i*64 + j]=tmp[j];
+            }
+        }
+    }
     for(int i=0;i<5;i++){
         FAT[i]=(char) 1;
     }
