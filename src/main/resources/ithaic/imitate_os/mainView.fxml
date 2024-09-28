@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
 <VBox fx:id="mainVBox" prefHeight="800" prefWidth="1200" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
 <!--   <children>-->
 <!--      <TextField fx:id="CommandInput" layoutX="534.0" layoutY="92.0" />-->
@@ -18,22 +19,25 @@
 
    <HBox fx:id="topHBox" spacing="50" alignment="CENTER" style="-fx-border-color: red; -fx-border-width: 2" prefWidth="${mainVBox.width}">
 
-      <Label fx:id="systemClockLabel">系统时钟</Label>
-      <Label>cpu</Label>
-      <Label>正在运行进程ID</Label>
-      <Label>时间片</Label>
-<!--      <Button fx:id="test" >test</Button>-->
-<!--      <Label>用户命令接口</Label>-->
+      <Label fx:id="systemClockLabel" minWidth="150">系统时钟</Label>
+      <Label minWidth="150">CPU</Label>
+      <Label fx:id="runningProcessLabel" minWidth="150">正在运行进程ID</Label>
+      <Label fx:id="relativeClockLabel" minWidth="150">时间片</Label>
    </HBox>
 
    <SplitPane fx:id="bottom_Box" dividerPositions="0.4" orientation="HORIZONTAL" prefWidth="${mainVBox.width}" style="-fx-border-color: black; -fx-border-width: 2">
       <VBox fx:id="bottom_leftBox" style="-fx-border-color: yellow; -fx-border-width: 2" minWidth="200">
 
          <HBox spacing="10" fx:id="queueBox" prefWidth="${bottom_leftBox.width}" style="-fx-border-color: blue; -fx-border-width: 2">
-               <Label>就绪进程队列ID</Label>
-               <Label>就绪进程队列ID</Label>
-               <!--         <ListView>就绪进程队列ID</ListView>-->
-               <!--         <ListView>就绪进程队列ID</ListView>-->
+
+             <VBox  alignment="CENTER">
+                 <Label >就绪进程队列ID</Label>
+                 <ListView fx:id="readyProcessQueue" HBox.hgrow="ALWAYS"></ListView>
+             </VBox>
+             <VBox alignment="CENTER">
+                 <Label >阻塞进程队列ID</Label>
+                 <ListView fx:id="blockProcessQueue" HBox.hgrow="ALWAYS"></ListView>
+             </VBox>
          </HBox>
 
          <VBox spacing="10" fx:id="commandBox" prefWidth="${bottom_leftBox.width}" style="-fx-border-color: orange; -fx-border-width: 2">
@@ -52,10 +56,18 @@
                <Label>执行过程中间结果</Label>
                <Label>进程执行完，显示结果</Label>
             </VBox>
-            <VBox fx:id="diskBox" alignment="CENTER" prefHeight="${processAndDisk.height}" style="-fx-border-color: pink; -fx-border-width: 2">
-               <Label>磁盘目录结构</Label>
-               <Label>磁盘使用情况</Label>
-            </VBox>
+            <SplitPane fx:id="diskBox" dividerPositions="0.5" orientation="VERTICAL" prefHeight="${processAndDisk.height}" style="-fx-border-color: pink; -fx-border-width: 2">
+
+               <VBox>
+                  <Label>磁盘目录结构</Label>
+                  <TreeView fx:id="diskStructure"></TreeView>
+               </VBox>
+               <VBox>
+                  <Label>磁盘使用情况</Label>
+               </VBox>
+
+
+            </SplitPane>
          </HBox>
 
          <VBox fx:id="userInterface"  alignment="BOTTOM_CENTER" prefWidth="${bottom_rightBox.width}">
