@@ -4,6 +4,7 @@ import ithaic.imitate_os.fileManager.DiskUsedShower;
 import ithaic.imitate_os.fileManager.FileInteract;
 
 import ithaic.imitate_os.fileManager.DiskTreeShower;
+import ithaic.imitate_os.memoryManager.MemoryPaneShower;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
 import javafx.animation.KeyFrame;
@@ -16,10 +17,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import java.util.Queue;
 
 public class mainController {
+    @FXML
+    private HBox memoryPane;
     @FXML
     private Label diskBox_VBox_bottom_label;
     @FXML
@@ -81,6 +85,7 @@ public class mainController {
     private Button button;
 
     private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
+    private ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
 
 
     @FXML
@@ -88,6 +93,7 @@ public class mainController {
         new FileInteract(CommandInput, historyCommand, button);
         new DiskTreeShower(diskStructure);
         new DiskUsedShower(diskUsedPane);
+       // new MemoryPaneShower(memoryPane,bottom_leftBox);
         initializeBox();
         initializeText();
         timeUpdate();
@@ -111,11 +117,10 @@ public class mainController {
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
 //            绑定queueBox的高度是父组件高度的0.4倍
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-
         commandBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.6);
 //            绑定commandBox的高度是父组件高度的0.6倍
         commandBox.prefHeightProperty().bind(Bindings.multiply(0.6, bottom_leftBox.heightProperty()));
-
+            memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
@@ -163,6 +168,7 @@ public class mainController {
     //    更新进程框
     private void processQueueUpdate() {
         readyProcessUpdate();
+        blockProcessUpdate();
     }
 
     //    就绪进程的更新实现
@@ -173,13 +179,29 @@ public class mainController {
             newProcessNames.add("无进程");
         } else {
             for (PCB pcb : pcbQueue) {
-                newProcessNames.add(pcb.getName());
+                newProcessNames.add("["+pcb.getPid()+"] "+pcb.getName());
             }
         }
         // 只在列表发生变化时更新 ListView
         if (!newProcessNames.equals(currentProcessNames_ready)) {
             currentProcessNames_ready.setAll(newProcessNames);  // 更新 currentProcessIDs
             readyProcessQueue.setItems(currentProcessNames_ready);  // 只在需要时设置
+        }
+    }
+    private void blockProcessUpdate(){
+        Queue<PCB> pcbQueue = CPU.getInstance().getProcessManager().getBlockedProcessQueue();
+        ObservableList<String> newProcessNames = FXCollections.observableArrayList();
+        if (pcbQueue.size() == 0) {
+            newProcessNames.add("无进程");
+        } else {
+            for (PCB pcb : pcbQueue) {
+                newProcessNames.add("["+pcb.getPid()+"] "+pcb.getName());
+            }
+        }
+        // 只在列表发生变化时更新 ListView
+        if (!newProcessNames.equals(currentProcessNames_block)) {
+            currentProcessNames_block.setAll(newProcessNames);  // 更新 currentProcessIDs
+            blockProcessQueue.setItems(currentProcessNames_block);  // 只在需要时设置
         }
     }
 
@@ -222,7 +244,7 @@ public class mainController {
             String tmp = CPU.getInstance().getProcessState();
             intermediateProcess.appendText(">" + tmp + "\n");
             //当前指令
-            currentCommand.setText("当前执行中指令："+CPU.getInstance().getCurrentCommand());
+            currentCommand.setText("当前执行中指令："+CPU.getInstance().getIR());
             //最终结果输出
             processResult.setText("AX = " + CPU.getInstance().getProcessResult());
         }
