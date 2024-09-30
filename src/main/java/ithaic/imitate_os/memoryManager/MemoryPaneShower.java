@@ -5,7 +5,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-import java.util.Arrays;
 public class MemoryPaneShower {
    private static HBox hBox;
     private static VBox leftBox;
