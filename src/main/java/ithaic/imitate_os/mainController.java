@@ -9,10 +9,12 @@ import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -78,7 +80,8 @@ public class mainController {
     private TextArea intermediateProcess;
     @FXML
     private Label processResult;
-
+@FXML
+private PieChart pieChart;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -93,12 +96,16 @@ public class mainController {
         new FileInteract(CommandInput, historyCommand, button);
         new DiskTreeShower(diskStructure);
         new DiskUsedShower(diskUsedPane);
-       // new MemoryPaneShower(memoryPane,bottom_leftBox);
         initializeBox();
         initializeText();
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
+        Platform.runLater(()->{
+            new MemoryPaneShower(memoryPane,bottom_leftBox);
+        });
+
+
     }
 
     //    初始化大框组件的边界
@@ -120,7 +127,8 @@ public class mainController {
         commandBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.6);
 //            绑定commandBox的高度是父组件高度的0.6倍
         commandBox.prefHeightProperty().bind(Bindings.multiply(0.6, bottom_leftBox.heightProperty()));
-            memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
+                    memoryPane.setPrefWidth(commandBox.getPrefWidth());
+                    memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
@@ -214,6 +222,7 @@ public class mainController {
             updateIntermediateProcess();
             DiskTreeShower.updateDiskTree();
             DiskUsedShower.updateDiskUsed();
+            MemoryPaneShower.updateMemoryPane();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
