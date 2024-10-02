@@ -158,23 +158,21 @@ public class CPU {
             case "end":
                 PSW |= 0b001;  // 设置程序结束中断
                 setProcessState("end");//进程过程界面显示end
-
                 setProcessResult(String.valueOf(AX));//进程结果界面显示AX
                 break;
             case "x++":
                 setProcessState("AX++, AX = " + ++AX);//进程过程界面显示
-
                 setProcessResult(null);//进程结果界面显示计算中
                 break;
             case "x--":
                 setProcessState("AX--, AX = " + --AX);//进程过程界面显示
-
                 setProcessResult(null);//进程结果界面显示计算中
                 break;
             default:
                 if (IR.startsWith("x=")) {
                     AX = Integer.parseInt(IR.substring(2));
                     setProcessState("AX = " + AX);//进程过程界面显示
+                    setProcessResult(null);
                 } else if (IR.startsWith("!")) {
                     char deviceName = IR.charAt(1);
                     int requestTime = Integer.parseInt(IR.substring(2));
@@ -192,25 +190,12 @@ public class CPU {
         systemClockLabel = systemClock;
     }
 
-    //返回Label时间
-    public int getLabelClock() {
-        return systemClockLabel;
-    }
-
     private void setLabelRelativeClock() {
         relativeClockLabel = relativeClock;
     }
 
-    public int getLabelRelativeClock() {
-        return relativeClockLabel;
-    }
-
     private void setProcessState(String str) {
         processStatus = str;
-    }
-
-    public String getProcessState() {
-        return processStatus;
     }
 
     private void setProcessResult(String result) {

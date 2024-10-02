@@ -33,7 +33,7 @@
              </VBox>
          </HBox>
 
-         <VBox spacing="10" fx:id="commandBox" alignment="CENTER" prefWidth="${bottom_leftBox.width}" >
+         <VBox spacing="10" fx:id="commandBox" prefWidth="${bottom_leftBox.width}" >
             <Label fx:id="currentCommand">正在执行的命令</Label>
             <Label>主存用户使用</Label>
             <HBox fx:id="memoryPane" prefWidth="300" prefHeight="20"/>

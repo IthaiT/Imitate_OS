@@ -52,7 +52,6 @@ public class MemoryPaneShower {
                 boolean flag = false;
                 if (hashMap.containsKey(start) && hashMap.get(start) == end) {
                     //说明这个位置仍然站位
-                    flag = false;
                     for (int i = start; i < end + start; i++) {
                         rectangles[i].setFill(colors.get(start));
                     }

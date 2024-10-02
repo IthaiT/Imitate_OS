@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class HelloApplication extends Application {
     private final static String TITLE = "Imitate OS";
@@ -14,13 +15,12 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("mainView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
-        scene.getStylesheets().add(getClass().getResource("mainView.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("mainView.css")).toExternalForm());
         stage.setTitle(TITLE);
         stage.setScene(scene);
         stage.show();
     }
     //OS界面缺失图标
-
     //关闭程序(关闭窗口一同应该关闭CPU运行线程)
     @Override
     public void stop() throws Exception {

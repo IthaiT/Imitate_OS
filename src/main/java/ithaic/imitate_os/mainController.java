@@ -189,7 +189,7 @@ private PieChart pieChart;
     private void readyProcessUpdate() {
         Queue<PCB> pcbQueue = CPU.getInstance().getProcessManager().getReadyProcessQueue();
         ObservableList<String> newProcessNames = FXCollections.observableArrayList();
-        if (pcbQueue.size() == 0) {
+        if (pcbQueue.isEmpty()) {
             newProcessNames.add("无进程");
         } else {
             for (PCB pcb : pcbQueue) {
@@ -206,7 +206,7 @@ private PieChart pieChart;
     private void blockProcessUpdate() {
         Queue<PCB> pcbQueue = CPU.getInstance().getProcessManager().getBlockedProcessQueue();
         ObservableList<String> newProcessNames = FXCollections.observableArrayList();
-        if (pcbQueue.size() == 0) {
+        if (pcbQueue.isEmpty()) {
             newProcessNames.add("无进程");
         } else {
             for (PCB pcb : pcbQueue) {
