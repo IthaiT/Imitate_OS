@@ -10,33 +10,27 @@ import java.util.Random;
 
 public class MemoryPaneShower {
     private static HBox hBox;
-    private static HBox leftBox;
-
     private static final Color notUsedColor = Color.rgb(200, 200, 200);
-    private static HashMap<Integer, Integer> hashMap = new HashMap<>();
+    private static final HashMap<Integer, Integer> hashMap = new HashMap<>();
     static HashMap<Integer, Color> colors = new HashMap<>();
     static Rectangle[] rectangles = new Rectangle[512];
-
     static {
         //限定key=-1不存在的内存值，保证不会随机到这个颜色
         colors.put(-1, notUsedColor);
     }
-
     /**
      * 获取box，初始化小矩形
      */
     public MemoryPaneShower(HBox Box, HBox box) {
         MemoryPaneShower.hBox = Box;
-        MemoryPaneShower.leftBox = box;
         for (int i = 0; i < 512; i++) {
-            rectangles[i] = new Rectangle(leftBox.getPrefWidth() / 512, 20);
+            rectangles[i] = new Rectangle(0.01, 20);
             rectangles[i].setFill(notUsedColor);
-            rectangles[i].widthProperty().bind(leftBox.widthProperty().divide(512));
+            rectangles[i].widthProperty().bind(box.widthProperty().divide(512));
         }
         getMemoryBlocks();
-        hBox.getChildren().addAll(rectangles);
+        Box.getChildren().addAll(rectangles);
     }
-
     /**
      * 读取内存块,分配颜色
      */

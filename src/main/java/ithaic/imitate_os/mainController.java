@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -49,8 +50,6 @@ public class mainController {
     private SplitPane bottom_Box;
     @FXML
     private HBox queueBox;
-    @FXML
-    private VBox commandBox;
     @FXML
     private SplitPane diskBox;
     @FXML
@@ -88,8 +87,8 @@ public class mainController {
     @FXML
     private Button button;
 
-    private ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
-    private ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
+    private final ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
+    private final ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
 
 
     @FXML
@@ -119,23 +118,15 @@ public class mainController {
         bottom_Box.prefHeightProperty().bind(Bindings.subtract(mainVBox.heightProperty(), topHBox.heightProperty()));
 
         bottom_leftBox.setPrefHeight(bottom_Box.getPrefHeight());
-       // bottom_leftBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.4);
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-       // bottom_leftBox.prefWidthProperty().bind(Bindings.multiply(0.4, bottom_Box.widthProperty()));
         bottom_Box.getDividers().get(0).positionProperty().addListener((o,oldVal,newVal)->{
             bottom_leftBox.prefWidthProperty().bind(bottom_Box.widthProperty().multiply(newVal.doubleValue()));
-            System.out.println("left:    "+bottom_leftBox.getWidth());
         });
 //            绑定queueBox的高度是父组件高度的0.4倍
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-        //            绑定commandBox的高度是父组件高度的0.6倍
-        commandBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.6);
-        commandBox.prefHeightProperty().bind(Bindings.multiply(0.6, bottom_leftBox.heightProperty()));
-
-        memoryPane.setPrefWidth(commandBox.getPrefWidth());
         memoryPane.setPrefHeight(20);
-        memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
+        memoryPane.prefWidthProperty().bind(Bindings.multiply(0.95,bottom_leftBox.widthProperty()));
 
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
@@ -179,7 +170,6 @@ public class mainController {
     private void initializeProcessBox() {
         intermediateProcess.setEditable(false);
         processResult.setEditable(false);
-       // intermediateProcess.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(), processResult.heightProperty()));
     }
 
     //    更新进程框

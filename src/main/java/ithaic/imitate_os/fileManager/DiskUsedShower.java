@@ -13,14 +13,14 @@ public class DiskUsedShower {
     private static FlowPane diskUsedPane;
     static Rectangle[] rectangles = new Rectangle[256];
     private static String commandString = null; // 判断用户是否输入新的命令，以此来判断目录树是否需要更新
-    private static char[] FAT = new char[256];
+    private static final char[] FAT = new char[256];
 
     private static final Color beingUsedColor = Color.rgb(100, 100, 100);
     private static final Color notUsedColor = Color.rgb(200, 200, 200);
 
-    /**
-     * 初始化前五个1，后面全0，然后重新读一遍盘，保证每一次启动都是读盘
-     * */
+    /*
+      初始化前五个1，后面全0，然后重新读一遍盘，保证每一次启动都是读盘
+      */
     static {
         Arrays.fill(FAT, (char) 0);
         for (int i = 0; i < 4; i++) {
