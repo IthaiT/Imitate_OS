@@ -1,13 +1,9 @@
 package ithaic.imitate_os.process;
-
 import ithaic.imitate_os.deviceManager.DeviceManager;
-import ithaic.imitate_os.mainController;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
-import javafx.scene.control.Label;
 import lombok.Data;
 import lombok.Getter;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,9 +31,9 @@ public class CPU {
     private int relativeClockLabel = 0;//时间片标签0
     @Getter
     private String processStatus = "";//进程状态标签传参
-    private final String CALCULATING="Calculating...";//常量,计算中
+
     @Getter
-    private String processResult = CALCULATING;//进程结果标签传参
+    private String processResult = null;//进程结果标签传参
     @Getter
     private static CPU instance;
 
@@ -168,12 +164,12 @@ public class CPU {
             case "x++":
                 setProcessState("AX++, AX = " + ++AX);//进程过程界面显示
 
-                setProcessResult(CALCULATING);//进程结果界面显示计算中
+                setProcessResult(null);//进程结果界面显示计算中
                 break;
             case "x--":
                 setProcessState("AX--, AX = " + --AX);//进程过程界面显示
 
-                setProcessResult(CALCULATING);//进程结果界面显示计算中
+                setProcessResult(null);//进程结果界面显示计算中
                 break;
             default:
                 if (IR.startsWith("x=")) {
@@ -197,13 +193,24 @@ public class CPU {
     }
 
     //返回Label时间
+    public int getLabelClock() {
+        return systemClockLabel;
+    }
 
     private void setLabelRelativeClock() {
         relativeClockLabel = relativeClock;
     }
 
+    public int getLabelRelativeClock() {
+        return relativeClockLabel;
+    }
+
     private void setProcessState(String str) {
         processStatus = str;
+    }
+
+    public String getProcessState() {
+        return processStatus;
     }
 
     private void setProcessResult(String result) {

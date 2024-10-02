@@ -80,9 +80,13 @@ public class mainController {
     @FXML
     private TextArea intermediateProcess;
     @FXML
-    private Label processResult;
+    private TextArea processResult;
     @FXML
-    private PieChart pieChart;
+    private Label processLabel;
+    @FXML
+    private  SplitPane processSplit;
+@FXML
+private PieChart pieChart;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -140,7 +144,7 @@ public class mainController {
         processAndDisk.prefHeightProperty().bind(Bindings.multiply(0.7, bottom_rightBox.heightProperty()));
         processBox.setPrefWidth(bottom_rightBox.getPrefWidth() * 0.4);
         processBox.prefWidthProperty().bind(Bindings.multiply(0.4, processAndDisk.widthProperty()));
-
+                processSplit.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(),processLabel.heightProperty()));
         diskBox.setPrefWidth(processAndDisk.getPrefWidth() * 0.6);
         diskBox.prefWidthProperty().bind(Bindings.multiply(0.6, processAndDisk.widthProperty()));
         diskScrollPane.prefHeightProperty().bind(Bindings.subtract(diskBox_VBox_bottom.heightProperty(), diskBox_VBox_bottom_label.heightProperty()));
@@ -171,7 +175,8 @@ public class mainController {
     //    初始化进程过程和结果
     private void initializeProcessBox() {
         intermediateProcess.setEditable(false);
-        intermediateProcess.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(), processResult.heightProperty()));
+        processResult.setEditable(false);
+       // intermediateProcess.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(), processResult.heightProperty()));
     }
 
     //    更新进程框
@@ -243,7 +248,8 @@ public class mainController {
         //当前进程非空
         if (CPU.getInstance().getRunningProcess() != null) {
             String runningProcessName = CPU.getInstance().getRunningProcess().getName();
-            runningProcessLabel.setText("运行进程：" + runningProcessName);
+            int runningProcessID = CPU.getInstance().getRunningProcess().getPid();
+            runningProcessLabel.setText("运行进程：[" +runningProcessID+"] "+ runningProcessName);
         } else {//当前无进程
             runningProcessLabel.setText("运行进程：无");
         }
@@ -253,11 +259,15 @@ public class mainController {
     private void updateIntermediateProcess() {
         if (CPU.getInstance().getRunningProcess() != null) {
             String tmp = CPU.getInstance().getProcessStatus();
+            String name=CPU.getInstance().getRunningProcess().getName();
+            int id=CPU.getInstance().getRunningProcess().getPid();
             intermediateProcess.appendText(">" + tmp + "\n");
             //当前指令
-            currentCommand.setText("当前执行中指令：" + CPU.getInstance().getIR());
-            //最终结果输出
-            processResult.setText("AX = " + CPU.getInstance().getProcessResult());
+            currentCommand.setText("当前执行中指令："+CPU.getInstance().getIR());
+            //最终结果输出,非空
+            if (CPU.getInstance().getProcessResult()!=null){
+                processResult.appendText("["+ id+"] "+ name +" = "+CPU.getInstance().getProcessResult()+"\n");
+            }
         }
     }
 
