@@ -10,7 +10,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
-
 //弹窗类
 public class PopUpWindow {
     private final int MAX_INPUT_HEIGHT = 100;
@@ -18,6 +17,7 @@ public class PopUpWindow {
     private final String Title = "弹窗";
     private final String Content = "请输入指令：";
     private String str;
+
     public char[] popUp() {
         String str = "";
         Stage stage = new Stage();
@@ -45,7 +45,7 @@ public class PopUpWindow {
         Button btn2 = new Button("取消");
         btn2.setPrefWidth(50);
         btn2.setOnAction(e -> {
-            this.str="";
+            this.str = "";
             stage.close();
         });
         //设置按钮居中
@@ -65,6 +65,7 @@ public class PopUpWindow {
 //        textArea.setText(str);
         textArea.appendText(str);
     }
+
     private char[] StrToCharArray(String str) {
         return str.toCharArray();
     }

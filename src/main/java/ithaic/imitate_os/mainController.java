@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+
 import java.util.Queue;
 
 public class mainController {
@@ -80,8 +81,8 @@ public class mainController {
     private TextArea intermediateProcess;
     @FXML
     private Label processResult;
-@FXML
-private PieChart pieChart;
+    @FXML
+    private PieChart pieChart;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -101,8 +102,8 @@ private PieChart pieChart;
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
-        Platform.runLater(()->{
-            new MemoryPaneShower(memoryPane,bottom_leftBox);
+        Platform.runLater(() -> {
+            new MemoryPaneShower(memoryPane, bottom_leftBox);
         });
 
 
@@ -127,8 +128,8 @@ private PieChart pieChart;
         commandBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.6);
 //            绑定commandBox的高度是父组件高度的0.6倍
         commandBox.prefHeightProperty().bind(Bindings.multiply(0.6, bottom_leftBox.heightProperty()));
-                    memoryPane.setPrefWidth(commandBox.getPrefWidth());
-                    memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
+        memoryPane.setPrefWidth(commandBox.getPrefWidth());
+        memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
@@ -142,7 +143,7 @@ private PieChart pieChart;
 
         diskBox.setPrefWidth(processAndDisk.getPrefWidth() * 0.6);
         diskBox.prefWidthProperty().bind(Bindings.multiply(0.6, processAndDisk.widthProperty()));
-          diskScrollPane.prefHeightProperty().bind(Bindings.subtract(diskBox_VBox_bottom.heightProperty(),diskBox_VBox_bottom_label.heightProperty()));
+        diskScrollPane.prefHeightProperty().bind(Bindings.subtract(diskBox_VBox_bottom.heightProperty(), diskBox_VBox_bottom_label.heightProperty()));
         userInterface.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.3);
         userInterface.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_rightBox.heightProperty()));
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
@@ -187,7 +188,7 @@ private PieChart pieChart;
             newProcessNames.add("无进程");
         } else {
             for (PCB pcb : pcbQueue) {
-                newProcessNames.add("["+pcb.getPid()+"] "+pcb.getName());
+                newProcessNames.add("[" + pcb.getPid() + "] " + pcb.getName());
             }
         }
         // 只在列表发生变化时更新 ListView
@@ -196,14 +197,15 @@ private PieChart pieChart;
             readyProcessQueue.setItems(currentProcessNames_ready);  // 只在需要时设置
         }
     }
-    private void blockProcessUpdate(){
+
+    private void blockProcessUpdate() {
         Queue<PCB> pcbQueue = CPU.getInstance().getProcessManager().getBlockedProcessQueue();
         ObservableList<String> newProcessNames = FXCollections.observableArrayList();
         if (pcbQueue.size() == 0) {
             newProcessNames.add("无进程");
         } else {
             for (PCB pcb : pcbQueue) {
-                newProcessNames.add("["+pcb.getPid()+"] "+pcb.getName());
+                newProcessNames.add("[" + pcb.getPid() + "] " + pcb.getName());
             }
         }
         // 只在列表发生变化时更新 ListView
@@ -230,8 +232,8 @@ private PieChart pieChart;
 
     //    系统时间个时间片获取的实现
     private void updateClock() {
-        int systemClock = CPU.getInstance().getLabelClock();
-        int relativeClock = CPU.getInstance().getLabelRelativeClock();
+        int systemClock = CPU.getInstance().getSystemClockLabel();
+        int relativeClock = CPU.getInstance().getRelativeClockLabel();
         systemClockLabel.setText("系统时间：" + systemClock);
         relativeClockLabel.setText("时间片：" + relativeClock);
     }
@@ -250,10 +252,10 @@ private PieChart pieChart;
     //    中间过程更新
     private void updateIntermediateProcess() {
         if (CPU.getInstance().getRunningProcess() != null) {
-            String tmp = CPU.getInstance().getProcessState();
+            String tmp = CPU.getInstance().getProcessStatus();
             intermediateProcess.appendText(">" + tmp + "\n");
             //当前指令
-            currentCommand.setText("当前执行中指令："+CPU.getInstance().getIR());
+            currentCommand.setText("当前执行中指令：" + CPU.getInstance().getIR());
             //最终结果输出
             processResult.setText("AX = " + CPU.getInstance().getProcessResult());
         }

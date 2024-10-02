@@ -29,10 +29,14 @@ public class CPU {
     private char PSW;  // 程序状态字
     private int AX;    // 累加器
     private Runnable task;
+    @Getter
     private int systemClockLabel = 0;//系统时钟标签0
+    @Getter
     private int relativeClockLabel = 0;//时间片标签0
+    @Getter
     private String processStatus = "";//进程状态标签传参
     private final String CALCULATING="Calculating...";//常量,计算中
+    @Getter
     private String processResult = CALCULATING;//进程结果标签传参
     @Getter
     private static CPU instance;
@@ -193,32 +197,16 @@ public class CPU {
     }
 
     //返回Label时间
-    public int getLabelClock() {
-        return systemClockLabel;
-    }
 
     private void setLabelRelativeClock() {
         relativeClockLabel = relativeClock;
-    }
-
-    public int getLabelRelativeClock() {
-        return relativeClockLabel;
     }
 
     private void setProcessState(String str) {
         processStatus = str;
     }
 
-    public String getProcessState() {
-        return processStatus;
-    }
-
     private void setProcessResult(String result) {
         processResult = result;
     }
-
-    public String getProcessResult() {
-        return processResult;
-    }
-
 }
