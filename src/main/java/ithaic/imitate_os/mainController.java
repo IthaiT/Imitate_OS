@@ -32,8 +32,6 @@ public class mainController {
     @FXML
     private ScrollPane diskScrollPane;
     @FXML
-    private VBox diskBox_VBox_top;
-    @FXML
     private VBox diskBox_VBox_bottom;
     @FXML
     private FlowPane diskUsedPane;
@@ -85,8 +83,6 @@ public class mainController {
     private Label processLabel;
     @FXML
     private  SplitPane processSplit;
-@FXML
-private PieChart pieChart;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -99,15 +95,17 @@ private PieChart pieChart;
     @FXML
     private void initialize() {
         new FileInteract(CommandInput, historyCommand, button);
-        new DiskTreeShower(diskStructure);
-        new DiskUsedShower(diskUsedPane);
+
         initializeBox();
         initializeText();
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
         Platform.runLater(() -> {
-            new MemoryPaneShower(memoryPane, bottom_leftBox);
+            new MemoryPaneShower(memoryPane, queueBox);
+            new DiskTreeShower(diskStructure);
+            new DiskUsedShower(diskUsedPane);
+
         });
 
 
@@ -121,19 +119,24 @@ private PieChart pieChart;
         bottom_Box.prefHeightProperty().bind(Bindings.subtract(mainVBox.heightProperty(), topHBox.heightProperty()));
 
         bottom_leftBox.setPrefHeight(bottom_Box.getPrefHeight());
-        bottom_leftBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.4);
+       // bottom_leftBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.4);
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-        bottom_leftBox.prefWidthProperty().bind(Bindings.multiply(0.4, bottom_Box.widthProperty()));
-
-
-        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
+       // bottom_leftBox.prefWidthProperty().bind(Bindings.multiply(0.4, bottom_Box.widthProperty()));
+        bottom_Box.getDividers().get(0).positionProperty().addListener((o,oldVal,newVal)->{
+            bottom_leftBox.prefWidthProperty().bind(bottom_Box.widthProperty().multiply(newVal.doubleValue()));
+            System.out.println("left:    "+bottom_leftBox.getWidth());
+        });
 //            绑定queueBox的高度是父组件高度的0.4倍
+        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
+        //            绑定commandBox的高度是父组件高度的0.6倍
         commandBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.6);
-//            绑定commandBox的高度是父组件高度的0.6倍
         commandBox.prefHeightProperty().bind(Bindings.multiply(0.6, bottom_leftBox.heightProperty()));
+
         memoryPane.setPrefWidth(commandBox.getPrefWidth());
+        memoryPane.setPrefHeight(20);
         memoryPane.prefWidthProperty().bind(commandBox.widthProperty());
+
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());

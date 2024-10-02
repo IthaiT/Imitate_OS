@@ -6,12 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Random;
 
 public class MemoryPaneShower {
     private static HBox hBox;
-    private static VBox leftBox;
+    private static HBox leftBox;
 
     private static final Color notUsedColor = Color.rgb(200, 200, 200);
     private static HashMap<Integer, Integer> hashMap = new HashMap<>();
@@ -26,9 +25,9 @@ public class MemoryPaneShower {
     /**
      * 获取box，初始化小矩形
      */
-    public MemoryPaneShower(HBox Box, VBox Vbox) {
+    public MemoryPaneShower(HBox Box, HBox box) {
         MemoryPaneShower.hBox = Box;
-        MemoryPaneShower.leftBox = Vbox;
+        MemoryPaneShower.leftBox = box;
         for (int i = 0; i < 512; i++) {
             rectangles[i] = new Rectangle(leftBox.getPrefWidth() / 512, 20);
             rectangles[i].setFill(notUsedColor);
