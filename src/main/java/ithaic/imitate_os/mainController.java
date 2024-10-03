@@ -96,12 +96,13 @@ public class mainController {
         new FileInteract(CommandInput, historyCommand, button);
 
         initializeBox();
+        initializeLeftBoxPane();
         initializeText();
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
         Platform.runLater(() -> {
-            new MemoryPaneShower(memoryPane, queueBox);
+            new MemoryPaneShower(memoryPane, bottom_leftBox);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
 
@@ -119,20 +120,10 @@ public class mainController {
 
         bottom_leftBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-        bottom_Box.getDividers().get(0).positionProperty().addListener((o,oldVal,newVal)->{
-            bottom_leftBox.prefWidthProperty().bind(bottom_Box.widthProperty().multiply(newVal.doubleValue()));
-        });
-//            绑定queueBox的高度是父组件高度的0.4倍
-        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
-        queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-        memoryPane.setPrefHeight(20);
-        memoryPane.prefWidthProperty().bind(Bindings.multiply(0.95,bottom_leftBox.widthProperty()));
 
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
         bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
-        bottom_rightBox.prefWidthProperty().bind(Bindings.multiply(0.6, bottom_Box.widthProperty()));
-
 
         processAndDisk.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.7);
         processAndDisk.prefHeightProperty().bind(Bindings.multiply(0.7, bottom_rightBox.heightProperty()));
@@ -146,7 +137,13 @@ public class mainController {
         userInterface.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_rightBox.heightProperty()));
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
     }
-
+    private void initializeLeftBoxPane(){
+//            绑定queueBox的高度是父组件高度的0.4倍
+        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
+        queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
+        memoryPane.setPrefHeight(20);
+        memoryPane.setMinWidth(0);
+    }
 
     //    初始化输入命令行框和历史命令行的边界
     private void initializeText() {
