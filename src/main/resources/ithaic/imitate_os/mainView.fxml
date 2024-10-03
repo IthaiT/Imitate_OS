@@ -22,7 +22,7 @@
    </HBox>
 
    <SplitPane fx:id="bottom_Box" dividerPositions="0.4" prefWidth="${mainVBox.width}" >
-      <VBox fx:id="bottom_leftBox" minWidth="300" maxWidth="900">
+      <VBox fx:id="bottom_leftBox" minWidth="300" maxWidth="900" alignment="TOP_CENTER">
          <HBox spacing="10" fx:id="queueBox" prefWidth="${bottom_leftBox.width}">
              <VBox  alignment="CENTER">
                  <Label >就绪进程队列ID</Label>
@@ -35,7 +35,7 @@
          </HBox>
             <Label fx:id="currentCommand">正在执行的命令</Label>
             <Label>主存用户使用</Label>
-            <HBox fx:id="memoryPane" maxWidth="512"/>
+            <HBox fx:id="memoryPane"/>
             <Label>设备占用情况</Label>
       </VBox>
 
