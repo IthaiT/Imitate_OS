@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
@@ -13,59 +10,53 @@
 <?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.GridPane?>
 <VBox fx:id="mainVBox" prefHeight="800" prefWidth="1200" style="-fx-font-size:14" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
 
 
    <HBox fx:id="topHBox" spacing="50" alignment="CENTER" prefWidth="${mainVBox.width}">
-
-      <Label fx:id="systemClockLabel" minWidth="150">系统时钟</Label>
-      <Label minWidth="150">CPU</Label>
-      <Label fx:id="runningProcessLabel" minWidth="150">正在运行进程ID</Label>
-      <Label fx:id="relativeClockLabel" minWidth="150">时间片</Label>
+      <Label fx:id="systemClockLabel" >系统时钟</Label>
+      <Label >CPU</Label>
+      <Label fx:id="runningProcessLabel" >正在运行进程ID</Label>
+      <Label fx:id="relativeClockLabel" >时间片</Label>
    </HBox>
 
-   <SplitPane fx:id="bottom_Box" dividerPositions="0.4" orientation="HORIZONTAL" prefWidth="${mainVBox.width}" >
-      <VBox fx:id="bottom_leftBox"  minWidth="200">
-
-         <HBox spacing="10" fx:id="queueBox" prefWidth="${bottom_leftBox.width}" >
-
+   <SplitPane fx:id="bottom_Box" dividerPositions="0.4" prefWidth="${mainVBox.width}" >
+      <VBox fx:id="bottom_leftBox" minWidth="300" maxWidth="900" alignment="TOP_CENTER">
+         <HBox spacing="10" fx:id="queueBox" prefWidth="${bottom_leftBox.width}">
              <VBox  alignment="CENTER">
                  <Label >就绪进程队列ID</Label>
-                 <ListView fx:id="readyProcessQueue" HBox.hgrow="ALWAYS"></ListView>
+                 <ListView fx:id="readyProcessQueue" HBox.hgrow="ALWAYS"/>
              </VBox>
              <VBox alignment="CENTER">
                  <Label >阻塞进程队列ID</Label>
-                 <ListView fx:id="blockProcessQueue" HBox.hgrow="ALWAYS"></ListView>
+                 <ListView fx:id="blockProcessQueue" HBox.hgrow="ALWAYS"/>
              </VBox>
          </HBox>
-
-         <VBox spacing="10" fx:id="commandBox" prefWidth="${bottom_leftBox.width}" >
             <Label fx:id="currentCommand">正在执行的命令</Label>
             <Label>主存用户使用</Label>
+            <HBox fx:id="memoryPane"/>
             <Label>设备占用情况</Label>
-         </VBox>
       </VBox>
 
-
-<!--      alignment="CENTER"-->
-      <SplitPane fx:id="bottom_rightBox" dividerPositions="0.7" orientation="VERTICAL" minWidth="300" >
+      <SplitPane fx:id="bottom_rightBox" dividerPositions="0.7" orientation="VERTICAL"  >
          <SplitPane fx:id="processAndDisk" dividerPositions="0.4" prefWidth="${bottom_rightBox.width}" minHeight="150" minWidth="300">
             <VBox fx:id="processBox" alignment="CENTER" prefHeight="${processAndDisk.height}" minWidth="100" >
-               <Label>进程过程</Label>
-               <VBox style="-fx-font-family: 'Monospace';">
-                  <TextArea fx:id="intermediateProcess" style="-fx-font-size: 15px;"></TextArea>
-                  <Label fx:id="processResult" prefHeight="30" style="-fx-font-size: 15px;"></Label>
-               </VBox>
+               <Label fx:id="processLabel">进程过程</Label>
+               <SplitPane fx:id="processSplit" dividerPositions="0.9" orientation="VERTICAL" style="-fx-font-family: 'Monospace';-fx-font-size: 15px;">
+                  <TextArea fx:id="intermediateProcess"/>
+                  <TextArea fx:id="processResult"/>
+               </SplitPane>
             </VBox>
             <SplitPane fx:id="diskBox" dividerPositions="0.5" orientation="VERTICAL" prefHeight="${processAndDisk.height}" minWidth="200">
-               <VBox fx:id="diskBox_VBox_top" alignment="CENTER">
+               <VBox alignment="CENTER">
                   <Label>磁盘目录结构</Label>
-                  <TreeView fx:id="diskStructure"></TreeView>
+                  <TreeView fx:id="diskStructure"/>
                </VBox>
                <VBox fx:id="diskBox_VBox_bottom" alignment="TOP_CENTER">
                   <Label fx:id="diskBox_VBox_bottom_label">磁盘使用情况</Label>
                   <ScrollPane fx:id="diskScrollPane" hbarPolicy="NEVER" prefWidth="${diskBox.width}">
-                     <FlowPane fx:id="diskUsedPane" style="-fx-padding:20" prefWidth="${diskBox.width}"></FlowPane>
+                     <FlowPane fx:id="diskUsedPane" style="-fx-padding:20" prefWidth="${diskBox.width}"/>
                   </ScrollPane>
                </VBox>
 
@@ -74,10 +65,10 @@
          </SplitPane>
 
          <VBox fx:id="userInterface"  alignment="BOTTOM_CENTER" prefWidth="${bottom_rightBox.width}">
-            <TextArea fx:id="historyCommand" prefWidth="${bottom_rightBox.width}"></TextArea>
+            <TextArea fx:id="historyCommand" prefWidth="${bottom_rightBox.width}"/>
             <HBox fx:id="userInterface_box" alignment="BOTTOM_CENTER" prefWidth="${userInterface.width}">
                <TextField fx:id="CommandInput" />
-               <Button fx:id="button" mnemonicParsing="false" text="Enter" />
+               <Button fx:id="button" mnemonicParsing="false" >Enter</Button>
             </HBox>
          </VBox>
       </SplitPane>

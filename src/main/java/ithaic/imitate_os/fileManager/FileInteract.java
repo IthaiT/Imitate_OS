@@ -3,9 +3,12 @@ package ithaic.imitate_os.fileManager;
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
 import ithaic.imitate_os.process.ProcessManager;
+import javafx.event.EventType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import lombok.Data;
 import lombok.Getter;
 
@@ -28,6 +31,7 @@ public class FileInteract {
     private static ArrayList<String> currentPath = new ArrayList<>();
     private static ArrayList<String> sourceArray = new ArrayList<>();
     private static ArrayList<String> aimArray = new ArrayList<>();
+    private static HistoryCommand historyCommandList;
 
 
     public FileInteract(TextField CommandInput, TextArea historyCommand ,Button button){
@@ -38,6 +42,15 @@ public class FileInteract {
         //设置按钮鼠标监听事件
         FileInteract.button = button;
         historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
+        historyCommandList = HistoryCommand.getInstance();
+        historyCommand.requestFocus();
+        CommandInput.setOnKeyPressed(e -> {
+            if(e.getCode()== KeyCode.UP){
+                CommandInput.setText(historyCommandList.getCommand(0));
+            }else if(e.getCode()==KeyCode.DOWN){
+                CommandInput.setText(historyCommandList.getCommand(1));
+            }
+        });
         button.setOnMouseClicked(e -> commandAction());
         button.setOnKeyPressed(e -> {
             if(e.getCode().toString().equals("ENTER")) {
@@ -50,6 +63,7 @@ public class FileInteract {
     private void commandAction(){
         command = CommandInput.getText();
         historyCommand.appendText("$  " + command + "\n");
+        historyCommandList.addCommand(command);
         HandleCommand();
         historyCommand.appendText("\n");
         historyCommand.appendText("----------------------------------------------------------------------------------\n");
@@ -119,6 +133,9 @@ public class FileInteract {
         else if(commandArray[0].equals("exec")){  //执行可执行文件
             FileUtils.executeFile(sourceArray.toArray(new String[0]));
         }
+        else if(commandArray[0].equals("clear")){
+            historyCommand.clear();
+        }
         else if(commandArray[0].equals("help")) {  //退出系统
             FileInteract.getHistoryCommand().appendText("命令列表：\n" +
                     "create [文件名] [内容] 创建文件，包括普通文件和可执行文件\n" +
@@ -157,7 +174,7 @@ public class FileInteract {
         }
         if(commandArray.length == 1){
             if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd")
-                    || commandArray[0].equals("show") || commandArray[0].equals("help"))return true;
+                    || commandArray[0].equals("show") || commandArray[0].equals("help") || commandArray[0].equals("clear") )return true;
             else {
                 FileInteract.getHistoryCommand().appendText("命令错误！\n");
                 return false;
