@@ -167,7 +167,7 @@ public class FileInteract {
         //处理第一个参数，即源文件或目录
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
         //如果是相对路径，加入当前路径
-        if(isRelative(directoryArray)) {
+        if(isRelative()) {
             sourceArray.addAll(currentPath);
             for (String s : directoryArray) {
                 if (!s.isEmpty()) {
@@ -185,7 +185,7 @@ public class FileInteract {
         directoryArray = null;
         if(commandArray.length == 3){
             directoryArray = commandArray[2].split("/"); // 以/分割文件名数组
-            if(isRelative(directoryArray)){
+            if(isRelative()){
                 aimArray.addAll(currentPath);
                 for (String s : directoryArray) {
                     if (!s.isEmpty()) {
@@ -204,24 +204,9 @@ public class FileInteract {
 
     /**
      * 判断是否是相对路径
-     * @param directoryArray 目录数组
      * @return true表示是相对路径 false表示是绝对路径*/
-    private boolean isRelative(String[] directoryArray){
-        //如果长度为0，说明输入用户输入”/“，则是绝对路径
-        if(directoryArray.length == 0)return false;
-        //如果当前路径不是空，则说明是相对路径
-        if(!currentPath.isEmpty())return true;
-        String filename;
-        if(directoryArray.length == 1)filename = directoryArray[0];
-        else filename = directoryArray[1];
-        char[] rootDisk = Disk.readBlock(4);
-        for (int i = 0; i < 64; i+=8) {
-            //如果输入的目录包含一级目录，说明是绝对路径
-            if(filename.equals(new String(rootDisk, i, 3))){
-                return false;
-            }
-        }
-        return true;
+    private boolean isRelative(){
+        return !commandArray[1].startsWith("/");
     }
 }
 
