@@ -17,8 +17,6 @@ public class DeviceTimer extends Thread{
     @Override
     public void run() {
         try {
-
-            ProcessManager.getInstance().block(pcb);
             System.out.println("设备 " + device.getName() + " 分配给进程 " + pcb.getPid());
             // 模拟设备使用倒计时
             System.out.println("进程 " + pcb.getPid() + " 使用设备 " + device.getName() + " " + requestTime + " 单位时间");

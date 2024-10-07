@@ -1,9 +1,13 @@
 package ithaic.imitate_os.process;
+
 import ithaic.imitate_os.deviceManager.DeviceManager;
+import ithaic.imitate_os.mainController;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
+import javafx.scene.control.Label;
 import lombok.Data;
 import lombok.Getter;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,9 +35,9 @@ public class CPU {
     private int relativeClockLabel = 0;//时间片标签0
     @Getter
     private String processStatus = "";//进程状态标签传参
-
+    private final String CALCULATING="Calculating...";//常量,计算中
     @Getter
-    private String processResult = null;//进程结果标签传参
+    private String processResult = CALCULATING;//进程结果标签传参
     @Getter
     private static CPU instance;
 
@@ -158,21 +162,23 @@ public class CPU {
             case "end":
                 PSW |= 0b001;  // 设置程序结束中断
                 setProcessState("end");//进程过程界面显示end
+
                 setProcessResult(String.valueOf(AX));//进程结果界面显示AX
                 break;
             case "x++":
                 setProcessState("AX++, AX = " + ++AX);//进程过程界面显示
-                setProcessResult(null);//进程结果界面显示计算中
+
+                setProcessResult(CALCULATING);//进程结果界面显示计算中
                 break;
             case "x--":
                 setProcessState("AX--, AX = " + --AX);//进程过程界面显示
-                setProcessResult(null);//进程结果界面显示计算中
+
+                setProcessResult(CALCULATING);//进程结果界面显示计算中
                 break;
             default:
                 if (IR.startsWith("x=")) {
                     AX = Integer.parseInt(IR.substring(2));
                     setProcessState("AX = " + AX);//进程过程界面显示
-                    setProcessResult(null);
                 } else if (IR.startsWith("!")) {
                     char deviceName = IR.charAt(1);
                     int requestTime = Integer.parseInt(IR.substring(2));
