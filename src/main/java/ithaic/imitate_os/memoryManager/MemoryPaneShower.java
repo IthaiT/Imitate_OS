@@ -110,6 +110,8 @@ public class MemoryPaneShower {
     public static void updateMemoryPane() {
         hBox1.getChildren().clear();
         hBox2.getChildren().clear();
+        hBox3.getChildren().clear();
+        hBox4.getChildren().clear();
         for (Rectangle r : rectangles) {
             r.setFill(notUsedColor);
         }
