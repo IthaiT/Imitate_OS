@@ -35,7 +35,7 @@ public class CPU {
     private int relativeClockLabel = 0;//时间片标签0
     @Getter
     private String processStatus = "";//进程状态标签传参
-    private final String CALCULATING="Calculating...";//常量,计算中
+    private final String CALCULATING=null;//常量,计算中
     @Getter
     private String processResult = CALCULATING;//进程结果标签传参
     @Getter

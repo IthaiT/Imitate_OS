@@ -27,7 +27,14 @@ import java.util.Queue;
 
 public class mainController {
     @FXML
-    private HBox memoryPane;
+    private HBox memoryPane_1;
+    @FXML
+    private HBox memoryPane_2;
+    @FXML
+    private HBox memoryPane_3;
+    @FXML
+    private HBox memoryPane_4;
+
     @FXML
     private Label diskBox_VBox_bottom_label;
     @FXML
@@ -102,7 +109,7 @@ public class mainController {
         initializeQueueBox();
         initializeProcessBox();
         Platform.runLater(() -> {
-            new MemoryPaneShower(memoryPane, bottom_leftBox);
+            new MemoryPaneShower(memoryPane_1,memoryPane_2,memoryPane_3,memoryPane_4);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
 
@@ -122,7 +129,7 @@ public class mainController {
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
-        bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
+       // bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         processAndDisk.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.7);
@@ -141,8 +148,15 @@ public class mainController {
 //            绑定queueBox的高度是父组件高度的0.4倍
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-        memoryPane.setPrefHeight(20);
-        memoryPane.setMinWidth(0);
+        memoryPane_1.setPrefHeight(20);
+        memoryPane_1.setMinWidth(0);
+
+        memoryPane_2.setPrefHeight(20);
+        memoryPane_2.setMinWidth(0);
+        memoryPane_3.setPrefHeight(20);
+        memoryPane_3.setMinWidth(0);
+        memoryPane_4.setPrefHeight(20);
+        memoryPane_4.setMinWidth(0);
     }
 
     //    初始化输入命令行框和历史命令行的边界

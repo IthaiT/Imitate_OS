@@ -1,8 +1,6 @@
 package ithaic.imitate_os.memoryManager;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -10,7 +8,10 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MemoryPaneShower {
-    private static HBox hBox;
+    private static HBox hBox1;
+    private static HBox hBox2;
+    private static HBox hBox3;
+    private static HBox hBox4;
     private static final int SIZE=512;
     private static final Color notUsedColor = Color.rgb(200, 200, 200);
     private static final HashMap<Integer, Integer> hashMap = new HashMap<>();
@@ -23,21 +24,41 @@ public class MemoryPaneShower {
     /**
      * 获取box，初始化小矩形
      */
-    public MemoryPaneShower(HBox Box, VBox box) {
-        MemoryPaneShower.hBox = Box;
-        for (int i = 0; i < 512; i++) {
+    public MemoryPaneShower(HBox Box1,HBox Box2,HBox Box3,HBox Box4) {
+        MemoryPaneShower.hBox1 = Box1;
+        MemoryPaneShower.hBox2 = Box2;
+        MemoryPaneShower.hBox3 = Box3;
+        MemoryPaneShower.hBox4 = Box4;
+        for (int i = 0; i < SIZE; i++) {
             rectangles[i] = new Rectangle(0.01, 20);
             rectangles[i].setFill(notUsedColor);
-            rectangles[i].widthProperty().bind(box.widthProperty().divide(SIZE));
+            rectangles[i].widthProperty().bind(hBox1.widthProperty().divide(SIZE/4));
         }
         getMemoryBlocks();
-        Box.getChildren().addAll(rectangles);
+        for (int i = 0; i < SIZE; i++){
+            if (i < SIZE/4){//0-127
+                Box1.getChildren().add(rectangles[i]);
+            }else if (i < SIZE/2){//128-255
+                Box2.getChildren().add(rectangles[i]);
+            }else if (i < SIZE*3/4){//256-383
+                Box3.getChildren().add(rectangles[i]);
+            }else {//384-512
+                Box4.getChildren().add(rectangles[i]);
+            }
+        }
     }
     /**
      * 读取内存块,分配颜色
      */
     private static void getMemoryBlocks() {
         MemoryBlock blocks = Memory.getInstance().getMemoryBlock();
+
+        if (blocks == null && !hashMap.isEmpty()){
+            hashMap.clear();
+            colors.clear();
+            colors.put(-1,notUsedColor);
+        }
+
         while (blocks != null) {
             //非空
             if (!blocks.isFree()) {
@@ -87,11 +108,22 @@ public class MemoryPaneShower {
 
     //    外部调用的更新方法
     public static void updateMemoryPane() {
-        hBox.getChildren().clear();
+        hBox1.getChildren().clear();
+        hBox2.getChildren().clear();
         for (Rectangle r : rectangles) {
             r.setFill(notUsedColor);
         }
         getMemoryBlocks();
-        hBox.getChildren().addAll(rectangles);
+        for (int i = 0; i < SIZE; i++){
+            if (i < SIZE/4){//0-127
+                hBox1.getChildren().add(rectangles[i]);
+            }else if (i < SIZE/2){//128-255
+                hBox2.getChildren().add(rectangles[i]);
+            }else if (i < SIZE*3/4){//256-383
+                hBox3.getChildren().add(rectangles[i]);
+            }else {//384-512
+                hBox4.getChildren().add(rectangles[i]);
+            }
+        }
     }
 }
