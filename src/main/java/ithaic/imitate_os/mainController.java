@@ -149,18 +149,10 @@ public class mainController {
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
     }
     private void initializeLeftBoxPane(){
-//            绑定queueBox的高度是父组件高度的0.4倍
-        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
-        queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-//        memoryPane_1.setPrefHeight(20);
-//        memoryPane_1.setMinWidth(0);
-//
-//        memoryPane_2.setPrefHeight(20);
-//        memoryPane_2.setMinWidth(0);
-//        memoryPane_3.setPrefHeight(20);
-//        memoryPane_3.setMinWidth(0);
-//        memoryPane_4.setPrefHeight(20);
-//        memoryPane_4.setMinWidth(0);
+//            绑定queueBox的高度是父组件高度的0.3倍
+        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.3);
+        queueBox.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_leftBox.heightProperty()));
+
     }
 
     //    初始化输入命令行框和历史命令行的边界

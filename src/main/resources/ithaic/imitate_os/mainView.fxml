@@ -58,13 +58,6 @@
             <ScrollPane fx:id="scrollPaneMemory" hbarPolicy="NEVER" prefWidth="${memoryPanesVBox.width}" prefHeight="80">
                <FlowPane fx:id="memoryPane" prefWidth="${scrollPaneMemory.width}"></FlowPane>
             </ScrollPane>
-<!--            <HBox fx:id="memoryPane_1" prefHeight="20" />-->
-
-<!--            <HBox fx:id="memoryPane_2" prefHeight="20" />-->
-
-<!--            <HBox fx:id="memoryPane_3" prefHeight="20" />-->
-
-<!--            <HBox fx:id="memoryPane_4" prefHeight="20" />-->
             <VBox.margin>
                <Insets left="5.0" right="5.0" />
             </VBox.margin>
@@ -81,7 +74,7 @@
                   <TextArea fx:id="processResult" />
                </SplitPane>
             </VBox>
-            <SplitPane fx:id="diskBox" dividerPositions="0.5" minWidth="200" orientation="VERTICAL" prefHeight="${processAndDisk.height}">
+            <SplitPane fx:id="diskBox" dividerPositions="0.45" minWidth="200" orientation="VERTICAL" prefHeight="${processAndDisk.height}">
                <VBox alignment="CENTER">
                   <Label>磁盘目录结构</Label>
                   <TreeView fx:id="diskStructure" />
