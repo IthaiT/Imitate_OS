@@ -202,6 +202,23 @@ public class mainController {
             }
         });
 
+        diskStructure.setCellFactory(tv->new TreeCell<String>(){
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                // 判断该单元格是否为空
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setDisable(true);  // 禁用这个单元格
+                } else {
+                    setText(item);
+                    setDisable(false); // 启用单元格
+                    setGraphic(getTreeItem().getGraphic());
+                }
+            }
+        });
+
 
     }
 

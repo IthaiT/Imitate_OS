@@ -19,7 +19,6 @@
     -fx-padding:5;
     -fx-alignment:CENTER;
     -fx-background-radius:5;/*圆角*/
-
 }
 #topHBox VBox:hover{
     -fx-background-color: #4385de;
@@ -35,14 +34,7 @@
     -fx-border-color: #0064cd; /* 设置边框颜色 */
     -fx-background-color: white;
 }
-#bottom_Box > .split-pane-divider{
-    -fx-padding:1px;
-    -fx-background-color:#efefef;
-}
-#bottom_Box > .split-pane-divider:hover{
-    -fx-padding:2px;
-    -fx-background-color: #dcdcdc;
-}
+
 #bottom_leftBox{
     -fx-spacing:10;
     -fx-background-color: white;
@@ -71,10 +63,27 @@
     -fx-font-weight:bold;
 }
 #currentCommand{
+    -fx-font-family:'Consolas';
+    -fx-font-size:15px;
     -fx-font-weight:normal;
 }
 
+/*
+设置ScrollPane样式
+*/
+.scroll-pane{
+    -fx-background-color:rgb(239,239,239);
+}
+.scroll-pane:focused{
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
 
+#memoryPane{
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-background-color: rgb(239,239,239);
+}
 /*
 设置ListView样式
 */
@@ -82,29 +91,35 @@
         -fx-background-color: rgb(239,239,239);
         -fx-background-radius: 5px;
         -fx-padding:2px;
-       /* -fx-border-color: white;
-        -fx-border-width: 3px;
-        -fx-border-radius: 2px;*/
+
 }
 .list-cell{
     -fx-background-color:transparent;
     -fx-border-width:0px;
     -fx-border-radius:5px;
     -fx-padding:2px;
+    -fx-text-fill:black;
 }
 .list-cell:hover{
     -fx-background-radius:5px;
     -fx-background-color: #dcdcdc;
 }
-.list-cell:selected{
-    -fx-background-radius:5px;
-    -fx-background-color:#dcdcdc;
-    -fx-text-fill:black;
-}
+
+
+
 .list-view:focused{
         -fx-focus-color: transparent;
         -fx-faint-focus-color: transparent;
+        -fx-background-insets: 0;
+        -fx-padding: 2px;
+        -fx-border-width: 0;
 }
+
+.list-view:selected{
+     -fx-border-width: 0;
+     -fx-border-color: transparent;
+}
+
 .scroll-bar:vertical{
     -fx-background-color: #fcfcfc;
     -fx-border-radius: 5px;
@@ -133,3 +148,98 @@
 .empty-cell:selected {
     -fx-background-color: transparent;  /* 移除 selected 样式 */
 }
+
+
+ .split-pane > .split-pane-divider{
+     -fx-padding:1px;
+     -fx-background-color:#efefef;
+ }
+ .split-pane > .split-pane-divider:hover{
+     -fx-padding:2px;
+     -fx-background-color: #dcdcdc;
+     -fx-background-radius:10px;
+ }
+
+#processBox{
+    -fx-background-color:white;
+}
+#processLabel{
+    -fx-font-weight:bold;
+    -fx-min-height:25;
+}
+
+
+#processSplit{
+    -fx-font-family: 'Consolas';
+    -fx-font-size: 15px;
+
+}
+#processSplit TextArea{
+    -fx-background-color:white;
+    -fx-border-color:transparent;
+    -fx-background-radius:20px;
+}
+#processSplit TextArea:focused{
+       -fx-background-color: transparent;
+          -fx-background-insets: 0;
+          -fx-border-width: 0;
+          -fx-padding: 0;
+          -fx-highlight-fill: transparent; /* 移除高亮填充 */
+          -fx-highlight-text-fill: -fx-text-fill; /* 设置高亮文本颜色与正常文本颜色一致 */
+          -fx-faint-focus-color: transparent; /* 移除模糊焦点颜色 */
+}
+#processSplit TextArea:selected{
+     -fx-border-width: 0;
+     -fx-border-color: transparent;
+}
+
+#diskBox{
+    -fx-background-color:white;
+}
+diskBox VBox{
+
+}
+#diskBox VBox Label{
+    -fx-min-height:25px;
+    -fx-font-weight:bold;
+}
+
+
+#diskStructure{
+     -fx-background-color:rgb(239,239,239);
+     -fx-background-radius:5px;
+}
+.tree-view:focused {
+    -fx-focus-color: transparent; /* 移除聚焦时的边框颜色 */
+    -fx-faint-focus-color: transparent; /* 移除淡化的边框颜色 */
+}
+.tree-cell{
+    -fx-background-color:rgb(239,239,239);
+    -fx-background-radius:5px;
+      -fx-padding:2px;
+}
+
+.tree-cell:hover{
+
+       -fx-background-radius:5px;
+       -fx-background-color: #dcdcdc;
+}
+.tree-cell:focused {
+     -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.tree-cell:selected {
+  -fx-text-fill:black;
+}
+
+.tree-disclosure-node > .arrow {
+    -fx-background-color: rgb(151,151,151); /* 设置背景颜色为蓝色 */
+}
+#diskScrollPane{
+    -fx-background-radius:5px;
+}
+#diskUsedPane{
+    -fx-padding:20
+}
+
+

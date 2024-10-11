@@ -1,19 +1,24 @@
 package ithaic.imitate_os;
+import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.process.CPU;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Objects;
 public class HelloApplication extends Application {
     private final static String TITLE = "Imitate OS";
+    private static final Image OS_IMAGE = new Image(Objects.requireNonNull(DiskTreeShower.class.getResourceAsStream("/ithaic/imitate_os/icons/OS_icon.png")));
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("mainView.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("mainView.css")).toExternalForm());
         stage.setTitle(TITLE);
+        stage.getIcons().add(OS_IMAGE);
         stage.setScene(scene);
         stage.show();
     }

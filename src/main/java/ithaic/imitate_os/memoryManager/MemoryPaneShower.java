@@ -27,7 +27,7 @@ public class MemoryPaneShower {
      */
     public MemoryPaneShower(FlowPane flowPane) {
         MemoryPaneShower.flowPane = flowPane;
-        flowPane.setPadding(new Insets(5));
+        flowPane.setPadding(new Insets(0,8,5,8));
         flowPane.setHgap(0);
         flowPane.setVgap(0);
         getMemoryBlocks();
