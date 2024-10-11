@@ -13,24 +13,32 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="mainVBox" prefHeight="800" prefWidth="1200" style="-fx-font-size:14" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
+<VBox fx:id="mainVBox" prefHeight="800" prefWidth="1200" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ithaic.imitate_os.mainController">
 
 
-   <HBox fx:id="topHBox" alignment="CENTER" prefWidth="${mainVBox.width}" spacing="50">
-      <Label fx:id="systemClockLabel">系统时钟</Label>
-      <Label>CPU</Label>
-      <Label fx:id="runningProcessLabel">正在运行进程ID</Label>
-      <Label fx:id="relativeClockLabel">时间片</Label>
+   <HBox fx:id="topHBox" alignment="CENTER" prefWidth="${mainVBox.width}">
+      <VBox>
+         <Label fx:id="systemClockLabel">系统时钟</Label>
+      </VBox>
+      <VBox>
+         <Label>CPU</Label>
+      </VBox>
+      <VBox>
+         <Label fx:id="runningProcessLabel">正在运行进程ID</Label>
+      </VBox>
+      <VBox>
+         <Label fx:id="relativeClockLabel">时间片</Label>
+      </VBox>
    </HBox>
 
    <SplitPane fx:id="bottom_Box" dividerPositions="0.3" prefWidth="${mainVBox.width}">
-      <VBox fx:id="bottom_leftBox" alignment="TOP_CENTER" maxWidth="500" minWidth="300">
-         <HBox fx:id="queueBox" prefWidth="${bottom_leftBox.width}" spacing="10">
-             <VBox alignment="CENTER">
+      <VBox fx:id="bottom_leftBox" alignment="TOP_CENTER">
+         <HBox fx:id="queueBox" prefWidth="${bottom_leftBox.width}">
+             <VBox>
                  <Label>就绪进程队列ID</Label>
                  <ListView fx:id="readyProcessQueue" HBox.hgrow="ALWAYS" />
              </VBox>
-             <VBox alignment="CENTER">
+             <VBox>
                  <Label>阻塞进程队列ID</Label>
                  <ListView fx:id="blockProcessQueue" HBox.hgrow="ALWAYS" />
              </VBox>
@@ -38,17 +46,30 @@
                <Insets left="5.0" right="5.0" />
             </padding>
          </HBox>
-            <Label fx:id="currentCommand">正在执行的命令</Label>
+         <VBox styleClass="bottom_leftBox_insideVbox">
+            <Label>正在执行的命令</Label>
+            <Label fx:id="currentCommand" />
+            <VBox.margin>
+               <Insets left="5.0" right="5.0" />
+            </VBox.margin>
+         </VBox>
+         <VBox styleClass="bottom_leftBox_insideVbox" fx:id="memoryPanesVBox">
             <Label>主存用户使用</Label>
-            <HBox fx:id="memoryPane_1" prefHeight="20">
-            </HBox>
-            <HBox fx:id="memoryPane_2" prefHeight="20">
-            </HBox>
-            <HBox fx:id="memoryPane_3" prefHeight="20">
-            </HBox>
-            <HBox fx:id="memoryPane_4" prefHeight="20">
-            </HBox>
-            <Label>设备占用情况</Label>
+            <ScrollPane fx:id="scrollPaneMemory" hbarPolicy="NEVER" prefWidth="${memoryPanesVBox.width}" prefHeight="80">
+               <FlowPane fx:id="memoryPane" prefWidth="${scrollPaneMemory.width}"></FlowPane>
+            </ScrollPane>
+<!--            <HBox fx:id="memoryPane_1" prefHeight="20" />-->
+
+<!--            <HBox fx:id="memoryPane_2" prefHeight="20" />-->
+
+<!--            <HBox fx:id="memoryPane_3" prefHeight="20" />-->
+
+<!--            <HBox fx:id="memoryPane_4" prefHeight="20" />-->
+            <VBox.margin>
+               <Insets left="5.0" right="5.0" />
+            </VBox.margin>
+         </VBox>
+         <Label>设备占用情况</Label>
       </VBox>
 
       <SplitPane fx:id="bottom_rightBox" dividerPositions="0.7" orientation="VERTICAL">

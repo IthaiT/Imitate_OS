@@ -1,12 +1,14 @@
 package ithaic.imitate_os.deviceManager;
 
 import ithaic.imitate_os.process.PCB;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DeviceManager {
     private static DeviceManager instance;
+    @Getter
     private Map<String, Device> devices;
 
     private DeviceManager() {

@@ -1,5 +1,7 @@
 package ithaic.imitate_os;
 
+import ithaic.imitate_os.deviceManager.Device;
+import ithaic.imitate_os.deviceManager.DeviceManager;
 import ithaic.imitate_os.fileManager.DiskUsedShower;
 import ithaic.imitate_os.fileManager.FileInteract;
 
@@ -14,18 +16,21 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
+
 import javafx.util.Duration;
 
+import java.util.Map;
 import java.util.Queue;
 
 public class mainController {
+    public VBox memoryPanesVBox;
+    public FlowPane memoryPane;
     @FXML
     private HBox memoryPane_1;
     @FXML
@@ -109,10 +114,9 @@ public class mainController {
         initializeQueueBox();
         initializeProcessBox();
         Platform.runLater(() -> {
-            new MemoryPaneShower(memoryPane_1,memoryPane_2,memoryPane_3,memoryPane_4);
+            new MemoryPaneShower(memoryPane);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
-
         });
 
 
@@ -148,15 +152,15 @@ public class mainController {
 //            绑定queueBox的高度是父组件高度的0.4倍
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-        memoryPane_1.setPrefHeight(20);
-        memoryPane_1.setMinWidth(0);
-
-        memoryPane_2.setPrefHeight(20);
-        memoryPane_2.setMinWidth(0);
-        memoryPane_3.setPrefHeight(20);
-        memoryPane_3.setMinWidth(0);
-        memoryPane_4.setPrefHeight(20);
-        memoryPane_4.setMinWidth(0);
+//        memoryPane_1.setPrefHeight(20);
+//        memoryPane_1.setMinWidth(0);
+//
+//        memoryPane_2.setPrefHeight(20);
+//        memoryPane_2.setMinWidth(0);
+//        memoryPane_3.setPrefHeight(20);
+//        memoryPane_3.setMinWidth(0);
+//        memoryPane_4.setPrefHeight(20);
+//        memoryPane_4.setMinWidth(0);
     }
 
     //    初始化输入命令行框和历史命令行的边界
@@ -175,6 +179,38 @@ public class mainController {
     private void initializeQueueBox() {
         readyProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
         blockProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
+    /**
+     * 检测cell单元是否有内容，有内容才可以被hover和selected出现对应样式
+     * 没有就设定为空样式
+     * */
+        readyProcessQueue.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isEmpty()) {
+                    setText(null);
+                    getStyleClass().add("empty-cell");
+                } else {
+                    setText(item);
+                    getStyleClass().remove("empty-cell");
+                }
+            }
+        });
+        blockProcessQueue.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isEmpty()) {
+                    setText(null);
+                    getStyleClass().add("empty-cell"); //
+                } else {
+                    setText(item);
+                    getStyleClass().remove("empty-cell");
+                }
+            }
+        });
+
+
     }
 
     //    初始化进程过程和结果
@@ -267,12 +303,21 @@ public class mainController {
             int id=CPU.getInstance().getRunningProcess().getPid();
             intermediateProcess.appendText(">" + tmp + "\n");
             //当前指令
-            currentCommand.setText("当前执行中指令："+CPU.getInstance().getIR());
+            currentCommand.setText(CPU.getInstance().getIR());
             //最终结果输出,非空
             if (CPU.getInstance().getProcessResult()!=null){
                 processResult.appendText("["+ id+"] "+ name +" = "+CPU.getInstance().getProcessResult()+"\n");
             }
         }
+    }
+
+    //设备占用情况显示
+    private void showDeviceState(){
+        Map devices= DeviceManager.getInstance().getDevices();
+        Device deviceA = (Device) devices.get("A");
+        Device deviceB = (Device) devices.get("B");
+        Device deviceC = (Device) devices.get("C");
+
     }
 
 }

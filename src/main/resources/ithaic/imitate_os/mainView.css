@@ -1,4 +1,6 @@
-
+#mainVBox{
+    -fx-font-size:14;
+}
 #button{
       -fx-text-fill: white;
       -fx-background-color: #5677fc;
@@ -7,12 +9,127 @@
       -fx-background-color: #4e6cef;
 }
 #topHBox{
+    -fx-spacing:30;
+    -fx-background-color: #488fef;
+    -fx-text-fill: #000000;
+    -fx-font-weight:bold;
+    -fx-padding:3 ;
+}
+#topHBox VBox{
+    -fx-padding:5;
+    -fx-alignment:CENTER;
+    -fx-background-radius:5;/*圆角*/
+
+}
+#topHBox VBox:hover{
+    -fx-background-color: #4385de;
+}
+
+#topHBox VBox Label{
+    -fx-min-width:100;
+    -fx-alignment:CENTER;
+}
+
+#bottom_Box{
+    -fx-border-width: 2 0 0 0; /* 上右下左,设置边框宽度，上边框为2 */
+    -fx-border-color: #0064cd; /* 设置边框颜色 */
     -fx-background-color: white;
 }
-
-#topHox Label{
-    min-width: 100px;
+#bottom_Box > .split-pane-divider{
+    -fx-padding:1px;
+    -fx-background-color:#efefef;
 }
-#memoryPane{
+#bottom_Box > .split-pane-divider:hover{
+    -fx-padding:2px;
+    -fx-background-color: #dcdcdc;
+}
+#bottom_leftBox{
+    -fx-spacing:10;
+    -fx-background-color: white;
+    -fx-min-width:300;
+    -fx-max-width:500;
+}
+#queueBox{
+    -fx-spacing:15;
+}
+#queueBox VBox{
+    -fx-alignment:CENTER;
+}
 
+#queueBox VBox Label{
+    -fx-font-weight:bold;
+    -fx-min-height:25;
+}
+
+.bottom_leftBox_insideVbox{
+    -fx-background-color: rgb(239,239,239);
+    -fx-background-radius: 5px;
+     -fx-alignment:CENTER;
+}
+.bottom_leftBox_insideVbox Label{
+    -fx-min-height:25px;
+    -fx-font-weight:bold;
+}
+#currentCommand{
+    -fx-font-weight:normal;
+}
+
+
+/*
+设置ListView样式
+*/
+.list-view{
+        -fx-background-color: rgb(239,239,239);
+        -fx-background-radius: 5px;
+        -fx-padding:2px;
+       /* -fx-border-color: white;
+        -fx-border-width: 3px;
+        -fx-border-radius: 2px;*/
+}
+.list-cell{
+    -fx-background-color:transparent;
+    -fx-border-width:0px;
+    -fx-border-radius:5px;
+    -fx-padding:2px;
+}
+.list-cell:hover{
+    -fx-background-radius:5px;
+    -fx-background-color: #dcdcdc;
+}
+.list-cell:selected{
+    -fx-background-radius:5px;
+    -fx-background-color:#dcdcdc;
+    -fx-text-fill:black;
+}
+.list-view:focused{
+        -fx-focus-color: transparent;
+        -fx-faint-focus-color: transparent;
+}
+.scroll-bar:vertical{
+    -fx-background-color: #fcfcfc;
+    -fx-border-radius: 5px;
+}
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent; /* 移除按钮的背景 */
+}
+
+/* 自定义滚动条的滑块 */
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #8b8b8b;  /* 滑块颜色 */
+    -fx-border-radius: 5px;
+}
+.scroll-bar:vertical .thumb:hover{
+    -fx-background-color: #636363;
+}
+
+/* 自定义空单元格样式，移除 hover 和 selected 样式 */
+.empty-cell {
+    -fx-background-color: transparent;  /* 去掉背景 */
+}
+.empty-cell:hover {
+    -fx-background-color: transparent;  /* 移除 hover 样式 */
+}
+.empty-cell:selected {
+    -fx-background-color: transparent;  /* 移除 selected 样式 */
 }
