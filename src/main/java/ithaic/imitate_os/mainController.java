@@ -320,13 +320,7 @@ public class mainController {
         }
     }
 
-    //设备占用情况显示
-    private void showDeviceState(){
-        Map devices= DeviceManager.getInstance().getDevices();
-        Device deviceA = (Device) devices.get("A");
-        Device deviceB = (Device) devices.get("B");
-        Device deviceC = (Device) devices.get("C");
 
-    }
+
 
 }

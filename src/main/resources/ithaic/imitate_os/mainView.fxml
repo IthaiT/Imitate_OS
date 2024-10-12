@@ -53,16 +53,30 @@
                <Insets left="5.0" right="5.0" />
             </VBox.margin>
          </VBox>
-         <VBox fx:id="memoryPanesVBox" styleClass="bottom_leftBox_insideVbox">
+         <VBox fx:id="memoryPanesVBox" prefHeight="100" styleClass="bottom_leftBox_insideVbox">
             <Label>主存用户使用</Label>
             <ScrollPane fx:id="scrollPaneMemory" hbarPolicy="NEVER" prefHeight="80" prefWidth="${memoryPanesVBox.width}">
                <FlowPane fx:id="memoryPane" prefWidth="${scrollPaneMemory.width}" />
             </ScrollPane>
             <VBox.margin>
-               <Insets left="5.0" right="5.0" />
+               <Insets left="5.0" right="5.0" bottom="5.0"/>
             </VBox.margin>
          </VBox>
-         <Label>设备占用情况</Label>
+
+
+         <VBox fx:id="deviceVBox" VBox.vgrow="ALWAYS" minHeight="200">
+            <Label>设备占用情况</Label>
+            <HBox prefWidth="${deviceVBox.width}" >
+<!--               设备A-->
+               <VBox fx:id="deviceA" HBox.hgrow="ALWAYS"/>
+<!--               设备B-->
+               <VBox fx:id="deviceB"  HBox.hgrow="ALWAYS"/>
+<!--               设备C-->
+               <VBox fx:id="deviceC"  HBox.hgrow="ALWAYS"/>
+            </HBox>
+         </VBox>
+
+
       </VBox>
 
       <SplitPane fx:id="bottom_rightBox" dividerPositions="0.7" orientation="VERTICAL">
