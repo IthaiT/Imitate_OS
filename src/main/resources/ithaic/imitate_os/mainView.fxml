@@ -59,21 +59,24 @@
                <FlowPane fx:id="memoryPane" prefWidth="${scrollPaneMemory.width}" />
             </ScrollPane>
             <VBox.margin>
-               <Insets left="5.0" right="5.0" bottom="5.0"/>
+               <Insets bottom="0" left="5.0" right="5.0" />
             </VBox.margin>
          </VBox>
 
 
-         <VBox fx:id="deviceVBox" VBox.vgrow="ALWAYS" minHeight="200">
-            <Label>设备占用情况</Label>
-            <HBox prefWidth="${deviceVBox.width}" >
-<!--               设备A-->
-               <VBox fx:id="deviceA" HBox.hgrow="ALWAYS"/>
-<!--               设备B-->
-               <VBox fx:id="deviceB"  HBox.hgrow="ALWAYS"/>
-<!--               设备C-->
-               <VBox fx:id="deviceC"  HBox.hgrow="ALWAYS"/>
-            </HBox>
+         <VBox fx:id="deviceVBox" VBox.vgrow="ALWAYS">
+            <Label styleClass="deviceVBox_label">设备占用情况</Label>
+            <ListView fx:id="deviceProcess">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></ListView>
+            <HBox fx:id="deviceBeingUsed" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin></HBox>
+            <VBox.margin>
+               <Insets bottom="5.0" left="5.0" right="5.0" />
+            </VBox.margin>
          </VBox>
 
 
@@ -91,7 +94,7 @@
             <SplitPane fx:id="diskBox" dividerPositions="0.45" minWidth="200" orientation="VERTICAL" prefHeight="${processAndDisk.height}">
                <VBox alignment="CENTER">
                   <Label>磁盘目录结构</Label>
-                  <TreeView fx:id="diskStructure" minHeight="70"/>
+                  <TreeView fx:id="diskStructure" minHeight="70" />
                   <padding>
                      <Insets bottom="5.0" left="5.0" right="5.0" />
                   </padding>
@@ -99,9 +102,9 @@
                <VBox fx:id="diskBox_VBox_bottom" alignment="TOP_CENTER">
                   <Label fx:id="diskBox_VBox_bottom_label">磁盘使用情况</Label>
                   <ScrollPane fx:id="diskScrollPane" hbarPolicy="NEVER" prefWidth="${diskBox.width}">
-                     <FlowPane fx:id="diskUsedPane" prefWidth="${diskBox.width}"/>
+                     <FlowPane fx:id="diskUsedPane" prefWidth="${diskBox.width}" />
                      <VBox.margin>
-                        <Insets left="5.0" right="5.0" bottom="5.0"/>
+                        <Insets bottom="5.0" left="5.0" right="5.0" />
                      </VBox.margin>
                   </ScrollPane>
                </VBox>

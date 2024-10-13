@@ -15,11 +15,13 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("mainView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1000, 600);
+        Scene scene = new Scene(fxmlLoader.load(), 1000, 650);
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("mainView.css")).toExternalForm());
         stage.setTitle(TITLE);
         stage.getIcons().add(OS_IMAGE);
         stage.setScene(scene);
+        stage.setMinHeight(500);
+        stage.setMinWidth(800);
         stage.show();
     }
     //OS界面缺失图标

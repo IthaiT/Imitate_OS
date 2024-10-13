@@ -10,7 +10,7 @@
 }
 #topHBox{
     -fx-spacing:30;
-    -fx-background-color: #488fef;
+    -fx-background-color: rgb(239,239,239);
     -fx-text-fill: #000000;
     -fx-font-weight:bold;
     -fx-padding:3 ;
@@ -21,7 +21,7 @@
     -fx-background-radius:5;/*圆角*/
 }
 #topHBox VBox:hover{
-    -fx-background-color: #4385de;
+    -fx-background-color: #dcdcdc;
 }
 
 #topHBox VBox Label{
@@ -31,7 +31,7 @@
 
 #bottom_Box{
     -fx-border-width: 2 0 0 0; /* 上右下左,设置边框宽度，上边框为2 */
-    -fx-border-color: #0064cd; /* 设置边框颜色 */
+    -fx-border-color: #888888; /* 设置边框颜色 */
     -fx-background-color: white;
 }
 
@@ -242,7 +242,15 @@ diskBox VBox{
     -fx-background-radius:5px;
 }
 #diskUsedPane{
-    -fx-padding:20
+    -fx-padding:20;
 }
-
+#deviceVBox{
+    -fx-alignment:CENTER;
+      -fx-background-color:rgb(239,239,239);
+        -fx-background-radius:5px;
+}
+.deviceVBox_label{
+    -fx-font-weight:bold;
+    -fx-min-height:25;
+}
 

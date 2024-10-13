@@ -1,11 +1,9 @@
 package ithaic.imitate_os;
 
-import ithaic.imitate_os.deviceManager.Device;
-import ithaic.imitate_os.deviceManager.DeviceManager;
+import ithaic.imitate_os.deviceManager.DeviceUsedShower;
+import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.fileManager.DiskUsedShower;
 import ithaic.imitate_os.fileManager.FileInteract;
-
-import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.memoryManager.MemoryPaneShower;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
@@ -16,30 +14,21 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
 import javafx.util.Duration;
 
-import java.util.Map;
 import java.util.Queue;
 
 public class mainController {
-    public VBox memoryPanesVBox;
-    public FlowPane memoryPane;
-    @FXML
-    private HBox memoryPane_1;
-    @FXML
-    private HBox memoryPane_2;
-    @FXML
-    private HBox memoryPane_3;
-    @FXML
-    private HBox memoryPane_4;
 
+    public HBox deviceBeingUsed;
+    @FXML
+    private FlowPane memoryPane;
+    @FXML
+    private ListView deviceProcess;
     @FXML
     private Label diskBox_VBox_bottom_label;
     @FXML
@@ -113,10 +102,12 @@ public class mainController {
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
+
         Platform.runLater(() -> {
             new MemoryPaneShower(memoryPane);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
+            new DeviceUsedShower(deviceProcess,deviceBeingUsed);
         });
 
 
@@ -279,6 +270,7 @@ public class mainController {
             DiskTreeShower.updateDiskTree();
             DiskUsedShower.updateDiskUsed();
             MemoryPaneShower.updateMemoryPane();
+            DeviceUsedShower.updateDevices();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -310,7 +302,10 @@ public class mainController {
             String tmp = CPU.getInstance().getProcessStatus();
             String name=CPU.getInstance().getRunningProcess().getName();
             int id=CPU.getInstance().getRunningProcess().getPid();
-            intermediateProcess.appendText(">" + tmp + "\n");
+            if (tmp!=""){
+                //如果tmp是空白的话，使用设备会输出一个空格
+                intermediateProcess.appendText(">" + tmp + "\n");
+            }
             //当前指令
             currentCommand.setText(CPU.getInstance().getIR());
             //最终结果输出,非空
@@ -319,8 +314,5 @@ public class mainController {
             }
         }
     }
-
-
-
 
 }

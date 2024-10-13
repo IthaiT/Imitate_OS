@@ -7,7 +7,7 @@ import java.util.*;
 
 public class DeviceManager {
     private static DeviceManager instance;
-    private Map<String, List<Device>> devices;
+    private final Map<String, List<Device>> devices;
     @Getter
     private Queue<PCBInWaitingQueue> waitingQueue;
 
@@ -97,15 +97,23 @@ public class DeviceManager {
 
 
     //返回HashMap， Key值为索求的设备， Value值为要使用设备的进程
-    public Map<String, Integer> getBlockedQueueMessage(){
-        Map<String, Integer> message = new HashMap<>();
+    public Map<String, List<Integer>> getBlockedQueueMessage(){
+        Map<String, List<Integer>> message = new HashMap<>();
         for (PCBInWaitingQueue pcbInWaitingQueue : waitingQueue) {
-            message.put(pcbInWaitingQueue.getDeviceName(), pcbInWaitingQueue.getPcb().getPid());
+            //获取设备名字和pid
+            String deviceName = pcbInWaitingQueue.getDeviceName();
+            Integer pid = pcbInWaitingQueue.getPcb().getPid();
+            //列表存在就存入，不存在新建一个再存入
+            List<Integer> pidList = message.get(deviceName);
+            if (pidList==null){
+                pidList = new ArrayList<>();
+                message.put(deviceName,pidList);
+            }
+            pidList.add(pid);
         }
 
         String msg = "当前阻塞队列为空";
-        if(message.isEmpty()) message.put(msg, 0);
+        if(message.isEmpty()) message.put(msg, null);
         return message;
     }
-
 }

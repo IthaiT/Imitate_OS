@@ -1,10 +1,8 @@
 package ithaic.imitate_os.process;
 
 import ithaic.imitate_os.deviceManager.DeviceManager;
-import ithaic.imitate_os.mainController;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
-import javafx.scene.control.Label;
 import lombok.Data;
 import lombok.Getter;
 
