@@ -17,9 +17,9 @@ public class DeviceTimer extends Thread{
     @Override
     public void run() {
         try {
-            System.out.println("设备 " + device.getName() + " 分配给进程 " + pcb.getPid());
+            System.out.println("设备 " + device.getDeviceID() + " 分配给进程 " + pcb.getPid());
             // 模拟设备使用倒计时
-            System.out.println("进程 " + pcb.getPid() + " 使用设备 " + device.getName() + " " + requestTime + " 单位时间");
+           // System.out.println("进程 " + pcb.getPid() + " 使用设备 " + device.getName() + " " + requestTime + " 单位时间");
             Thread.sleep(requestTime * 1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -29,6 +29,6 @@ public class DeviceTimer extends Thread{
 
         // 设备用完后唤醒等待队列中的进程
         ProcessManager.getInstance().awake(pcb);
-        System.out.println("进程 " + pcb.getPid() + " 设备使用完成，继续执行其他操作");
+      //  System.out.println("进程 " + pcb.getPid() + " 设备使用完成，继续执行其他操作");
     }
 }
