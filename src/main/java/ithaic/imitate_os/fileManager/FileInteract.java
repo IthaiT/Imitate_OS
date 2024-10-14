@@ -116,9 +116,9 @@ public class FileInteract {
             StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
             if(sb!= null){
                 popUpWindow.appendText(sb.toString());
+                char[] content = popUpWindow.popUp();
+                FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
             }
-            char[] content = popUpWindow.popUp();
-            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("ls")) {// 显示目录内容
             FileUtils.listDirectory(currentPath.toArray(new String[0]));

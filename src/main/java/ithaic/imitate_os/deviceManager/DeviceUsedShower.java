@@ -1,6 +1,7 @@
 package ithaic.imitate_os.deviceManager;
 
 import ithaic.imitate_os.fileManager.DiskTreeShower;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -57,7 +58,10 @@ public class DeviceUsedShower {
     private void initDeviceBox(){
         deviceBox.setStyle(
                 "-fx-font-weight:normal;"
+                +"-fx-spacing:5;"+"-fx-font-size:13;"
                );
+
+
 
         vbox_A.setAlignment(Pos.TOP_CENTER);
         vbox_B.setAlignment(Pos.TOP_CENTER);
@@ -66,6 +70,14 @@ public class DeviceUsedShower {
         vbox_A.setSpacing(10);
         vbox_B.setSpacing(10);
         vbox_C.setSpacing(10);
+
+        vbox_A.setPadding(new Insets(5));
+        vbox_B.setPadding(new Insets(5));
+        vbox_C.setPadding(new Insets(5));
+
+        vbox_A.setStyle("-fx-background-color:white;"+"-fx-background-radius:5;");
+        vbox_B.setStyle("-fx-background-color:white;"+"-fx-background-radius:5;");
+        vbox_C.setStyle("-fx-background-color:white;"+"-fx-background-radius:5;");
 
         vbox_A.getChildren().add(A1);
         vbox_A.getChildren().add(A2);
@@ -89,6 +101,7 @@ public class DeviceUsedShower {
     }
 
     private void initListView(){
+        listView.setStyle("-fx-font-size:13");
         listView.getItems().addAll(
                 "A","B","C"
         );

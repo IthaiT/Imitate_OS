@@ -66,14 +66,17 @@
 
          <VBox fx:id="deviceVBox" VBox.vgrow="ALWAYS">
             <Label styleClass="deviceVBox_label">设备占用情况</Label>
-            <ListView fx:id="deviceProcess">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin></ListView>
+
             <HBox fx:id="deviceBeingUsed" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </VBox.margin></HBox>
+
+            <ListView fx:id="deviceProcess">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></ListView>
+
             <VBox.margin>
                <Insets bottom="5.0" left="5.0" right="5.0" />
             </VBox.margin>
