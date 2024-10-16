@@ -65,8 +65,9 @@ public class FileInteract {
         historyCommand.appendText("$  " + command + "\n");
         historyCommandList.addCommand(command);
         HandleCommand();
-        historyCommand.appendText("\n");
-        historyCommand.appendText("----------------------------------------------------------------------------------\n");
+        if(!command.equals("clear"))
+            historyCommand.appendText("\n");
+//        historyCommand.appendText("----------------------------------------------------------------------------------\n");
         historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
         CommandInput.clear();
     }
@@ -114,9 +115,9 @@ public class FileInteract {
             StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
             if(sb!= null){
                 popUpWindow.appendText(sb.toString());
+                char[] content = popUpWindow.popUp();
+                FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
             }
-            char[] content = popUpWindow.popUp();
-            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("ls")) {// 显示目录内容
             FileUtils.listDirectory(currentPath.toArray(new String[0]));
@@ -152,7 +153,9 @@ public class FileInteract {
                     "pwd 显示当前目录\n" +
                     "show 显示磁盘信息\n" +
                     "exec [可执行文件名] 执行可执行文件\n" +
-                    "help 显示命令列表\n");
+                    "help 显示命令列表\n"+
+                    "clear 清空历史命令\n");
+
         }
         else{
             FileInteract.getHistoryCommand().appendText("命令错误！\n");

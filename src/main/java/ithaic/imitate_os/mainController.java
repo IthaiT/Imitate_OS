@@ -1,9 +1,9 @@
 package ithaic.imitate_os;
 
+import ithaic.imitate_os.deviceManager.DeviceUsedShower;
+import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.fileManager.DiskUsedShower;
 import ithaic.imitate_os.fileManager.FileInteract;
-
-import ithaic.imitate_os.fileManager.DiskTreeShower;
 import ithaic.imitate_os.memoryManager.MemoryPaneShower;
 import ithaic.imitate_os.process.CPU;
 import ithaic.imitate_os.process.PCB;
@@ -14,20 +14,21 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 import java.util.Queue;
 
 public class mainController {
+
+    public HBox deviceBeingUsed;
     @FXML
-    private HBox memoryPane;
+    private FlowPane memoryPane;
+    @FXML
+    private ListView deviceProcess;
     @FXML
     private Label diskBox_VBox_bottom_label;
     @FXML
@@ -101,11 +102,12 @@ public class mainController {
         timeUpdate();
         initializeQueueBox();
         initializeProcessBox();
+
         Platform.runLater(() -> {
-            new MemoryPaneShower(memoryPane, bottom_leftBox);
+            new MemoryPaneShower(memoryPane);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
-
+            new DeviceUsedShower(deviceProcess,deviceBeingUsed);
         });
 
 
@@ -122,7 +124,7 @@ public class mainController {
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
-        bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
+       // bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         processAndDisk.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.7);
@@ -138,11 +140,10 @@ public class mainController {
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
     }
     private void initializeLeftBoxPane(){
-//            绑定queueBox的高度是父组件高度的0.4倍
-        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.4);
-        queueBox.prefHeightProperty().bind(Bindings.multiply(0.4, bottom_leftBox.heightProperty()));
-        memoryPane.setPrefHeight(20);
-        memoryPane.setMinWidth(0);
+//            绑定queueBox的高度是父组件高度的0.3倍
+        queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.3);
+        queueBox.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_leftBox.heightProperty()));
+
     }
 
     //    初始化输入命令行框和历史命令行的边界
@@ -161,6 +162,55 @@ public class mainController {
     private void initializeQueueBox() {
         readyProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
         blockProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
+    /**
+     * 检测cell单元是否有内容，有内容才可以被hover和selected出现对应样式
+     * 没有就设定为空样式
+     * */
+        readyProcessQueue.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isEmpty()) {
+                    setText(null);
+                    getStyleClass().add("empty-cell");
+                } else {
+                    setText(item);
+                    getStyleClass().remove("empty-cell");
+                }
+            }
+        });
+        blockProcessQueue.setCellFactory(listView -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                if (empty || item == null || item.isEmpty()) {
+                    setText(null);
+                    getStyleClass().add("empty-cell"); //
+                } else {
+                    setText(item);
+                    getStyleClass().remove("empty-cell");
+                }
+            }
+        });
+
+        diskStructure.setCellFactory(tv->new TreeCell<String>(){
+            @Override
+            protected void updateItem(String item,boolean empty){
+                super.updateItem(item, empty);
+                // 判断该单元格是否为空
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setDisable(true);  // 禁用这个单元格
+                } else {
+                    setText(item);
+                    setDisable(false); // 启用单元格
+                    setGraphic(getTreeItem().getGraphic());
+                }
+            }
+        });
+
+
     }
 
     //    初始化进程过程和结果
@@ -220,6 +270,7 @@ public class mainController {
             DiskTreeShower.updateDiskTree();
             DiskUsedShower.updateDiskUsed();
             MemoryPaneShower.updateMemoryPane();
+            DeviceUsedShower.updateDevices();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
@@ -251,9 +302,12 @@ public class mainController {
             String tmp = CPU.getInstance().getProcessStatus();
             String name=CPU.getInstance().getRunningProcess().getName();
             int id=CPU.getInstance().getRunningProcess().getPid();
-            intermediateProcess.appendText(">" + tmp + "\n");
+            if (tmp!=""){
+                //如果tmp是空白的话，使用设备会输出一个空格
+                intermediateProcess.appendText(">" + tmp + "\n");
+            }
             //当前指令
-            currentCommand.setText("当前执行中指令："+CPU.getInstance().getIR());
+            currentCommand.setText(CPU.getInstance().getIR());
             //最终结果输出,非空
             if (CPU.getInstance().getProcessResult()!=null){
                 processResult.appendText("["+ id+"] "+ name +" = "+CPU.getInstance().getProcessResult()+"\n");

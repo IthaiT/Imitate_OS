@@ -97,8 +97,7 @@ public class DiskUsedShower {
 
     private static String setRectData(Rectangle rectangle, int index) {
         String diskStates = rectangle.getFill().equals(beingUsedColor) ? "已占用" : "未占用";
-        String s = "盘" + index + ":" + diskStates;
-        return s;
+        return "盘" + index + ":" + diskStates;
     }
 
     /**

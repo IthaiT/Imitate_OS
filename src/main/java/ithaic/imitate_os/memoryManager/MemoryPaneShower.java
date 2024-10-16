@@ -1,17 +1,15 @@
 package ithaic.imitate_os.memoryManager;
-
-import javafx.beans.binding.Bindings;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
 import java.util.HashMap;
 import java.util.Random;
 
 public class MemoryPaneShower {
-    private static HBox hBox;
+    private static FlowPane flowPane;
     private static final int SIZE=512;
+    private static final int CELL_SIZE=5;
     private static final Color notUsedColor = Color.rgb(200, 200, 200);
     private static final HashMap<Integer, Integer> hashMap = new HashMap<>();
     static HashMap<Integer, Color> colors = new HashMap<>();
@@ -19,25 +17,35 @@ public class MemoryPaneShower {
     static {
         //限定key=-1不存在的内存值，保证不会随机到这个颜色
         colors.put(-1, notUsedColor);
+        for (int i = 0; i < SIZE; i++) {
+            rectangles[i] = new Rectangle(CELL_SIZE, CELL_SIZE);
+            rectangles[i].setFill(notUsedColor);
+        }
     }
     /**
      * 获取box，初始化小矩形
      */
-    public MemoryPaneShower(HBox Box, VBox box) {
-        MemoryPaneShower.hBox = Box;
-        for (int i = 0; i < 512; i++) {
-            rectangles[i] = new Rectangle(0.01, 20);
-            rectangles[i].setFill(notUsedColor);
-            rectangles[i].widthProperty().bind(box.widthProperty().divide(SIZE));
-        }
+    public MemoryPaneShower(FlowPane flowPane) {
+        MemoryPaneShower.flowPane = flowPane;
+        flowPane.setPadding(new Insets(0,8,5,8));
+        flowPane.setHgap(0);
+        flowPane.setVgap(0);
         getMemoryBlocks();
-        Box.getChildren().addAll(rectangles);
+        for (int i = 0; i < SIZE; i++) {
+            flowPane.getChildren().add(rectangles[i]);
+        }
+
     }
     /**
      * 读取内存块,分配颜色
      */
     private static void getMemoryBlocks() {
         MemoryBlock blocks = Memory.getInstance().getMemoryBlock();
+        if (blocks == null && !hashMap.isEmpty()){
+            hashMap.clear();
+            colors.clear();
+            colors.put(-1,notUsedColor);
+        }
         while (blocks != null) {
             //非空
             if (!blocks.isFree()) {
@@ -58,7 +66,6 @@ public class MemoryPaneShower {
                     hashMap.put(start, end);
                     flag = true;
                 }
-
                 if (flag) {
                     colors.remove(start);
                     Color color = createBeingUsedColor(start);
@@ -71,7 +78,7 @@ public class MemoryPaneShower {
             blocks = blocks.getNext();
         }
     }
-
+    //随机生成指定范围的颜色
     private static Color createBeingUsedColor(int key) {
         Color newColor;
         Random random = new Random();
@@ -87,11 +94,13 @@ public class MemoryPaneShower {
 
     //    外部调用的更新方法
     public static void updateMemoryPane() {
-        hBox.getChildren().clear();
+        flowPane.getChildren().clear();
         for (Rectangle r : rectangles) {
             r.setFill(notUsedColor);
         }
         getMemoryBlocks();
-        hBox.getChildren().addAll(rectangles);
+        for (int i = 0; i < SIZE; i++) {
+            flowPane.getChildren().add(rectangles[i]);
+        }
     }
 }
