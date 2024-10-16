@@ -49,7 +49,6 @@ public class MyFile {
             available = false;
             return ;
         }
-
         //判断文件名是否合法
         if(!isValidFilename(parentBlock)){
             available = false;
@@ -146,7 +145,7 @@ public class MyFile {
         Disk.readBlock(parentBlock);
         char[] buffer = Disk.getReadBuffer();
         for (int i = 0; i < 8; i++) {
-            if(filename.equals(new String(buffer,i*8,3))){
+            if(filename.equals(new String(buffer,i*8,filename.length()))){
                 FileInteract.getHistoryCommand().appendText("file already exists\n");
                 return false;
             }

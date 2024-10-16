@@ -84,7 +84,16 @@ public class FileUtils {
      * @return 文件内容
      */
     public static void typeFile(String[] filePath) {
+        if(filePath.length <= 0) FileInteract.getHistoryCommand().appendText("Invalid path\n");
+        //判断文件是否存在
+        if (!isFileExists(filePath, (char) 0x20)) {
+            FileInteract.getHistoryCommand().appendText("File not found\n");
+        }
         StringBuilder sb = getFileContent(filePath);
+        if(sb == null){
+            FileInteract.getHistoryCommand().appendText("File is empty\n");
+            return;
+        }
         FileInteract.getHistoryCommand().appendText(sb + "\n");
     }
 
@@ -344,9 +353,17 @@ public class FileUtils {
      * @return 是否成功执行
      */
     public static boolean executeFile(String[] filePath) {
-        if (filePath.length <= 1) return false;
+        if (filePath.length <= 1) FileInteract.getHistoryCommand().appendText("Invalid path\n");
+        //判断文件是否存在
+        if (!isFileExists(filePath, (char) 0x20)) {
+            FileInteract.getHistoryCommand().appendText("File not found\n");
+            return false;
+        }
         StringBuilder sb = getFileContent(filePath);
-        if (sb == null) return false;
+        if (sb == null) {
+            FileInteract.getHistoryCommand().appendText("File is empty\n");
+            return false;
+        }
         ProcessManager.getInstance().create(sb.toString().toCharArray(), filePath[filePath.length - 1]);
         return true;
     }
@@ -515,15 +532,6 @@ public class FileUtils {
      * @return 文件内容字符串
      */
     public static StringBuilder getFileContent(String[] filePath) {
-        if (filePath.length <= 0) {
-            FileInteract.getHistoryCommand().appendText("Invalid path\n");
-            return null;
-        }
-        //判断文件是否存在
-        if (!isFileExists(filePath, (char) 0x20)) {
-            FileInteract.getHistoryCommand().appendText("File not found\n");
-            return null;
-        }
         int position = getCatalogItemPosition(filePath);//得到目录块的位置
         char[] block = Disk.readBlock(position / 64); //得到目录块所在盘块
         int ptr = block[position % 64 + 5];//得到第一页的指针
@@ -532,7 +540,6 @@ public class FileUtils {
         for (int i = 0; i < 64; i++) {
             if (content[i] != 0) break;
             if (i == 63) {
-                FileInteract.getHistoryCommand().appendText("File is empty\n");
                 return null;
             }
         }

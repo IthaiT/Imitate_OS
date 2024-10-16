@@ -112,12 +112,16 @@ public class FileInteract {
         else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
             //判断文件是否存在
-            StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
-            if(sb!= null){
-                popUpWindow.appendText(sb.toString());
-                char[] content = popUpWindow.popUp();
-                FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
+            if (!FileUtils.isFileExists(sourceArray.toArray(new String[0]), (char) 0x20)) {
+                FileInteract.getHistoryCommand().appendText("File not found\n");
+                return;
             }
+            StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
+            if(sb != null){
+                popUpWindow.appendText(sb.toString());
+            }
+            char[] content = popUpWindow.popUp();
+            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
         }
         else if (commandArray[0].equals("ls")) {// 显示目录内容
             FileUtils.listDirectory(currentPath.toArray(new String[0]));

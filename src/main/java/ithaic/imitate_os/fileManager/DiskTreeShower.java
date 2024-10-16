@@ -35,13 +35,12 @@ public class DiskTreeShower {
         String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"};
         for (String str : commandArray) {
             if (Objects.equals(command, str)) {
-                DiskTreeShower.updateDiskTree();
+                TreeItem<String> root = disktree.getRoot();
+                root.getChildren().clear();
+                createTree(4, root);
                 break;
             }
         }
-        TreeItem<String> root = disktree.getRoot();
-        root.getChildren().clear();
-        createTree(4, root);
     }
 
 
