@@ -80,7 +80,6 @@ public class FileInteract {
                 char[] content = new PopUpWindow().popUp();
                 FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
             }
-
         }
         else if (commandArray[0].equals("delete")) {// 删除文件
             FileUtils.deleteFile(sourceArray.toArray(new String[0]));
