@@ -1,10 +1,10 @@
 package ithaic.imitate_os.fileManager;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -21,79 +21,142 @@ public class PopUpWindow {
 
     private final TextArea textArea = new TextArea();
     private String str;
+    private String oldStr;
     private static final String CONFIRM = "确定";
     private static final String CANCEL = "取消";
 
     public char[] popUp() {
+        Stage stage = createStage();
+        VBox vBox = createVBox();
+        Scene scene = new Scene(vBox, 600, 340);
 
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        return StrToCharArray(str);
+
+    }
+    private Stage createStage() {
         Stage stage = new Stage();
-        String content = "请输入指令：";
+        String content = "请输入文本：";
         stage.setTitle(content);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.getIcons().add(OS_IMAGE);
-        //设置窗口不可调整大小
         stage.setResizable(false);
-
-      //  Label label = new Label(Content);
-        //设置最大高度
+        stage.getIcons().add(OS_IMAGE);
+        // 设置文本区域的最大高度
         int MAX_INPUT_HEIGHT = 100;
         textArea.setMaxHeight(MAX_INPUT_HEIGHT);
-        //设置默认文本区域尺寸
         textArea.setMinHeight(300);
-
-        //设置文本区域可编辑
         textArea.setEditable(true);
-        //自动换行,不需要就设置false
         textArea.setWrapText(true);
 
+        oldStr = textArea.getText();
+
+
+        addTextAreaListeners();
+        return stage;
+    }
+    private VBox createVBox() {
+        // 创建按钮
+        HBox hBox = createButtonHBox();
+        VBox vBox = new VBox(textArea, hBox);
+        vBox.setAlignment(Pos.CENTER);
+        return vBox;
+    }
+    private HBox createButtonHBox() {
         Label confirm = new Label(CONFIRM);
         Label close = new Label(CANCEL);
 
         HBox hBoxConfirm = new HBox(confirm);
         HBox hBoxClose = new HBox(close);
-        //点击事件
-        hBoxConfirm.setOnMousePressed(e->{
-            if (e.getButton()== MouseButton.PRIMARY){
+
+        // 点击事件
+        hBoxConfirm.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
                 this.str = textArea.getText();
-                stage.close();
-            }
-        });
-        hBoxClose.setOnMousePressed(e->{
-            if (e.getButton()==MouseButton.PRIMARY){
-                this.str = null;
-                stage.close();
+                closeStage();
             }
         });
 
-        //按钮高度
+        hBoxClose.setOnMousePressed(e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
+                this.str = oldStr;
+                closeStage();
+            }
+        });
+
+        // 设置按钮高度
         hBoxConfirm.setPrefHeight(40);
         hBoxClose.setPrefHeight(40);
 
-        //设置按钮居中
-        HBox hBox = new HBox( hBoxConfirm, hBoxClose);
+        // 设置按钮居中
+        HBox hBox = new HBox(hBoxConfirm, hBoxClose);
         hBox.setStyle("-fx-font-size:15;");
         HBox.setHgrow(hBoxConfirm, Priority.ALWAYS);
         HBox.setHgrow(hBoxClose, Priority.ALWAYS);
-        //样式,居中和背景颜色
-        hBoxConfirm.setStyle("-fx-alignment:CENTER;-fx-background-color: #5677fc;");
-        hBoxClose.setStyle("-fx-alignment:CENTER;-fx-background-color: rgb(239,239,239);");
 
-        hBox.setAlignment(javafx.geometry.Pos.CENTER);
-        //装载
-        VBox vBox = new VBox(textArea, hBox);
-        vBox.setAlignment(javafx.geometry.Pos.CENTER);
-        Scene scene = new Scene(vBox, 600, 340);
-        stage.setScene(scene);
-        stage.showAndWait();
+        // 悬停效果
+        setButtonHoverEffect(hBoxConfirm, confirm, "#5677fc", "#0029cc", "white");
+        setButtonHoverEffect(hBoxClose, close, "rgb(239,239,239)", "#dcdcdc", null);
 
-        return StrToCharArray(textArea.getText());
+        hBox.setAlignment(Pos.CENTER);
+        return hBox;
+    }
+    private void setButtonHoverEffect(HBox buttonBox, Label buttonLabel, String normalColor, String hoverColor, String textColor) {
+        buttonBox.setStyle("-fx-alignment:CENTER;-fx-background-color: " + normalColor + ";");
+
+        buttonBox.setOnMouseEntered(event -> {
+            buttonBox.setStyle("-fx-alignment:CENTER;-fx-background-color: " + hoverColor + ";"); // 悬停时的背景颜色
+            if (textColor != null) {
+                buttonLabel.setStyle("-fx-text-fill:" + textColor + ";");
+            }
+        });
+
+        buttonBox.setOnMouseExited(event -> {
+            buttonBox.setStyle("-fx-alignment:CENTER;-fx-background-color: " + normalColor + ";"); // 离开时的背景颜色
+            if (textColor != null) {
+                buttonLabel.setStyle("-fx-text-fill:black;");
+            }
+        });
     }
 
+    private void closeStage() {
+        Stage stage = (Stage) textArea.getScene().getWindow();
+        stage.close();
+    }
+
+
+    private void addTextAreaListeners() {
+        textArea.setOnKeyPressed(event -> {
+            // 检查是否按下 Ctrl + Enter
+            if (event.isControlDown() && event.getCode() == KeyCode.ENTER) {
+               //执行确定
+                confirmInput();
+                event.consume(); // 防止事件进一步传播
+            }
+            // 检查是否按下 Ctrl + DEL
+            if (event.isControlDown() && event.getCode() == KeyCode.DELETE) {
+                //执行确定
+                cancelInput();
+                event.consume();
+            }
+        });
+    }
+    private void confirmInput() {
+        this.str = textArea.getText();
+        closeStage(); // 关闭窗口
+    }
+    private void cancelInput(){
+        this.str = oldStr;
+     //   textArea.setText(str);
+        closeStage();
+    }
     public void appendText(String str) {
         textArea.appendText(str);
     }
 
     private char[] StrToCharArray(String str) {
+        if (str==null) return null;
         return str.toCharArray();
     }
 

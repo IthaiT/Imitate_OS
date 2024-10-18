@@ -14,17 +14,21 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 public class mainController {
-
-    public HBox deviceBeingUsed;
+    @FXML
+    private HBox deviceBeingUsed;
     @FXML
     private FlowPane memoryPane;
     @FXML
@@ -92,8 +96,10 @@ public class mainController {
     private final ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
 
 
+
     @FXML
     private void initialize() {
+        ContextInput();
         new FileInteract(CommandInput, historyCommand, button);
 
         initializeBox();
@@ -111,6 +117,75 @@ public class mainController {
         });
 
 
+    }
+
+
+
+    //获得输入框的内容，给予提示
+    private void ContextInput(){
+        ContextMenu contextMenu = new ContextMenu();
+        List<String> suggestions = getStringList();
+        CommandInput.textProperty().addListener((obs,oldText,newText)->{
+            if (!newText.isEmpty()){
+                List<String> filteredSuggestions = new ArrayList<>();
+                for (String suggestion:suggestions){
+                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())){
+                        filteredSuggestions.add(suggestion);
+                    }
+                }
+                contextMenu.getItems().clear();
+                if (!filteredSuggestions.isEmpty()){
+                    for (String suggestion: filteredSuggestions){
+                        MenuItem item = new MenuItem(suggestion);
+                        item.setOnAction(e->{
+                            CommandInput.setText(suggestion);
+                            CommandInput.positionCaret(suggestion.length());
+                        });
+                        contextMenu.getItems().add(item);
+                    }
+                    contextMenu.show(CommandInput, Side.BOTTOM,0,0);
+                }else {
+                    contextMenu.hide();
+                }
+            }else {
+                contextMenu.hide();
+            }
+        });
+
+//        //tab
+//        CommandInput.setOnKeyPressed(e->{
+//            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()){
+//                if (!contextMenu.getItems().isEmpty()){
+//                    MenuItem firstItem = contextMenu.getItems().get(0);
+//                    CommandInput.setText(firstItem.getText());
+//                    CommandInput.positionCaret(firstItem.getText().length());
+//                    contextMenu.hide();
+//                  //  e.consume();//阻止tab默认行为
+//                }
+//            }
+//        });
+    }
+
+    private static List<String> getStringList() {
+        List<String> suggestions = new ArrayList<>();
+        suggestions.add("exec");
+        suggestions.add("create");
+        suggestions.add("type");
+        suggestions.add("copy");
+        suggestions.add("move");
+        suggestions.add("mkdir");
+        suggestions.add("rmdir");
+        suggestions.add("deldir");
+        suggestions.add("format-are u sure ?");
+        suggestions.add("cd");
+        suggestions.add("vi");
+        suggestions.add("ls");
+        suggestions.add("pwd");
+        suggestions.add("show");
+        suggestions.add("exec");
+        suggestions.add("help");
+        suggestions.add("clear");
+        return suggestions;
     }
 
     //    初始化大框组件的边界
@@ -162,10 +237,10 @@ public class mainController {
     private void initializeQueueBox() {
         readyProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
         blockProcessQueue.prefWidthProperty().bind(Bindings.multiply(0.5, queueBox.prefWidthProperty()));
-    /**
-     * 检测cell单元是否有内容，有内容才可以被hover和selected出现对应样式
-     * 没有就设定为空样式
-     * */
+//
+//      检测cell单元是否有内容，有内容才可以被hover和selected出现对应样式
+//      没有就设定为空样式
+
         readyProcessQueue.setCellFactory(listView -> new ListCell<String>() {
             @Override
             protected void updateItem(String item,boolean empty){
@@ -302,7 +377,7 @@ public class mainController {
             String tmp = CPU.getInstance().getProcessStatus();
             String name=CPU.getInstance().getRunningProcess().getName();
             int id=CPU.getInstance().getRunningProcess().getPid();
-            if (tmp!=""){
+            if (!Objects.equals(tmp, "")){
                 //如果tmp是空白的话，使用设备会输出一个空格
                 intermediateProcess.appendText(">" + tmp + "\n");
             }
