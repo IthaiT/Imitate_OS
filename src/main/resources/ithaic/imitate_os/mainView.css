@@ -254,3 +254,32 @@ diskBox VBox{
     -fx-min-height:25;
 }
 
+/* 为 ContextMenu 设置样式 */
+.context-menu {
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 2px;
+    -fx-padding: 0px;
+    -fx-background-radius: 5px;
+}
+
+/* 为 MenuItem 设置样式 */
+.context-menu .menu-item {
+    -fx-font-size: 14px;
+    -fx-background-color: transparent;
+}
+
+.context-menu .menu-item:focused {
+    -fx-background-color: #333333;
+}
+
+
+/* 删除 TextField 的聚焦边框 */
+.text-field:focused {
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+
+
