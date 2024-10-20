@@ -231,44 +231,52 @@ public class FileInteract {
      * 输入框没有内容时，↑↓选择历史命令
      * 有内容时，联想输入
      * */
-    private void ContextInput(HistoryCommand historyCommandList){
+    private void ContextInput(HistoryCommand historyCommandList) {
         ContextMenu contextMenu = new ContextMenu();
         List<String> suggestions = getStringList();
-        //监听输入框文本
-        CommandInput.textProperty().addListener((obs,oldText,newText)->{
-            if (!newText.isEmpty()){
+        int[] suggestionIndex = { -1 }; // 用于追踪Tab键的选择项
+
+        // 监听输入框文本
+        CommandInput.textProperty().addListener((obs, oldText, newText) -> {
+            if (!newText.isEmpty()) {
                 List<String> filteredSuggestions = new ArrayList<>();
-                for (String suggestion:suggestions){
-                    //内容非空快速匹配临近词条
-                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())){
+                for (String suggestion : suggestions) {
+                    // 内容非空时，快速匹配临近词条
+                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())) {
                         filteredSuggestions.add(suggestion);
                     }
                 }
-                //清空原本的item
+
                 contextMenu.getItems().clear();
-                //设定选择事件
-                if (!filteredSuggestions.isEmpty()){
-                    for (String suggestion: filteredSuggestions){
+                suggestionIndex[0] = -1; // 重置Tab选择项
+
+                // 更新候选词
+                if (!filteredSuggestions.isEmpty()) {
+                    for (String suggestion : filteredSuggestions) {
                         MenuItem item = new MenuItem(suggestion);
-                        item.setOnAction(e->{
+                        item.setOnAction(e -> {
                             CommandInput.setText(suggestion);
                             CommandInput.positionCaret(suggestion.length());
                         });
                         contextMenu.getItems().add(item);
                     }
-                    contextMenu.show(CommandInput, Side.BOTTOM,0,0);
-                }else {
+                    contextMenu.show(CommandInput, Side.BOTTOM, 0, 0);
+                } else {
                     contextMenu.hide();
                 }
-            }else {
+            } else {
                 contextMenu.hide();
             }
         });
 
         // 监听键盘事件，处理上下键切换历史命令或Tab键的自动补全
         CommandInput.setOnKeyPressed(e -> {
-            if (CommandInput.getText().isEmpty()) {
-                // 如果输入框为空，使用上下键切换历史命令
+
+            //默认情况下,context item会强制使用上下选择,禁用无效
+
+            //ctrl+up or down
+            if (e.isControlDown()){
+                // 输入框为空，使用上下键切换历史命令
                 if (e.getCode() == KeyCode.UP) {
                     CommandInput.setText(historyCommandList.getCommand(0));
                     CommandInput.positionCaret(CommandInput.getText().length());
@@ -276,21 +284,23 @@ public class FileInteract {
                     CommandInput.setText(historyCommandList.getCommand(1));
                     CommandInput.positionCaret(CommandInput.getText().length());
                 }
-            } else {
-                // 输入框不为空时，处理Tab键选择候选项
-                if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
-                    if (!contextMenu.getItems().isEmpty()) {
-                        MenuItem firstItem = contextMenu.getItems().get(0);
-                        CommandInput.setText(firstItem.getText());
-                        CommandInput.positionCaret(firstItem.getText().length());
-                        contextMenu.hide();
-
-                    }
-                    e.consume();
-                }
             }
+
+                // 输入框不为空，使用Tab键选择候选词
+            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
+                    List<MenuItem> items = contextMenu.getItems();
+                    if (!items.isEmpty()) {
+                        suggestionIndex[0] = (suggestionIndex[0] + 1) % items.size(); // 循环选择
+                        MenuItem selectedItem = items.get(suggestionIndex[0]);
+                        CommandInput.setText(selectedItem.getText());
+                        CommandInput.positionCaret(selectedItem.getText().length());
+                    }
+                    e.consume(); // 阻止Tab键的默认行为
+            }
+
         });
     }
+
 
     private static List<String> getStringList() {
         List<String> suggestions = new ArrayList<>();
