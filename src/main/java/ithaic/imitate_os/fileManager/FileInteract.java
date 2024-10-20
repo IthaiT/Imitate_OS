@@ -30,14 +30,14 @@ public class FileInteract {
     private static HistoryCommand historyCommandList;
 
 
-    public FileInteract(TextField CommandInput, TextArea historyCommand ,Button button){
+    public FileInteract(TextField CommandInput, TextArea historyCommand, Button button) {
         currentPath.add("");
         new Disk();// 创建磁盘
         FileInteract.CommandInput = CommandInput;//获得用户输入
         FileInteract.historyCommand = historyCommand;//获得历史命令条
         //设置按钮鼠标监听事件
         FileInteract.button = button;
-        historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
+        historyCommand.appendText("ImitateOS:  " + FileUtils.getPathString(currentPath.toArray(new String[0])));
         historyCommandList = HistoryCommand.getInstance();
         historyCommand.requestFocus();
         //设置历史命令上下选择，联想输入
@@ -46,62 +46,53 @@ public class FileInteract {
 
         button.setOnMouseClicked(e -> commandAction());
         button.setOnKeyPressed(e -> {
-            if(e.getCode().toString().equals("ENTER")) {
+            if (e.getCode().toString().equals("ENTER")) {
                 commandAction();
             }
         });
         CommandInput.setOnAction(e -> commandAction());
 
     }
-    private void commandAction(){
+
+    private void commandAction() {
         command = CommandInput.getText();
         historyCommand.appendText("$  " + command + "\n");
         historyCommandList.addCommand(command);
         HandleCommand();
-        if(!command.equals("clear"))
+        if (!command.equals("clear"))
             historyCommand.appendText("\n");
-        historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
+        historyCommand.appendText("ImitateOS:  " + FileUtils.getPathString(currentPath.toArray(new String[0])));
         CommandInput.clear();
     }
 
     private void HandleCommand() {
-        if(!handleCommandUtil())return;
+        if (!handleCommandUtil()) return;
 
         if (commandArray[0].equals("create")) {// 创建文件，包括普通文件和可执行文件
             MyFile myFile = new MyFile(sourceArray.toArray(new String[0]));
-            if(myFile.isAvailable()){
+            if (myFile.isAvailable()) {
                 char[] content = new PopUpWindow().popUp();
-                FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
+                FileUtils.writeFile(sourceArray.toArray(new String[0]), content);
             }
-        }
-        else if (commandArray[0].equals("delete")) {// 删除文件
+        } else if (commandArray[0].equals("delete")) {// 删除文件
             FileUtils.deleteFile(sourceArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("type")) {// 显示文件内容
+        } else if (commandArray[0].equals("type")) {// 显示文件内容
             FileUtils.typeFile(sourceArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("copy")) {// 复制文件
+        } else if (commandArray[0].equals("copy")) {// 复制文件
             FileUtils.hardCopyFile(sourceArray.toArray(new String[0]), aimArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("move")) {// 移动文件
+        } else if (commandArray[0].equals("move")) {// 移动文件
             FileUtils.moveFile(sourceArray.toArray(new String[0]), aimArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("mkdir")) {// 创建目录
+        } else if (commandArray[0].equals("mkdir")) {// 创建目录
             new Directory(sourceArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("rmdir")) {// 删除目录
+        } else if (commandArray[0].equals("rmdir")) {// 删除目录
             FileUtils.deleteDirectory(sourceArray.toArray(new String[0]));
-        }
-        else if(commandArray[0].equals("deldir")){
+        } else if (commandArray[0].equals("deldir")) {
             FileUtils.deleteAllFiles(sourceArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("format")) {// 格式化磁盘
+        } else if (commandArray[0].equals("format")) {// 格式化磁盘
             Disk.format();
-        }
-        else if (commandArray[0].equals("cd")) {// 切换目录
+        } else if (commandArray[0].equals("cd")) {// 切换目录
             FileUtils.changeDirectory(sourceArray.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("vi")) {// 编辑文件
+        } else if (commandArray[0].equals("vi")) {// 编辑文件
             PopUpWindow popUpWindow = new PopUpWindow();
             //判断文件是否存在
             if (!FileUtils.isFileExists(sourceArray.toArray(new String[0]), (char) 0x20)) {
@@ -109,30 +100,24 @@ public class FileInteract {
                 return;
             }
             StringBuilder sb = FileUtils.getFileContent(sourceArray.toArray(new String[0]));
-            if(sb != null){
+            if (sb != null) {
                 popUpWindow.appendText(sb.toString());
             }
             char[] content = popUpWindow.popUp();
-            FileUtils.writeFile(sourceArray.toArray(new String[0]),content);
-        }
-        else if (commandArray[0].equals("ls")) {// 显示目录内容
+            FileUtils.writeFile(sourceArray.toArray(new String[0]), content);
+        } else if (commandArray[0].equals("ls")) {// 显示目录内容
             FileUtils.listDirectory(currentPath.toArray(new String[0]));
-        }
-        else if (commandArray[0].equals("pwd")) {// 显示当前目录
+        } else if (commandArray[0].equals("pwd")) {// 显示当前目录
             historyCommand.appendText(FileUtils.getPathString(currentPath.toArray(new String[0])));
-        }
-        else if (commandArray[0].equals("show")) {//显示磁盘信息
+        } else if (commandArray[0].equals("show")) {//显示磁盘信息
             for (int i = 0; i < 10; i++) {
                 Disk.printBlock(i);
             }
-        }
-        else if(commandArray[0].equals("exec")){  //执行可执行文件
+        } else if (commandArray[0].equals("exec")) {  //执行可执行文件
             FileUtils.executeFile(sourceArray.toArray(new String[0]));
-        }
-        else if(commandArray[0].equals("clear")){
+        } else if (commandArray[0].equals("clear")) {
             historyCommand.clear();
-        }
-        else if(commandArray[0].equals("help")) {  //退出系统
+        } else if (commandArray[0].equals("help")) {  //退出系统
             FileInteract.getHistoryCommand().appendText("""
                     命令列表：
                     create [文件名] [内容] 创建文件，包括普通文件和可执行文件
@@ -154,27 +139,28 @@ public class FileInteract {
                     clear 清空历史命令
                     """);
 
-        }
-        else{
+        } else {
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
         }
     }
 
 
-    /** 处理用户输入，得到命令与路径数组
-     * */
-    private boolean handleCommandUtil(){
+    /**
+     * 处理用户输入，得到命令与路径数组
+     */
+    private boolean handleCommandUtil() {
         commandArray = null;
         sourceArray.clear();
         aimArray.clear();
         commandArray = command.trim().split("\\s+"); // 去除空格，并以空格分割命令数组
-        if(commandArray.length>3){
+        if (commandArray.length > 3) {
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
             return false;
         }
-        if(commandArray.length == 1){
-            if(commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd")
-                    || commandArray[0].equals("show") || commandArray[0].equals("help") || commandArray[0].equals("clear") )return true;
+        if (commandArray.length == 1) {
+            if (commandArray[0].equals("format") || commandArray[0].equals("ls") || commandArray[0].equals("pwd")
+                    || commandArray[0].equals("show") || commandArray[0].equals("help") || commandArray[0].equals("clear"))
+                return true;
             else {
                 FileInteract.getHistoryCommand().appendText("命令错误！\n");
                 return false;
@@ -184,7 +170,7 @@ public class FileInteract {
         //处理第一个参数，即源文件或目录
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
         //如果是相对路径，加入当前路径
-        if(isRelative()) {
+        if (isRelative()) {
             sourceArray.addAll(currentPath);
             for (String s : directoryArray) {
                 if (!s.isEmpty()) {
@@ -193,24 +179,23 @@ public class FileInteract {
             }
         }
         //如果是绝对路径，直接加入目录数组
-        else{
-            if(directoryArray.length == 0 ||!directoryArray[0].isEmpty())sourceArray.add("");
+        else {
+            if (directoryArray.length == 0 || !directoryArray[0].isEmpty()) sourceArray.add("");
             sourceArray.addAll(Arrays.asList(directoryArray).subList(0, directoryArray.length));
         }
 
         //处理第二个参数，即目标文件或目录
-        if(commandArray.length == 3){
+        if (commandArray.length == 3) {
             directoryArray = commandArray[2].split("/"); // 以/分割文件名数组
-            if(isRelative()){
+            if (isRelative()) {
                 aimArray.addAll(currentPath);
                 for (String s : directoryArray) {
                     if (!s.isEmpty()) {
                         aimArray.add(s);
                     }
                 }
-            }
-            else{
-                if(!directoryArray[0].isEmpty())aimArray.add("");
+            } else {
+                if (!directoryArray[0].isEmpty()) aimArray.add("");
                 aimArray.addAll(Arrays.asList(directoryArray).subList(0, directoryArray.length));
             }
         }
@@ -220,8 +205,10 @@ public class FileInteract {
 
     /**
      * 判断是否是相对路径
-     * @return true表示是相对路径 false表示是绝对路径*/
-    private boolean isRelative(){
+     *
+     * @return true表示是相对路径 false表示是绝对路径
+     */
+    private boolean isRelative() {
         return !commandArray[1].startsWith("/");
     }
 
@@ -230,11 +217,11 @@ public class FileInteract {
      * 获得输入框的内容，给予提示。
      * 输入框没有内容时，↑↓选择历史命令
      * 有内容时，联想输入
-     * */
+     */
     private void ContextInput(HistoryCommand historyCommandList) {
         ContextMenu contextMenu = new ContextMenu();
         List<String> suggestions = getStringList();
-        int[] suggestionIndex = { -1 }; // 用于追踪Tab键的选择项
+//        int[] suggestionIndex = {-1}; // 用于追踪Tab键的选择项
 
         // 监听输入框文本
         CommandInput.textProperty().addListener((obs, oldText, newText) -> {
@@ -248,7 +235,7 @@ public class FileInteract {
                 }
 
                 contextMenu.getItems().clear();
-                suggestionIndex[0] = -1; // 重置Tab选择项
+//                suggestionIndex[0] = -1; // 重置Tab选择项
 
                 // 更新候选词
                 if (!filteredSuggestions.isEmpty()) {
@@ -260,7 +247,6 @@ public class FileInteract {
                         });
                         contextMenu.getItems().add(item);
                     }
-                    contextMenu.show(CommandInput, Side.BOTTOM, 0, 0);
                 } else {
                     contextMenu.hide();
                 }
@@ -271,34 +257,41 @@ public class FileInteract {
 
         // 监听键盘事件，处理上下键切换历史命令或Tab键的自动补全
         CommandInput.setOnKeyPressed(e -> {
-
-            //默认情况下,context item会强制使用上下选择,禁用无效
-
-            //ctrl+up or down
-            if (e.isControlDown()){
-                // 输入框为空，使用上下键切换历史命令
-                if (e.getCode() == KeyCode.UP) {
-                    CommandInput.setText(historyCommandList.getCommand(0));
+            if (e.getCode() == KeyCode.CONTROL) {
+                contextMenu.show(CommandInput, Side.BOTTOM, 0, 0);
+            }
+            // 输入框为空，使用上下键切换历史命令
+            if (e.getCode() == KeyCode.UP) {
+                CommandInput.setText(historyCommandList.getCommand(0));
+                if (CommandInput.getText() != null) {
                     CommandInput.positionCaret(CommandInput.getText().length());
-                } else if (e.getCode() == KeyCode.DOWN) {
-                    CommandInput.setText(historyCommandList.getCommand(1));
+                }
+            } else if (e.getCode() == KeyCode.DOWN) {
+                CommandInput.setText(historyCommandList.getCommand(1));
+                if (CommandInput.getText() != null) {
                     CommandInput.positionCaret(CommandInput.getText().length());
                 }
             }
-
-                // 输入框不为空，使用Tab键选择候选词
-            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
-                    List<MenuItem> items = contextMenu.getItems();
-                    if (!items.isEmpty()) {
-                        suggestionIndex[0] = (suggestionIndex[0] + 1) % items.size(); // 循环选择
-                        MenuItem selectedItem = items.get(suggestionIndex[0]);
-                        CommandInput.setText(selectedItem.getText());
-                        CommandInput.positionCaret(selectedItem.getText().length());
-                    }
-                    e.consume(); // 阻止Tab键的默认行为
-            }
-
+//            // 输入框不为空，使用Tab键选择候选词
+//            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
+//                System.out.println("Tab pressed");
+//                List<MenuItem> items = contextMenu.getItems();
+//                if (!items.isEmpty()) {
+//                    suggestionIndex[0] = (suggestionIndex[0] + 1) % items.size(); // 循环选择
+//                    MenuItem selectedItem = items.get(suggestionIndex[0]);
+//                    CommandInput.setText(selectedItem.getText());
+//                    CommandInput.positionCaret(selectedItem.getText().length());
+//                }
+//                e.consume(); // 阻止Tab键的默认行为
+//            }
         });
+
+        CommandInput.setOnKeyReleased(e -> {
+            if (e.getCode() == KeyCode.CONTROL) {
+                contextMenu.hide();
+            }
+        });
+
     }
 
 
