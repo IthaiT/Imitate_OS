@@ -2,20 +2,15 @@ package ithaic.imitate_os.fileManager;
 
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
-import ithaic.imitate_os.process.ProcessManager;
-import javafx.event.EventType;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.geometry.Side;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import lombok.Data;
 import lombok.Getter;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.List;
 
 @Data
 public class FileInteract {
@@ -45,13 +40,10 @@ public class FileInteract {
         historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
         historyCommandList = HistoryCommand.getInstance();
         historyCommand.requestFocus();
-        CommandInput.setOnKeyPressed(e -> {
-            if(e.getCode()== KeyCode.UP){
-                CommandInput.setText(historyCommandList.getCommand(0));
-            }else if(e.getCode()==KeyCode.DOWN){
-                CommandInput.setText(historyCommandList.getCommand(1));
-            }
-        });
+        //设置历史命令上下选择，联想输入
+        ContextInput(historyCommandList);
+
+
         button.setOnMouseClicked(e -> commandAction());
         button.setOnKeyPressed(e -> {
             if(e.getCode().toString().equals("ENTER")) {
@@ -142,24 +134,26 @@ public class FileInteract {
             historyCommand.clear();
         }
         else if(commandArray[0].equals("help")) {  //退出系统
-            FileInteract.getHistoryCommand().appendText("命令列表：\n" +
-                    "create [文件名] [内容] 创建文件，包括普通文件和可执行文件\n" +
-                    "delete [文件名] 删除文件\n" +
-                    "type [文件名] 显示文件内容\n" +
-                    "copy [源文件名] [目标文件名] 复制文件\n" +
-                    "move [源文件名] [目标文件名] 移动文件\n" +
-                    "mkdir [目录名] 创建目录\n" +
-                    "rmdir [目录名] 删除空目录\n" +
-                    "deldir [目录名] 删除目录下所有文件\n" +
-                    "format 格式化磁盘\n" +
-                    "cd [目录名] 切换目录\n" +
-                    "vi [文件名] 编辑文件\n" +
-                    "ls 显示目录内容\n" +
-                    "pwd 显示当前目录\n" +
-                    "show 显示磁盘信息\n" +
-                    "exec [可执行文件名] 执行可执行文件\n" +
-                    "help 显示命令列表\n"+
-                    "clear 清空历史命令\n");
+            FileInteract.getHistoryCommand().appendText("""
+                    命令列表：
+                    create [文件名] [内容] 创建文件，包括普通文件和可执行文件
+                    delete [文件名] 删除文件
+                    type [文件名] 显示文件内容
+                    copy [源文件名] [目标文件名] 复制文件
+                    move [源文件名] [目标文件名] 移动文件
+                    mkdir [目录名] 创建目录
+                    rmdir [目录名] 删除空目录
+                    deldir [目录名] 删除目录下所有文件
+                    format 格式化磁盘
+                    cd [目录名] 切换目录
+                    vi [文件名] 编辑文件
+                    ls 显示目录内容
+                    pwd 显示当前目录
+                    show 显示磁盘信息
+                    exec [可执行文件名] 执行可执行文件
+                    help 显示命令列表
+                    clear 清空历史命令
+                    """);
 
         }
         else{
@@ -206,7 +200,6 @@ public class FileInteract {
         }
 
         //处理第二个参数，即目标文件或目录
-        directoryArray = null;
         if(commandArray.length == 3){
             directoryArray = commandArray[2].split("/"); // 以/分割文件名数组
             if(isRelative()){
@@ -232,5 +225,94 @@ public class FileInteract {
     private boolean isRelative(){
         return !commandArray[1].startsWith("/");
     }
+
+
+    /**
+     * 获得输入框的内容，给予提示。
+     * 输入框没有内容时，↑↓选择历史命令
+     * 有内容时，联想输入
+     * */
+    private void ContextInput(HistoryCommand historyCommandList){
+        ContextMenu contextMenu = new ContextMenu();
+        List<String> suggestions = getStringList();
+        //监听输入框文本
+        CommandInput.textProperty().addListener((obs,oldText,newText)->{
+            if (!newText.isEmpty()){
+                List<String> filteredSuggestions = new ArrayList<>();
+                for (String suggestion:suggestions){
+                    //内容非空快速匹配临近词条
+                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())){
+                        filteredSuggestions.add(suggestion);
+                    }
+                }
+                //清空原本的item
+                contextMenu.getItems().clear();
+                //设定选择事件
+                if (!filteredSuggestions.isEmpty()){
+                    for (String suggestion: filteredSuggestions){
+                        MenuItem item = new MenuItem(suggestion);
+                        item.setOnAction(e->{
+                            CommandInput.setText(suggestion);
+                            CommandInput.positionCaret(suggestion.length());
+                        });
+                        contextMenu.getItems().add(item);
+                    }
+                    contextMenu.show(CommandInput, Side.BOTTOM,0,0);
+                }else {
+                    contextMenu.hide();
+                }
+            }else {
+                contextMenu.hide();
+            }
+        });
+
+        // 监听键盘事件，处理上下键切换历史命令或Tab键的自动补全
+        CommandInput.setOnKeyPressed(e -> {
+            if (CommandInput.getText().isEmpty()) {
+                // 如果输入框为空，使用上下键切换历史命令
+                if (e.getCode() == KeyCode.UP) {
+                    CommandInput.setText(historyCommandList.getCommand(0));
+                    CommandInput.positionCaret(CommandInput.getText().length());
+                } else if (e.getCode() == KeyCode.DOWN) {
+                    CommandInput.setText(historyCommandList.getCommand(1));
+                    CommandInput.positionCaret(CommandInput.getText().length());
+                }
+            } else {
+                // 输入框不为空时，处理Tab键选择候选项
+                if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
+                    if (!contextMenu.getItems().isEmpty()) {
+                        MenuItem firstItem = contextMenu.getItems().get(0);
+                        CommandInput.setText(firstItem.getText());
+                        CommandInput.positionCaret(firstItem.getText().length());
+                        contextMenu.hide();
+
+                    }
+                    e.consume();
+                }
+            }
+        });
+    }
+
+    private static List<String> getStringList() {
+        List<String> suggestions = new ArrayList<>();
+        suggestions.add("create");
+        suggestions.add("type");
+        suggestions.add("copy");
+        suggestions.add("move");
+        suggestions.add("mkdir");
+        suggestions.add("rmdir");
+        suggestions.add("deldir");
+        suggestions.add("format-are u sure ?");
+        suggestions.add("cd");
+        suggestions.add("vi");
+        suggestions.add("ls");
+        suggestions.add("pwd");
+        suggestions.add("show");
+        suggestions.add("exec");
+        suggestions.add("help");
+        suggestions.add("clear");
+        return suggestions;
+    }
+
 }
 

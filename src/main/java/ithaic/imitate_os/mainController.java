@@ -96,9 +96,9 @@ public class mainController {
     private final ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
 
 
+
     @FXML
     private void initialize() {
-        ContextInput();
         new FileInteract(CommandInput, historyCommand, button);
 
         initializeBox();
@@ -116,73 +116,6 @@ public class mainController {
         });
 
 
-    }
-
-
-    //获得输入框的内容，给予提示
-    private void ContextInput() {
-        ContextMenu contextMenu = new ContextMenu();
-        List<String> suggestions = getStringList();
-        CommandInput.textProperty().addListener((obs, oldText, newText) -> {
-            if (!newText.isEmpty()) {
-                List<String> filteredSuggestions = new ArrayList<>();
-                for (String suggestion : suggestions) {
-                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())) {
-                        filteredSuggestions.add(suggestion);
-                    }
-                }
-                contextMenu.getItems().clear();
-                if (!filteredSuggestions.isEmpty()) {
-                    for (String suggestion : filteredSuggestions) {
-                        MenuItem item = new MenuItem(suggestion);
-                        item.setOnAction(e -> {
-                            CommandInput.setText(suggestion);
-                            CommandInput.positionCaret(suggestion.length());
-                        });
-                        contextMenu.getItems().add(item);
-                    }
-                    contextMenu.show(CommandInput, Side.BOTTOM, 0, 0);
-                } else {
-                    contextMenu.hide();
-                }
-            } else {
-                contextMenu.hide();
-            }
-        });
-//        //tab
-//        CommandInput.setOnKeyPressed(e->{
-//            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()){
-//                if (!contextMenu.getItems().isEmpty()){
-//                    MenuItem firstItem = contextMenu.getItems().get(0);
-//                    CommandInput.setText(firstItem.getText());
-//                    CommandInput.positionCaret(firstItem.getText().length());
-//                    contextMenu.hide();
-//                  //  e.consume();//阻止tab默认行为
-//                }
-//            }
-//        });
-    }
-
-    private static List<String> getStringList() {
-        List<String> suggestions = new ArrayList<>();
-        suggestions.add("exec");
-        suggestions.add("create");
-        suggestions.add("type");
-        suggestions.add("copy");
-        suggestions.add("move");
-        suggestions.add("mkdir");
-        suggestions.add("rmdir");
-        suggestions.add("deldir");
-        suggestions.add("format-are u sure ?");
-        suggestions.add("cd");
-        suggestions.add("vi");
-        suggestions.add("ls");
-        suggestions.add("pwd");
-        suggestions.add("show");
-        suggestions.add("exec");
-        suggestions.add("help");
-        suggestions.add("clear");
-        return suggestions;
     }
 
     //    初始化大框组件的边界
