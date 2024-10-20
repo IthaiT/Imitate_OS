@@ -19,6 +19,7 @@ import java.util.Objects;
 
 @Data
 public class FileInteract {
+    @Getter
     private static TextField CommandInput;
     @Getter
     private static TextArea historyCommand;

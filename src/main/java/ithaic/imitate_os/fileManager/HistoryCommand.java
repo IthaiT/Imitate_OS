@@ -60,6 +60,9 @@ public class HistoryCommand {
         if(cur==null){
             return null;
         }
+        if(!FileInteract.getCommandInput().getText().equals(cur.command)){
+            return cur.command;
+        }
         if(opCode == 0&&cur.pre != null){
             cur = cur.pre;
         }else if(opCode == 1&&cur.next != null){

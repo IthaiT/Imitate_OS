@@ -86,7 +86,7 @@ public class mainController {
     @FXML
     private Label processLabel;
     @FXML
-    private  SplitPane processSplit;
+    private SplitPane processSplit;
     @FXML
     private TextField CommandInput;
     @FXML
@@ -94,7 +94,6 @@ public class mainController {
 
     private final ObservableList<String> currentProcessNames_ready = FXCollections.observableArrayList();
     private final ObservableList<String> currentProcessNames_block = FXCollections.observableArrayList();
-
 
 
     @FXML
@@ -113,45 +112,43 @@ public class mainController {
             new MemoryPaneShower(memoryPane);
             new DiskTreeShower(diskStructure);
             new DiskUsedShower(diskUsedPane);
-            new DeviceUsedShower(deviceProcess,deviceBeingUsed);
+            new DeviceUsedShower(deviceProcess, deviceBeingUsed);
         });
 
 
     }
 
 
-
     //获得输入框的内容，给予提示
-    private void ContextInput(){
+    private void ContextInput() {
         ContextMenu contextMenu = new ContextMenu();
         List<String> suggestions = getStringList();
-        CommandInput.textProperty().addListener((obs,oldText,newText)->{
-            if (!newText.isEmpty()){
+        CommandInput.textProperty().addListener((obs, oldText, newText) -> {
+            if (!newText.isEmpty()) {
                 List<String> filteredSuggestions = new ArrayList<>();
-                for (String suggestion:suggestions){
-                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())){
+                for (String suggestion : suggestions) {
+                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())) {
                         filteredSuggestions.add(suggestion);
                     }
                 }
                 contextMenu.getItems().clear();
-                if (!filteredSuggestions.isEmpty()){
-                    for (String suggestion: filteredSuggestions){
+                if (!filteredSuggestions.isEmpty()) {
+                    for (String suggestion : filteredSuggestions) {
                         MenuItem item = new MenuItem(suggestion);
-                        item.setOnAction(e->{
+                        item.setOnAction(e -> {
                             CommandInput.setText(suggestion);
                             CommandInput.positionCaret(suggestion.length());
                         });
                         contextMenu.getItems().add(item);
                     }
-                    contextMenu.show(CommandInput, Side.BOTTOM,0,0);
-                }else {
+                    contextMenu.show(CommandInput, Side.BOTTOM, 0, 0);
+                } else {
                     contextMenu.hide();
                 }
-            }else {
+            } else {
                 contextMenu.hide();
             }
         });
-
 //        //tab
 //        CommandInput.setOnKeyPressed(e->{
 //            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()){
@@ -199,14 +196,14 @@ public class mainController {
         bottom_leftBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         bottom_rightBox.setPrefHeight(bottom_Box.getPrefHeight());
-       // bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
+        // bottom_rightBox.setPrefWidth(bottom_Box.getPrefWidth() * 0.6);
         bottom_rightBox.prefHeightProperty().bind(bottom_Box.prefHeightProperty());
 
         processAndDisk.setPrefHeight(bottom_rightBox.getPrefHeight() * 0.7);
         processAndDisk.prefHeightProperty().bind(Bindings.multiply(0.7, bottom_rightBox.heightProperty()));
         processBox.setPrefWidth(bottom_rightBox.getPrefWidth() * 0.4);
         processBox.prefWidthProperty().bind(Bindings.multiply(0.4, processAndDisk.widthProperty()));
-                processSplit.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(),processLabel.heightProperty()));
+        processSplit.prefHeightProperty().bind(Bindings.subtract(processBox.heightProperty(), processLabel.heightProperty()));
         diskBox.setPrefWidth(processAndDisk.getPrefWidth() * 0.6);
         diskBox.prefWidthProperty().bind(Bindings.multiply(0.6, processAndDisk.widthProperty()));
         diskScrollPane.prefHeightProperty().bind(Bindings.subtract(diskBox_VBox_bottom.heightProperty(), diskBox_VBox_bottom_label.heightProperty()));
@@ -214,7 +211,8 @@ public class mainController {
         userInterface.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_rightBox.heightProperty()));
         historyCommand.setMinHeight(userInterface.getPrefHeight() * 0.3);
     }
-    private void initializeLeftBoxPane(){
+
+    private void initializeLeftBoxPane() {
 //            绑定queueBox的高度是父组件高度的0.3倍
         queueBox.setPrefHeight(bottom_leftBox.getPrefHeight() * 0.3);
         queueBox.prefHeightProperty().bind(Bindings.multiply(0.3, bottom_leftBox.heightProperty()));
@@ -243,7 +241,7 @@ public class mainController {
 
         readyProcessQueue.setCellFactory(listView -> new ListCell<String>() {
             @Override
-            protected void updateItem(String item,boolean empty){
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isEmpty()) {
                     setText(null);
@@ -256,7 +254,7 @@ public class mainController {
         });
         blockProcessQueue.setCellFactory(listView -> new ListCell<String>() {
             @Override
-            protected void updateItem(String item,boolean empty){
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.isEmpty()) {
                     setText(null);
@@ -268,9 +266,9 @@ public class mainController {
             }
         });
 
-        diskStructure.setCellFactory(tv->new TreeCell<String>(){
+        diskStructure.setCellFactory(tv -> new TreeCell<String>() {
             @Override
-            protected void updateItem(String item,boolean empty){
+            protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 // 判断该单元格是否为空
                 if (empty || item == null) {
@@ -365,7 +363,7 @@ public class mainController {
         if (CPU.getInstance().getRunningProcess() != null) {
             String runningProcessName = CPU.getInstance().getRunningProcess().getName();
             int runningProcessID = CPU.getInstance().getRunningProcess().getPid();
-            runningProcessLabel.setText("运行进程：[" +runningProcessID+"] "+ runningProcessName);
+            runningProcessLabel.setText("运行进程：[" + runningProcessID + "] " + runningProcessName);
         } else {//当前无进程
             runningProcessLabel.setText("运行进程：无");
         }
@@ -375,17 +373,17 @@ public class mainController {
     private void updateIntermediateProcess() {
         if (CPU.getInstance().getRunningProcess() != null) {
             String tmp = CPU.getInstance().getProcessStatus();
-            String name=CPU.getInstance().getRunningProcess().getName();
-            int id=CPU.getInstance().getRunningProcess().getPid();
-            if (!Objects.equals(tmp, "")){
+            String name = CPU.getInstance().getRunningProcess().getName();
+            int id = CPU.getInstance().getRunningProcess().getPid();
+            if (!Objects.equals(tmp, "")) {
                 //如果tmp是空白的话，使用设备会输出一个空格
                 intermediateProcess.appendText(">" + tmp + "\n");
             }
             //当前指令
             currentCommand.setText(CPU.getInstance().getIR());
             //最终结果输出,非空
-            if (CPU.getInstance().getProcessResult()!=null){
-                processResult.appendText("["+ id+"] "+ name +" = "+CPU.getInstance().getProcessResult()+"\n");
+            if (CPU.getInstance().getProcessResult() != null) {
+                processResult.appendText("[" + id + "] " + name + " = " + CPU.getInstance().getProcessResult() + "\n");
             }
         }
     }
