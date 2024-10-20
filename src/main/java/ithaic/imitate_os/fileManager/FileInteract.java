@@ -60,7 +60,6 @@ public class FileInteract {
         HandleCommand();
         if(!command.equals("clear"))
             historyCommand.appendText("\n");
-//        historyCommand.appendText("----------------------------------------------------------------------------------\n");
         historyCommand.appendText("ImitateOS:  " +FileUtils.getPathString(currentPath.toArray(new String[0])));
         CommandInput.clear();
     }

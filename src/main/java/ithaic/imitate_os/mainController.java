@@ -117,7 +117,7 @@ public class mainController {
 
 
     }
-
+        //优化方法
     //    初始化大框组件的边界
     private void initializeBox() {
         topHBox.setPrefHeight(mainVBox.getPrefHeight() * 0.05);
