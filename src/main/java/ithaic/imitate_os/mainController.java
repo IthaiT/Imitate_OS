@@ -14,15 +14,11 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Side;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
 

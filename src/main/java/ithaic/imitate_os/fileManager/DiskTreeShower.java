@@ -4,6 +4,10 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -32,16 +36,14 @@ public class DiskTreeShower {
         if (tmp == null || tmp.equals(commandString)) return;
         commandString = tmp;
         String command = FileInteract.getCommandArray()[0];
-        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"};
-        for (String str : commandArray) {
-            if (Objects.equals(command, str)) {
-                TreeItem<String> root = disktree.getRoot();
+          List<String> commandArray = new ArrayList<>(Arrays.asList("create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format"));
+          if (commandArray.contains(command)){
+              TreeItem<String> root = disktree.getRoot();
                 root.getChildren().clear();
                 createTree(4, root);
-                break;
-            }
-        }
+          }
     }
+
 
 
     /**
@@ -52,11 +54,9 @@ public class DiskTreeShower {
     private static void createTree(int ptr, TreeItem<String> parent) {
         char[] buffer = new char[64];
         char[] tmp = Disk.readBlock(ptr);
-        for (int i = 0; i < 64; i++) {
-            buffer[i] = tmp[i];
-        }
+        System.arraycopy(tmp, 0, buffer, 0, 64);
         for (int i = 0; i < 8; i++) {
-            if(buffer[i * 8] == 0)return;
+            if(buffer[i * 8] == 0)continue;
             if(buffer[i * 8 + 4] == 0x20 || buffer[i * 8 + 4] == 0x40){
                 TreeItem<String> item = new TreeItem<>(new String(buffer, i * 8, 3));
                 item.setGraphic(getIcon(DOCUMENT_IMAGE));

@@ -138,7 +138,6 @@ public class FileInteract {
                     help 显示命令列表
                     clear 清空历史命令
                     """);
-
         } else {
             FileInteract.getHistoryCommand().appendText("命令错误！\n");
         }
@@ -222,37 +221,38 @@ public class FileInteract {
         ContextMenu contextMenu = new ContextMenu();
         List<String> suggestions = getStringList();
 //        int[] suggestionIndex = {-1}; // 用于追踪Tab键的选择项
-
         // 监听输入框文本
         CommandInput.textProperty().addListener((obs, oldText, newText) -> {
-            if (!newText.isEmpty()) {
-                List<String> filteredSuggestions = new ArrayList<>();
-                for (String suggestion : suggestions) {
-                    // 内容非空时，快速匹配临近词条
-                    if (suggestion.toLowerCase().startsWith(newText.toLowerCase())) {
-                        filteredSuggestions.add(suggestion);
+            if (newText!=null){
+                if (!newText.isEmpty()) {
+                    List<String> filteredSuggestions = new ArrayList<>();
+                    for (String suggestion : suggestions) {
+                        // 内容非空时，快速匹配临近词条
+                        if (suggestion.toLowerCase().startsWith(newText.toLowerCase())) {
+                            filteredSuggestions.add(suggestion);
+                        }
                     }
-                }
-
-                contextMenu.getItems().clear();
+                    contextMenu.getItems().clear();
 //                suggestionIndex[0] = -1; // 重置Tab选择项
 
-                // 更新候选词
-                if (!filteredSuggestions.isEmpty()) {
-                    for (String suggestion : filteredSuggestions) {
-                        MenuItem item = new MenuItem(suggestion);
-                        item.setOnAction(e -> {
-                            CommandInput.setText(suggestion);
-                            CommandInput.positionCaret(suggestion.length());
-                        });
-                        contextMenu.getItems().add(item);
+                    // 更新候选词
+                    if (!filteredSuggestions.isEmpty()) {
+                        for (String suggestion : filteredSuggestions) {
+                            MenuItem item = new MenuItem(suggestion);
+                            item.setOnAction(e -> {
+                                CommandInput.setText(suggestion);
+                                CommandInput.positionCaret(suggestion.length());
+                            });
+                            contextMenu.getItems().add(item);
+                        }
+                    } else {
+                        contextMenu.hide();
                     }
                 } else {
                     contextMenu.hide();
                 }
-            } else {
-                contextMenu.hide();
             }
+
         });
 
         // 监听键盘事件，处理上下键切换历史命令或Tab键的自动补全
@@ -272,18 +272,6 @@ public class FileInteract {
                     CommandInput.positionCaret(CommandInput.getText().length());
                 }
             }
-//            // 输入框不为空，使用Tab键选择候选词
-//            if (e.getCode() == KeyCode.TAB && contextMenu.isShowing()) {
-//                System.out.println("Tab pressed");
-//                List<MenuItem> items = contextMenu.getItems();
-//                if (!items.isEmpty()) {
-//                    suggestionIndex[0] = (suggestionIndex[0] + 1) % items.size(); // 循环选择
-//                    MenuItem selectedItem = items.get(suggestionIndex[0]);
-//                    CommandInput.setText(selectedItem.getText());
-//                    CommandInput.positionCaret(selectedItem.getText().length());
-//                }
-//                e.consume(); // 阻止Tab键的默认行为
-//            }
         });
 
         CommandInput.setOnKeyReleased(e -> {
@@ -298,6 +286,7 @@ public class FileInteract {
     private static List<String> getStringList() {
         List<String> suggestions = new ArrayList<>();
         suggestions.add("create");
+        suggestions.add("delete");
         suggestions.add("type");
         suggestions.add("copy");
         suggestions.add("move");
