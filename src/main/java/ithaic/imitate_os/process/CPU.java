@@ -1,6 +1,7 @@
 package ithaic.imitate_os.process;
 
 import ithaic.imitate_os.deviceManager.DeviceManager;
+import ithaic.imitate_os.fileManager.FileInteract;
 import ithaic.imitate_os.memoryManager.Memory;
 import ithaic.imitate_os.memoryManager.MemoryManager;
 import lombok.Data;
@@ -72,15 +73,12 @@ public class CPU {
             if(runningProcess != null){
                 executeRunningProcess();
             }
-            //System.out.println("没有进程, CPU空转");
         } else {
             executeRunningProcess();
         }
 
-        //System.out.println("系统时钟: " + systemClock);
         //立刻调用设置时间
         setLabelClock();
-
 
         systemClock++;
         if (relativeClock == 0) {
@@ -94,8 +92,15 @@ public class CPU {
      */
     private void executeRunningProcess() {
         String instruction = memoryManager.fetchInstruction(runningProcess.getAllocatedMemory());
-        String[] instructions = instruction.split("[\\n;\\s\0]+");
-
+        String[] instructions = null;
+        try{
+            instructions = InstructionValidator.validateAndGetInstructions(instruction).toArray(new String[0]);
+        }catch (Exception e) {
+            FileInteract.getHistoryCommand().appendText(e.getMessage());
+            memoryManager.release(runningProcess.getAllocatedMemory()); //释放内存
+            PSW |= 0b001;  // 指令格式错误, 程序结束
+            return;
+        }
         try {
             IR = instructions[PC++];
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -105,7 +110,7 @@ public class CPU {
 
         parseInstruction();
         relativeClock--;
-        //System.out.println("进程 " + runningProcess.getPid() + " 运行中, 时间片剩余: " + relativeClock);
+
         //更新进程状态
         setLabelRelativeClock();
     }
@@ -180,9 +185,9 @@ public class CPU {
                 } else if (IR.startsWith("!")) {
                     char deviceName = IR.charAt(1);
                     int requestTime = Integer.parseInt(IR.substring(2));
-                    //TODO:处理I/O请求,申请设备资源,此处应该调用设备管理的相关函数
                     DeviceManager deviceManager = DeviceManager.getInstance();
                     deviceManager.allocateDevice(runningProcess, String.valueOf(deviceName), requestTime);
+                    setProcessState("使用设备" + deviceName + ",时间:" + requestTime);//进程过程界面显示
                     PSW |= 0b100;  // 设置I/O请求中断
                 }
                 break;

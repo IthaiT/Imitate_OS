@@ -2,6 +2,7 @@ package ithaic.imitate_os.fileManager;
 
 import ithaic.imitate_os.fileManager.fileKind.Directory;
 import ithaic.imitate_os.fileManager.fileKind.MyFile;
+import ithaic.imitate_os.process.InstructionValidator;
 import ithaic.imitate_os.process.ProcessManager;
 
 import java.util.ArrayList;
@@ -257,10 +258,6 @@ public class FileUtils {
             FileInteract.getHistoryCommand().appendText("被写文件不存在\n");
             return;
         }
-//        int isExecutable = 0;
-//        if(filePath[filePath.length-1].endsWith(".e")) isExecutable = 1;
-        //判断文件内容有没有更改，有的话更新文件
-
         //更新文件
         clearFileContent(filePath);
         int fileLength = 0;
@@ -362,6 +359,13 @@ public class FileUtils {
         StringBuilder sb = getFileContent(filePath);
         if (sb == null) {
             FileInteract.getHistoryCommand().appendText("File is empty\n");
+            return false;
+        }
+        //语法检查
+        try{
+            InstructionValidator.validateAndGetInstructions(sb.toString());
+        } catch (Exception e) {
+            FileInteract.getHistoryCommand().appendText(e.getMessage());
             return false;
         }
         ProcessManager.getInstance().create(sb.toString().toCharArray(), filePath[filePath.length - 1]);
