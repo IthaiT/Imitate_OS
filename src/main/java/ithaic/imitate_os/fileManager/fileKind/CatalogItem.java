@@ -14,7 +14,7 @@ public class CatalogItem{
      * @param extendedName: 扩展名
      * @param property:     文件属性
      * @param freeBlock:    起始盘块号
-     * @param fileLength:       文件大小，单位为盘块数
+     * @param fileLength:   文件大小，单位为盘块数
      */
     private void createCatalogItem(char[] name, char extendedName, char property, char freeBlock, char fileLength){
         for (int i = 0; i < 8; i++) {

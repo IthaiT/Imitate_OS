@@ -11,11 +11,13 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lombok.Data;
 
 import java.util.Objects;
 
 
 //弹窗类
+@Data
 public class PopUpWindow {
     private static final Image OS_IMAGE = new Image(Objects.requireNonNull(DiskTreeShower.class.getResourceAsStream("/ithaic/imitate_os/icons/OS_icon.png")));
 

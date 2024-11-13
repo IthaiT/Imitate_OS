@@ -105,10 +105,10 @@ public class FileUtils {
      * @param sourceMixedArray 源文件路径数组
      * @param targetMixedArray 目标文件路径数组
      */
-    public static void softCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
+    public static boolean softCopyFile(String[] sourceMixedArray, String[] targetMixedArray) {
         if (!copyFileUtil(sourceMixedArray, targetMixedArray)) {
             FileInteract.getHistoryCommand().appendText("复制失败\n");
-            return;
+            return false;
         }
         //修改目录项
         String targetFilename = targetMixedArray[targetMixedArray.length - 1];
@@ -130,6 +130,7 @@ public class FileUtils {
         int position = Disk.findBottomFileBlock(directoryArray);
         FileInteract.getHistoryCommand().appendText(String.valueOf(position) + "\n");
         Disk.writeCatalogItem(content, position, 8);
+        return true;
     }
 
 
@@ -194,7 +195,10 @@ public class FileUtils {
      * @param targetMixedArray 目标文件路径数组
      */
     public static void moveFile(String[] sourceMixedArray, String[] targetMixedArray) {
-        softCopyFile(sourceMixedArray, targetMixedArray);
+        if(!softCopyFile(sourceMixedArray, targetMixedArray)){
+            FileInteract.getHistoryCommand().appendText("move file failed");
+            return;
+        }
         int sourcePosition = getCatalogItemPosition(sourceMixedArray);//得到目录块的位置
         Disk.modifyCatalogItem(new char[8], sourcePosition / 64, sourcePosition % 64);//清除原先目录项
     }
@@ -351,6 +355,12 @@ public class FileUtils {
      */
     public static boolean executeFile(String[] filePath) {
         if (filePath.length <= 1) FileInteract.getHistoryCommand().appendText("Invalid path\n");
+        //判断是否为可执行文件
+        String filename = filePath[filePath.length - 1];
+        if(!filename.endsWith(".e")){
+            FileInteract.getHistoryCommand().appendText("File can not be executed\n");
+            return false;
+        }
         //判断文件是否存在
         if (!isFileExists(filePath, (char) 0x20)) {
             FileInteract.getHistoryCommand().appendText("File not found\n");

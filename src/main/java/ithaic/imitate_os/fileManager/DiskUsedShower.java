@@ -49,7 +49,7 @@ public class DiskUsedShower {
         if (tmp == null || tmp.equals(commandString)) return;
         commandString = tmp;
         String command = FileInteract.getCommandArray()[0];
-        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format", "vi"};
+        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format","vi"};
         for (String str : commandArray) {
             if (Objects.equals(command, str)) {
                 ArrayList<Integer> state = loadDiskState();
@@ -108,7 +108,7 @@ public class DiskUsedShower {
         for (int i = 0; i < 4; i++) {
             char[] tmp = Disk.readBlock(i);
             for (int j = 0; j < 64; j++) {
-                if (FAT[i * 64 + j] != tmp[j]) {
+                if (FAT[i * 64 + j] != tmp[j] && (FAT[i * 64 + j] == 0 || tmp[j] == 0)) {
                     //如果二者不相等，需要记录这是FAT的第几个存入到数组中，返回“需要对调颜色的数组”
                     FAT[i * 64 + j] = tmp[j];
                     state.add(i * 64 + j);

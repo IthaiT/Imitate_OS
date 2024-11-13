@@ -145,7 +145,7 @@ public class MyFile {
         Disk.readBlock(parentBlock);
         char[] buffer = Disk.getReadBuffer();
         for (int i = 0; i < 8; i++) {
-            if(filename.equals(new String(buffer,i*8,filename.length()))){
+            if(filename.equals(new String(buffer,i*8,filename.length())) && fileAttribute == buffer[8*i + 4]){
                 FileInteract.getHistoryCommand().appendText("file already exists\n");
                 return false;
             }

@@ -169,7 +169,7 @@ public class FileInteract {
         //处理第一个参数，即源文件或目录
         String[] directoryArray = commandArray[1].split("/"); // 以/分割目录数组
         //如果是相对路径，加入当前路径
-        if (isRelative()) {
+        if (isRelative(1)) {
             sourceArray.addAll(currentPath);
             for (String s : directoryArray) {
                 if (!s.isEmpty()) {
@@ -186,15 +186,16 @@ public class FileInteract {
         //处理第二个参数，即目标文件或目录
         if (commandArray.length == 3) {
             directoryArray = commandArray[2].split("/"); // 以/分割文件名数组
-            if (isRelative()) {
+            if (isRelative(2)) {
                 aimArray.addAll(currentPath);
                 for (String s : directoryArray) {
                     if (!s.isEmpty()) {
                         aimArray.add(s);
                     }
                 }
-            } else {
-                if (!directoryArray[0].isEmpty()) aimArray.add("");
+            }
+            else {
+                if (directoryArray.length == 0 || !directoryArray[0].isEmpty()) aimArray.add("");
                 aimArray.addAll(Arrays.asList(directoryArray).subList(0, directoryArray.length));
             }
         }
@@ -207,8 +208,8 @@ public class FileInteract {
      *
      * @return true表示是相对路径 false表示是绝对路径
      */
-    private boolean isRelative() {
-        return !commandArray[1].startsWith("/");
+    private boolean isRelative(int i) {
+        return !commandArray[i].startsWith("/");
     }
 
 
