@@ -270,9 +270,9 @@ public class mainController {
             processQueueUpdate();
             updateIntermediateProcess();
             DiskTreeShower.updateDiskTree();
-            DiskUsedShower.updateDiskUsed();
             MemoryPaneShower.updateMemoryPane();
             DeviceUsedShower.updateDevices();
+            DiskUsedShower.updateDiskUsed();
         }));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();

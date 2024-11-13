@@ -42,17 +42,17 @@ public class DiskUsedShower {
         diskUsedPane.setVgap(3);
         loadPanes();
     }
-
     //    更新方法
     public static void updateDiskUsed() {
-        String tmp = FileInteract.getCommand();
-        if (tmp == null || tmp.equals(commandString)) return;
-        commandString = tmp;
-        String command = FileInteract.getCommandArray()[0];
-        String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format","vi"};
-        for (String str : commandArray) {
-            if (Objects.equals(command, str)) {
+       // String tmp = FileInteract.getCommand();
+      //  if (tmp == null || tmp.equals(commandString)) return;
+       // commandString = tmp;
+       // String command = FileInteract.getCommandArray()[0];
+       // String[] commandArray = {"create", "delete", "copy", "move", "mkdir", "rmdir", "deldir", "format","vi"};
+       // for (String str : commandArray) {
+         //   if (Objects.equals(command, str)) {
                 ArrayList<Integer> state = loadDiskState();
+                if (state.isEmpty()) return;
                 for (Integer integer : state) {
                     rectangles[integer].setFill((rectangles[integer].getFill().equals(notUsedColor)) ? beingUsedColor : notUsedColor);
                     rectangles[integer].setUserData(setRectData(rectangles[integer], integer));
@@ -60,9 +60,9 @@ public class DiskUsedShower {
                 }
                 diskUsedPane.getChildren().clear();
                 diskUsedPane.getChildren().addAll(rectangles);
-                break;
-            }
-        }
+               // break;
+          //  }
+       // }
     }
 
     // 初始化
@@ -117,5 +117,7 @@ public class DiskUsedShower {
         }
         return state;
     }
+
+
 }
 

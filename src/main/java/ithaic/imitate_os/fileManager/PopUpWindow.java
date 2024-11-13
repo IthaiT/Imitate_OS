@@ -31,12 +31,9 @@ public class PopUpWindow {
         Stage stage = createStage();
         VBox vBox = createVBox();
         Scene scene = new Scene(vBox, 600, 340);
-
         stage.setScene(scene);
         stage.showAndWait();
-
         return StrToCharArray(str);
-
     }
     private Stage createStage() {
         Stage stage = new Stage();
